@@ -34,6 +34,8 @@ for /r "%return_path%" %%d in (*.rb) do (
     java -jar %executable% -VCs %%d
     @REM pause
 )
+
+
 cd %repo_path%
 call mvn test
 pause
