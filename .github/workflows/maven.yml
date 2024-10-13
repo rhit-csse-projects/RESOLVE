@@ -77,7 +77,7 @@ jobs:
             echo $PWD
             ls
             chmod +x ./vcgen.sh
-            ./vc_gen.sh
+            ./vcgen.sh
           elif [[ "$RUNNER_OS" == "Windows" ]]; then
             echo "This is running on Windows"
             echo $PWD
