@@ -1,5 +1,5 @@
 /*
- * TestFactoryTest.java
+ * VCGenerationTest.java
  * ---------------------------------
  * Copyright (c) 2024
  * RESOLVE Software Research Group
