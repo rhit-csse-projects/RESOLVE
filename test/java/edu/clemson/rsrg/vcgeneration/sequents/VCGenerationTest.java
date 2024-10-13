@@ -60,7 +60,6 @@ public class VCGenerationTest {
                 System.out.println(".asrt files found:");
                 String controlFilesDir = "/test/validVCs/";
                 File vcDir = new File(current_directory.getAbsolutePath(), controlFilesDir);
-                System.out.println(vcDir.getAbsolutePath());
                 for (String fileName : asrtFiles) {
                     File controlFile = new File(vcDir.getAbsolutePath(), fileName);
                     File testFile = new File(directory.getAbsolutePath(), fileName);
@@ -84,9 +83,6 @@ public class VCGenerationTest {
             File test = new File(testFile);
             File control = new File(controlFile);
             // Assertions.assertEquals(0, 1);
-
-            System.out.println("Test file: " + testFile);
-            System.out.println("Control file: " + controlFile);
 
             if (!control.exists()) {
                 fail("Control file does not exist: " + controlFile);
