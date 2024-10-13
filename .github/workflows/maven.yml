@@ -53,11 +53,13 @@ jobs:
 
   # This job runs our JUnit tests.
   junit:
-    runs-on: ubuntu-latest
+
     strategy:
       matrix:
         java-dist: [ 'corretto', 'liberica', 'microsoft', 'temurin', 'semeru', 'zulu' ]
         java: [ '17', '21' ]
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
+      runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v4
