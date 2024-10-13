@@ -40,7 +40,6 @@ find "$RETURN_PATH" -type f -name "*.rb" | while read -r file; do
     dir=$(dirname "$file")
     base_file=$(basename "$file" .rb)
 
-    echo "Base File: $base_file"
     echo "Directory: $dir"
     echo "File: $file"
     # Output the directory and the file
@@ -48,7 +47,6 @@ find "$RETURN_PATH" -type f -name "*.rb" | while read -r file; do
     java -jar "$EXECUTABLE" -VCs "$file"
 
     file_found=$(find . -type f -name "$base_file.asrt")
-    echo "File Found: $file_found"
 
     if [ -n "$file_found" ]; then  # Check if the file was found
         mv "$file_found" "$RETURN_PATH"  # Move the found file to the target directory
