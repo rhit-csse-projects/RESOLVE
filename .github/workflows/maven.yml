@@ -72,7 +72,6 @@ jobs:
         run: mvn clean package -DskipTests
       - name: Enforce Bash for Windows and Linux
         shell: bash
-      - name: Make vcgen.sh executable and run it
         run: |
           chmod +x "${GITHUB_WORKSPACE}/vcgen.sh"
           "${GITHUB_WORKSPACE}/vcgen.sh"
