@@ -50,6 +50,7 @@ jobs:
             ${{ runner.os }}-maven-
       - name: Run Formatter Validation Check
         run: mvn formatter:validate
+
   # This job runs our JUnit tests.
   junit:
     runs-on: ubuntu-latest
@@ -65,6 +66,18 @@ jobs:
         with:
           distribution: ${{ matrix.java-dist }}
           java-version: ${{ matrix.java }}
+      - name: Generate New JAR files
+        run: mvn clean package -DskipTests
+      - name: Run command based on OS
+        run: |
+          if [[ "$RUNNER_OS" == "Linux" ]]; then
+            echo "This is running on Linux"
+            chmod +x ./vc_gen.sh
+            ./vc_gen.sh
+          elif [[ "$RUNNER_OS" == "Windows" ]]; then
+            echo "This is running on Windows"
+            bash .\vc_gen.sh
+          fi
       - name: Cache Maven packages
         uses: actions/cache@v4
         with:
