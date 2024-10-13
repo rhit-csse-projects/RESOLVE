@@ -74,10 +74,12 @@ jobs:
         run: |
           if [[ "$RUNNER_OS" == "Linux" ]]; then
             echo "This is running on Linux"
+            echo $PWD
             chmod +x ./vc_gen.sh
             ./vc_gen.sh
           elif [[ "$RUNNER_OS" == "Windows" ]]; then
             echo "This is running on Windows"
+            echo $PWD
             bash .\vc_gen.sh
           fi
       - name: Cache Maven packages
