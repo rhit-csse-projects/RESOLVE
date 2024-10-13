@@ -76,13 +76,13 @@ jobs:
             echo "This is running on Linux"
             echo $PWD
             ls
-            chmod +x ./vc_gen.sh
+            chmod +x ./vcgen.sh
             ./vc_gen.sh
           elif [[ "$RUNNER_OS" == "Windows" ]]; then
             echo "This is running on Windows"
             echo $PWD
             ls
-            bash .\vc_gen.sh
+            bash .\vcgen.sh
           fi
       - name: Cache Maven packages
         uses: actions/cache@v4
