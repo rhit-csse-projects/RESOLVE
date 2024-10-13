@@ -58,8 +58,8 @@ jobs:
       matrix:
         java-dist: [ 'corretto', 'liberica', 'microsoft', 'temurin', 'semeru', 'zulu' ]
         java: [ '17', '21' ]
-        os: [ ubuntu-latest, macos-latest, windows-latest ]
-      runs-on: ${{ matrix.os }}
+        os: [ ubuntu-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v4
