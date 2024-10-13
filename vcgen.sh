@@ -26,7 +26,7 @@ echo "$EXECUTABLE"
 
 
 cd ..
-git clone https://github.com/ClemsonRSRG/RESOLVE-Workspace.git
+git clone https://github.com/rhit-csse-projects/RESOLVE-Workspace.git
 cd RESOLVE-Workspace
 cd RESOLVE
 cd Main
