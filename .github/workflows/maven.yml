@@ -70,20 +70,12 @@ jobs:
           java-version: ${{ matrix.java }}
       - name: Generate New JAR files
         run: mvn clean package -DskipTests
-      - name: Run command based on OS
+      - name: Enforce Bash for Windows and Linux
+        shell: bash
+      - name: Make vcgen.sh executable and run it
         run: |
-          if [[ "$RUNNER_OS" == "Linux" ]]; then
-            echo "This is running on Linux"
-            echo $PWD
-            ls
-            chmod +x ./vcgen.sh
-            ./vcgen.sh
-          elif [[ "$RUNNER_OS" == "Windows" ]]; then
-            echo "This is running on Windows"
-            echo $PWD
-            ls
-            bash .\vcgen.sh
-          fi
+          chmod +x "${GITHUB_WORKSPACE}/vcgen.sh"
+          "${GITHUB_WORKSPACE}/vcgen.sh"
       - name: Cache Maven packages
         uses: actions/cache@v4
         with:
