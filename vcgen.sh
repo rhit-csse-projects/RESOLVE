@@ -13,20 +13,17 @@
 #
 
 
-#set "repo_path=%cd%"
+
 
 REPO_PATH=$PWD
 
-#export REPO_PATH
-
 echo "$REPO_PATH"
 
-#mvn clean package -DskipTests
+
 EXECUTABLE="$REPO_PATH/target/RESOLVE-Summer24a-jar-with-dependencies.jar"
 
 echo "$EXECUTABLE"
-#set "executable=%cd%\target\RESOLVE-Summer24a-jar-with-dependencies.jar"
-#echo executable: %executable%
+
 
 cd ..
 git clone https://github.com/ClemsonRSRG/RESOLVE-Workspace.git
@@ -49,24 +46,10 @@ find "$RETURN_PATH" -type f -name "*.rb" | while read -r file; do
     # Output the directory and the file
     cd "$dir"
     java -jar "$EXECUTABLE" -VCs "$file"
-    mv "$base_file.asrt" "$RETURN_PATH"
 
+    file_found=$(find . -type f -name "$base_file.asrt")
 
+    if [ -n "$file_found" ]; then  # Check if the file was found
+        mv "$file_found" "$RETURN_PATH"  # Move the found file to the target directory
+    fi
 done
-
-
-
-#for /r "%return_path%" %%d in (*.rb) do (
-#    @REM echo Hello
-#    @REM pause
-#    rem Extract the directory path
-#    echo Full file path: %%d
-#    set "dir_path=%%~pd"
-#    cd %dir_path%
-#    java -jar %executable% -VCs %%d
-#    @REM pause
-#)
-#
-#@REM cd %repo_path%
-#@REM call mvn test
-#@REM pause
