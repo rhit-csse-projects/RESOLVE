@@ -31,20 +31,19 @@ public class VCGenerationTest {
 
     @TestFactory
     Collection<DynamicTest> testVCGeneration() {
-        String directoryPath = "/RESOLVE-Workspace/RESOLVE/Main/";
-        File current_directory = new File(System.getProperty("user.dir"));
-        File parentDirFile = current_directory.getParentFile();
+        String relativeResolveWorkspacePath = "/RESOLVE-Workspace/RESOLVE/Main/";
+        File projectDir = new File(System.getProperty("user.dir"));
+        File parentDirFile = projectDir.getParentFile();
 
-        File directory = new File(parentDirFile.getAbsolutePath(), directoryPath);
-        System.out.println(directory.getAbsolutePath());
+        File fullResolveWorkspacePath = new File(parentDirFile.getAbsolutePath(), relativeResolveWorkspacePath);
+        System.out.println(fullResolveWorkspacePath.getAbsolutePath());
 
         ArrayList<String> testFiles = new ArrayList<>();
         ArrayList<String> controlFiles = new ArrayList<>();
         ArrayList<String> fileNames = new ArrayList<>();
 
-        // Check if the specified path is a directory
-        if (directory.isDirectory()) {
-            // Use a FilenameFilter to get only .asrt files
+        if (fullResolveWorkspacePath.isDirectory()) {
+
             FilenameFilter asrtFilter = new FilenameFilter() {
                 @Override
                 public boolean accept(File dir, String name) {
@@ -52,17 +51,15 @@ public class VCGenerationTest {
                 }
             };
 
-            // Get the list of .asrt files
-            String[] asrtFiles = directory.list(asrtFilter);
+            String[] asrtFiles = fullResolveWorkspacePath.list(asrtFilter);
 
-            // Print the list of .asrt files
             if (asrtFiles != null && asrtFiles.length > 0) {
                 System.out.println(".asrt files found:");
                 String controlFilesDir = "/test/validVCs/";
-                File vcDir = new File(current_directory.getAbsolutePath(), controlFilesDir);
+                File vcDir = new File(projectDir.getAbsolutePath(), controlFilesDir);
                 for (String fileName : asrtFiles) {
                     File controlFile = new File(vcDir.getAbsolutePath(), fileName);
-                    File testFile = new File(directory.getAbsolutePath(), fileName);
+                    File testFile = new File(fullResolveWorkspacePath.getAbsolutePath(), fileName);
 
                     controlFiles.add(controlFile.getAbsolutePath());
                     testFiles.add(testFile.getAbsolutePath());
@@ -82,7 +79,6 @@ public class VCGenerationTest {
             String controlFile = controlFiles.get(i);
             File test = new File(testFile);
             File control = new File(controlFile);
-            // Assertions.assertEquals(0, 1);
 
             if (!control.exists()) {
                 fail("Control file does not exist: " + controlFile);
@@ -103,18 +99,16 @@ public class VCGenerationTest {
     }
 
     public static boolean filesAreEqualIgnoreLineEndingsAndEncoding(File file1, File file2) throws IOException {
-        // Read lines from both files (ignoring line ending differences)
         List<String> linesFile1 = Files.readAllLines(file1.toPath(), StandardCharsets.UTF_8);
         List<String> linesFile2 = Files.readAllLines(file2.toPath(), StandardCharsets.UTF_8);
 
-        // Compare line-by-line
         if (linesFile1.size() != linesFile2.size()) {
             return false;
         }
 
         // starting at index 1 to ignore the first line which is the file header and contains timestamp
         for (int i = 1; i < linesFile1.size(); i++) {
-            String line1 = linesFile1.get(i).trim(); // Trims to ignore spaces and CR/LF differences
+            String line1 = linesFile1.get(i).trim();
             String line2 = linesFile2.get(i).trim();
             if (!line1.equals(line2)) {
                 return false;

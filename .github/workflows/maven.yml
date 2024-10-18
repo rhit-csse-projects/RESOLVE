@@ -70,11 +70,11 @@ jobs:
           java-version: ${{ matrix.java }}
       - name: Generate New JAR files
         run: mvn clean package -DskipTests
-      - name: Enforce Bash for Windows and Linux
+      - name: Generate VCs
         shell: bash
         run: |
-          chmod +x "${GITHUB_WORKSPACE}/vcgen.sh"
-          "${GITHUB_WORKSPACE}/vcgen.sh"
+          chmod +x "${GITHUB_WORKSPACE}/bin/vcgen.sh"
+          "${GITHUB_WORKSPACE}/bin/vcgen.sh"
       - name: Cache Maven packages
         uses: actions/cache@v4
         with:
