@@ -1558,9 +1558,24 @@ public class Populator extends TreeWalkerVisitor {
             // is declared as recursive.
             myRecursiveCallLocation = null;
         } catch (NoSuchSymbolException nsse) {
-            throw new SourceErrorException(
-                    "Procedure " + dec.getName().getName() + " does not implement any known operation.",
-                    dec.getName().getLocation());
+            ScopeBuilder scopeBuilder  = myBuilder.getInnermostActiveScope();
+            for (ParameterVarDec val : dec.getParameters()) {
+                try {
+
+                    PTType pt = val.getTy().getProgramType();
+                    scopeBuilder.addFormalParameter(val.getName().getName(), val, val.getMode(), pt);
+                } catch (DuplicateSymbolException dse) {
+                    duplicateSymbol(val.getName().getName(), val.getName().getLocation());
+                }
+            }
+
+            putOperationLikeThingInSymbolTable(dec.getName(), dec.getReturnTy(), dec, scopeBuilder);
+
+
+            myBuilder.startScope(dec);
+//            throw new SourceErrorException(
+//                    "Procedure " + dec.getName().getName() + " does not implement any known operation.",
+//                    dec.getName().getLocation());
         } catch (DuplicateSymbolException dse) {
             // We should have caught this before now, like when we defined the
             // duplicate Operation
