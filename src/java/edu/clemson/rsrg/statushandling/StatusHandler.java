@@ -15,6 +15,8 @@ package edu.clemson.rsrg.statushandling;
 import edu.clemson.rsrg.parsing.data.Location;
 import edu.clemson.rsrg.statushandling.exception.CompilerException;
 
+import java.util.List;
+
 /**
  * <p>
  * A common interface that all handlers for debugging, errors and/or other information coming from the compiler must
@@ -26,18 +28,6 @@ import edu.clemson.rsrg.statushandling.exception.CompilerException;
  * @version 1.0
  */
 public interface StatusHandler {
-
-    /**
-     * <p>
-     * This method displays the error message passed in.
-     * </p>
-     *
-     * @param l
-     *            The location where we encountered the error.
-     * @param msg
-     *            Message to be displayed.
-     */
-    void error(Location l, String msg);
 
     /**
      * <p>
@@ -81,14 +71,43 @@ public interface StatusHandler {
 
     /**
      * <p>
-     * This method displays compiler warning passed in.
+     * This method registers and displays compiler warning passed in.
      * </p>
      *
-     * @param l
-     *            The location where we encountered the error.
-     * @param msg
-     *            Message to be displayed.
+     * @param fault
+     *            The warning to be registered and displayed
      */
-    void warning(Location l, String msg);
+    void registerAndStreamWarning(Fault fault);
 
+    /**
+     * <p>
+     * This method returns the number of warnings captured by this status handler.
+     * </p>
+     *
+     * @return The number of captured warnings
+     */
+    public int retrieveWarningCount();
+
+    /**
+     * <p>
+     * This method returns an ordered list of registered warnings on the system
+     * </p>
+     *
+     * @return The ordered list of warnings
+     */
+    public List<Fault> getWarnings();
+
+    /**
+     * <p>
+     * This method registers a new inorder warning
+     * </p>
+     */
+    public void registerWarning(Fault fault);
+
+    /**
+     * <p>
+     * This method writes and flushes all registered warnings to the output
+     * </p>
+     */
+    public void streamAllWarnings();
 }
