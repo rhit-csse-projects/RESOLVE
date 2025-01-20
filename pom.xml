@@ -192,6 +192,7 @@
                                 <exclude>*.md</exclude>
                                 <exclude>*.xml</exclude>
                                 <exclude>*.yml</exclude>
+                                <exclude>.dockerignore</exclude>
                                 <exclude>LICENSE.txt</exclude>
                                 <exclude>.github/**</exclude>
                                 <exclude>bin/**</exclude>
@@ -199,6 +200,8 @@
                                 <exclude>src/antlr4/**</exclude>
                                 <exclude>src/resources/**</exclude>
                                 <exclude>test/resources/**</exclude>
+                                <exclude>RESOLVE-Workspace/**</exclude>
+                                <exclude>.m2/**</exclude>
                             </excludes>
                         </licenseSet>
                     </licenseSets>

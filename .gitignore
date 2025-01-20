@@ -45,6 +45,9 @@ nbactions*.xml
 *.iws
 .idea/
 
+# Maven dependencies
+.m2/
+
 
 #######################
 # Per-Developer Files #

@@ -1,0 +1,17 @@
+{
+  "name": "My Dev Container",
+  "build": {
+    "dockerfile": "../Dockerfile",
+    "context": ".."
+  },
+  "mounts": [
+    "source=${localWorkspaceFolder}/.m2,target=/root/.m2,type=bind"
+  ],
+  "customizations": {
+    "jetbrains": {
+      "plugins": [
+        "org.antlr.intellij.plugin"
+      ]
+    }
+  }, postStartCommand: "mvn clean package -DskipTests && ./bin/vcgen.sh"
+}
