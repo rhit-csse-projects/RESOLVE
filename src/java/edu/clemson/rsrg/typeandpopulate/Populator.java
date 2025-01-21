@@ -1559,11 +1559,18 @@ public class Populator extends TreeWalkerVisitor {
             myRecursiveCallLocation = null;
         } catch (NoSuchSymbolException nsse) {
             ScopeBuilder scopeBuilder  = myBuilder.getInnermostActiveScope();
+            myCurrentParameters = new LinkedList<>();
             for (ParameterVarDec val : dec.getParameters()) {
                 try {
 
                     PTType pt = val.getTy().getProgramType();
-                    scopeBuilder.addFormalParameter(val.getName().getName(), val, val.getMode(), pt);
+                    if (pt == null) {
+                        pt = PTVoid.getInstance(myTypeGraph);
+                    } else {
+                        pt = val.getTy().getProgramType();
+                    }
+                    ProgramParameterEntry newValue = scopeBuilder.addFormalParameter(val.getName().getName(), val, val.getMode(), pt);
+                    myCurrentParameters.add(newValue);
                 } catch (DuplicateSymbolException dse) {
                     duplicateSymbol(val.getName().getName(), val.getName().getLocation());
                 }
@@ -1571,8 +1578,13 @@ public class Populator extends TreeWalkerVisitor {
 
             putOperationLikeThingInSymbolTable(dec.getName(), dec.getReturnTy(), dec, scopeBuilder);
 
+            myCorrespondingOperation = scopeBuilder.queryForOne(new NameAndEntryTypeQuery<>(null, dec.getName(), OperationEntry.class,
+                            ImportStrategy.IMPORT_NAMED, FacilityStrategy.FACILITY_IGNORE, false))
+                    .toOperationEntry(dec.getLocation());
+
 
             myBuilder.startScope(dec);
+            myCurrentParameters = new LinkedList<>();
 //            throw new SourceErrorException(
 //                    "Procedure " + dec.getName().getName() + " does not implement any known operation.",
 //                    dec.getName().getLocation());
