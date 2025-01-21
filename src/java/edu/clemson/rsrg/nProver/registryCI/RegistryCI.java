@@ -23,7 +23,7 @@ public class RegistryCI {
     private Scanner scan;
     private int currentMapping;
 
-    private static String prompt = " >";
+    private static String prompt = "> ";
 
     public RegistryCI() {
         registry = new CongruenceClassRegistry<>(100, 100, 100, 100);
