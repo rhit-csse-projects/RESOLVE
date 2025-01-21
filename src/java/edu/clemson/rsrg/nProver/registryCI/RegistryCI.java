@@ -46,58 +46,67 @@ public class RegistryCI {
             if (input.equals("Q")) {
                 break;
             }
-            String command[] = input.split(" ");
-            if (command.length < 2) {
-                System.out.println("Invalid input \"" + input + "\". Command must have an argument.");
-                continue;
-            }
-            if (command.length > 2) {
-                System.out.println("Invalid input \"" + input + "\". Command can only have one argument.");
-                continue;
-            }
-            processCommand(command[0], command[1]);
+            processCommand(input);
         }
     }
 
-    public void processCommand(String command, String arg) {
-        switch (command) {
+    public void processCommand(String command) {
+        String parsedCommand[] = command.split(" ");
+        if (parsedCommand.length < 2) {
+            System.out.println("Invalid input \"" + command + "\". Command must have an argument.");
+            return;
+        }
+        switch (parsedCommand[0]) {
         case "R":
-            if (symbolToMapping.containsKey(arg)) {
-                System.out.println("Symbol \"" + arg + "\" already registered.");
-                break;
+            int mapping = 0;
+            if (symbolToMapping.containsKey(parsedCommand[1])) {
+                mapping = symbolToMapping.get(parsedCommand[1]);
+            } else {
+                symbolToMapping.put(parsedCommand[1], currentMapping);
+                mappingToSymbol.add(parsedCommand[1]);
+                mapping = currentMapping;
             }
-            symbolToMapping.put(arg, currentMapping);
-            mappingToSymbol.add(arg);
-            int designator = registry.registerCluster(currentMapping);
+            int designator = registry.registerCluster(mapping);
             System.out.println("Designator: " + designator);
             currentMapping++;
             break;
         case "A":
             try {
-                int num = Integer.parseInt(arg);
+                int num = Integer.parseInt(parsedCommand[1]);
                 if (num < 0) {
                     System.out.println("Argument must be non-negative.");
                 }
                 // should check if it's a valid designator first but not sure how - only checks appear to be for labels
+                // registry.
                 registry.appendToClusterArgList(num);
+                System.out.println("Added to argument list");
             } catch (NumberFormatException e) {
                 System.out.println("Argument must be a number.");
             }
             break;
         case "?":
-            if (!symbolToMapping.containsKey(arg)) {
-                System.out.println("Not registered");
-                break;
+            if (symbolToMapping.containsKey(parsedCommand[1])) {
+                int label = symbolToMapping.get(parsedCommand[1]);
+                if (registry.isRegistryLabel(label)) {
+                    System.out.println("Registered");
+                    break;
+                }
             }
-            int label = symbolToMapping.get(arg);
-            if (registry.isRegistryLabel(label)) {
-                System.out.println("Registered");
-            } else {
-                System.out.println("Not registered");
-            }
+            System.out.println("Not registered");
             break;
         case "M":
-            System.out.println("UNIMPLEMENTED FUNCTION");
+            if (parsedCommand.length < 3) {
+                System.out.println("Invalid input \"" + command + "\". Command must have two arguments.");
+                return;
+            }
+            try {
+                int designator1 = Integer.parseInt(parsedCommand[1]);
+                int designator2 = Integer.parseInt(parsedCommand[2]);
+                registry.makeCongruent(designator1, designator2);
+                System.out.println("Made congruent.");
+            } catch (NumberFormatException e) {
+                System.out.println("Arguments must be numbers.");
+            }
             break;
         default:
             System.out.println("Unspecified command: " + command);
