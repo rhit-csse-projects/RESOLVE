@@ -1565,9 +1565,10 @@ public class Populator extends TreeWalkerVisitor {
 
                     PTType pt = val.getTy().getProgramType();
                     if (pt == null) {
-                        pt = PTVoid.getInstance(myTypeGraph);
-                    } else {
-                        pt = val.getTy().getProgramType();
+                        if (val.getTy() instanceof NameTy) {
+                            postNameTy((NameTy) val.getTy());
+                            pt = val.getTy().getProgramType();
+                        }
                     }
                     ProgramParameterEntry newValue = scopeBuilder.addFormalParameter(val.getName().getName(), val, val.getMode(), pt);
                     myCurrentParameters.add(newValue);
@@ -1643,12 +1644,15 @@ public class Populator extends TreeWalkerVisitor {
         }
 
         // Various different sanity checks
-        ValidOperationDeclChecker validOperationDeclChecker = new ValidOperationDeclChecker(dec.getLocation(),
-                myCorrespondingOperation, myCurrentParameters);
-        validOperationDeclChecker.isSameReturnType(returnType);
-        validOperationDeclChecker.isSameNumberOfParameters();
-        validOperationDeclChecker.hasValidParameterModesImpl();
-        validOperationDeclChecker.isValidRecursiveProcedure(dec.getRecursive(), myRecursiveCallLocation);
+        if (myCorrespondingOperation != null) {
+            ValidOperationDeclChecker validOperationDeclChecker = new ValidOperationDeclChecker(dec.getLocation(),
+                    myCorrespondingOperation, myCurrentParameters);
+            validOperationDeclChecker.isSameReturnType(returnType);
+            validOperationDeclChecker.isSameNumberOfParameters();
+            validOperationDeclChecker.hasValidParameterModesImpl();
+            validOperationDeclChecker.isValidRecursiveProcedure(dec.getRecursive(), myRecursiveCallLocation);
+        }
+
 
         try {
             myBuilder.getInnermostActiveScope().addProcedure(dec.getName().getName(), dec, myCorrespondingOperation);
