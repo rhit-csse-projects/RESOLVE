@@ -25,8 +25,6 @@ EXECUTABLE="$REPO_PATH/target/RESOLVE-Summer24a-jar-with-dependencies.jar"
 echo "$EXECUTABLE"
 
 
-cd ..
-git clone https://github.com/rhit-csse-projects/RESOLVE-Workspace.git
 cd RESOLVE-Workspace
 cd RESOLVE
 cd Main
