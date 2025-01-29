@@ -24,7 +24,9 @@ EXECUTABLE="$REPO_PATH/target/RESOLVE-Summer24a-jar-with-dependencies.jar"
 
 echo "$EXECUTABLE"
 
+echo "Running vcgen.sh"
 pwd
+echo "Changing to RESOLVE-Workspace"
 
 cd RESOLVE-Workspace
 cd RESOLVE
