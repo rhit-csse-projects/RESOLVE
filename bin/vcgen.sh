@@ -24,6 +24,7 @@ EXECUTABLE="$REPO_PATH/target/RESOLVE-Summer24a-jar-with-dependencies.jar"
 
 echo "$EXECUTABLE"
 
+pwd
 
 cd RESOLVE-Workspace
 cd RESOLVE
