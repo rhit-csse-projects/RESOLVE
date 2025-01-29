@@ -25,7 +25,7 @@ EXECUTABLE="$REPO_PATH/target/RESOLVE-Summer24a-jar-with-dependencies.jar"
 echo "$EXECUTABLE"
 
 echo "Running vcgen.sh"
-ls -l RESOLVE-Workspace
+git submodule update --init --recursive
 echo "Changing to RESOLVE-Workspace"
 
 cd RESOLVE-Workspace
