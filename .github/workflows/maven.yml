@@ -74,6 +74,8 @@ jobs:
           fetch-depth: '0'
           distribution: ${{ matrix.java-dist }}
           java-version: ${{ matrix.java }}
+      - name: List Submodules
+        run: git submodule status
       - name: Generate New JAR files
         run: mvn clean package -DskipTests
       - name: Generate VCs
