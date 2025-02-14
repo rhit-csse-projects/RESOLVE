@@ -266,7 +266,7 @@ public class Utilities {
      */
     public static File getWorkspaceDir(String path) {
         File resolvePath = null;
-        String resolveDirName = "RESOLVE";
+        String resolveDirName = "RESOLVE-Workspace";
 
         // Look in the specified path
         if (path != null) {
@@ -294,12 +294,13 @@ public class Utilities {
             while ((resolvePath == null) && (currentDir.getParentFile() != null)) {
                 currentDir = currentDir.getParentFile();
                 if (currentDir.getName().equals(resolveDirName)) {
-                    // We store the path that contains the "RESOLVE" folder
-                    resolvePath = currentDir.getParentFile();
+                    // We store the Resolve-Workspace path
+                    resolvePath = currentDir;
+                    break;
                 }
             }
 
-            // Probably will crash because we can't find "RESOLVE"
+            // Probably will crash because we can't find "RESOLVE-Workspace"
             if (resolvePath == null) {
                 System.err.println(
                         "Warning: Directory '" + resolveDirName + "' not found, using current " + "directory.");
