@@ -285,9 +285,17 @@ public class Utilities {
             File currentDir = getAbsoluteFile("");
 
             // Check to see if our current path is the path that contains
-            // the RESOLVE folder.
+            // the RESOLVE-Workspace folder.
             if (currentDir.getName().equals(resolveDirName)) {
                 resolvePath = currentDir;
+            }
+
+            // Check to see if the current directory is the path that contains the RESOLVE-Workspace folder.
+            if (resolvePath == null) {
+                File tempFile = getAbsoluteFile(resolveDirName);
+                if (tempFile.exists()) {
+                    resolvePath = tempFile;
+                }
             }
 
             // Attempt to locate the "RESOLVE" folder
