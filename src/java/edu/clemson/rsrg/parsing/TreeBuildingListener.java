@@ -57,6 +57,9 @@ import edu.clemson.rsrg.parsing.sanitychecking.ValidFunctionOpDeclChecker;
 import edu.clemson.rsrg.parsing.sanitychecking.ValidSharedStateChecker;
 import edu.clemson.rsrg.parsing.sanitychecking.ValidTypeFamilyChecker;
 import edu.clemson.rsrg.parsing.utilities.SyntacticSugarConverter;
+import edu.clemson.rsrg.statushandling.Fault;
+import edu.clemson.rsrg.statushandling.FaultType;
+import edu.clemson.rsrg.statushandling.StatusHandler;
 import edu.clemson.rsrg.statushandling.exception.SourceErrorException;
 import edu.clemson.rsrg.treewalk.TreeWalker;
 import edu.clemson.rsrg.typeandpopulate.entry.ProgramParameterEntry;
@@ -180,6 +183,14 @@ public class TreeBuildingListener extends ResolveParserBaseListener {
      */
     private final TypeGraph myTypeGraph;
 
+
+    /**
+     * <p>
+     * This is the math type graph that indicates relationship between different math types.
+     * </p>
+     */
+    private final StatusHandler myStatusHandler;
+
     // ===========================================================
     // Constructors
     // ===========================================================
@@ -195,8 +206,9 @@ public class TreeBuildingListener extends ResolveParserBaseListener {
      * @param typeGraph
      *            Type graph that indicates relationship between different mathematical types.
      */
-    public TreeBuildingListener(ResolveFile file, TypeGraph typeGraph) {
+    public TreeBuildingListener(ResolveFile file, TypeGraph typeGraph, StatusHandler statusHandler) {
         myTypeGraph = typeGraph;
+        myStatusHandler = statusHandler;
         myFile = file;
         myFinalModule = null;
         myNodes = new ParseTreeProperty<>();
@@ -2066,6 +2078,7 @@ public class TreeBuildingListener extends ResolveParserBaseListener {
     public void enterProcedureDecl(ResolveParser.ProcedureDeclContext ctx) {
         // Create a new container
         myArrayFacilityDecContainerStack.push(new ArrayFacilityDecContainer(ctx));
+        ResolveParser.OperationParameterListContext parameterList = ctx.operationParameterList();
     }
 
     /**
@@ -2278,8 +2291,7 @@ public class TreeBuildingListener extends ResolveParserBaseListener {
      *            Operation declaration node in ANTLR4 AST.
      */
     @Override
-    public void exitOperationDecl(ResolveParser.OperationDeclContext ctx) {
-        // Parameters
+    public void exitOperationDecl(ResolveParser.OperationDeclContext ctx) {// Parameters
         List<ParameterVarDec> varDecs = getParameterDecls(ctx.operationParameterList().parameterDecl());
 
         // Return type (if any)
@@ -2318,6 +2330,44 @@ public class TreeBuildingListener extends ResolveParserBaseListener {
         if (dec.getReturnTy() != null) {
             ValidFunctionOpDeclChecker declChecker = new ValidFunctionOpDeclChecker(dec);
             declChecker.checkFunctionOpDecl();
+        }
+
+        Exp assertionExp = dec.getRequires().getAssertionExp();
+        for (ParameterVarDec pvd: dec.getParameters()) {
+            switch (pvd.getMode()) {
+                case RESTORES:
+                case PRESERVES:
+                case EVALUATES:
+                case REPLACES:
+                    if (assertionExp.containsVar(pvd.getName().asString(0, 0), true)) {
+                        String str = "Ensures clause at " +
+                                assertionExp.getLocation().toString() +
+                                " contains #" +
+                                pvd.getName().asString(0, 0) +
+                                " while having parameter mode " +
+                                pvd.getMode().toString();
+                        myStatusHandler.registerAndStreamFault(
+                                new Fault(FaultType.INCORRECT_PARAMETER_MODE_USAGE,
+                                        pvd.getLocation(),
+                                        str,
+                                        false));
+                    }
+                    break;
+                case ALTERS:
+                    if (assertionExp.containsVar(pvd.getName().asString(0, 0), false)) {
+                        String str = "Ensures clause at " +
+                                assertionExp.getLocation().toString() +
+                                " contains " +
+                                pvd.getName().asString(0, 0) +
+                                " while having parameter mode " +
+                                pvd.getMode().toString();
+                        myStatusHandler.registerAndStreamFault(
+                                new Fault(FaultType.INCORRECT_PARAMETER_MODE_USAGE,
+                                        pvd.getLocation(),
+                                        str,
+                                        false));
+                    }
+            }
         }
 
         myNodes.put(ctx, dec);

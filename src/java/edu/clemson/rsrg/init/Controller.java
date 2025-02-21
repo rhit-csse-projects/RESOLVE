@@ -20,7 +20,6 @@ import edu.clemson.rsrg.init.file.ResolveFileBasicInfo;
 import edu.clemson.rsrg.init.pipeline.*;
 import edu.clemson.rsrg.misc.Utilities;
 import edu.clemson.rsrg.nProver.GeneralPurposeProver;
-import edu.clemson.rsrg.parametermodechecking.ParameterModeChecker;
 import edu.clemson.rsrg.parsing.ResolveLexer;
 import edu.clemson.rsrg.parsing.ResolveParser;
 import edu.clemson.rsrg.parsing.TreeBuildingListener;
@@ -214,13 +213,6 @@ class Controller {
                     }
                 }
 
-                if (myCompileEnvironment.flags.isFlagSet(ParameterModeChecker.FLAG_CHECK_PARAMETER_MODES)
-                        && m.equals(new ModuleIdentifier(targetModule))) {
-                    ParameterCheckPipeline parameterCheckPipeline = new ParameterCheckPipeline(myCompileEnvironment,
-                            mySymbolTable);
-                    parameterCheckPipeline.process(m);
-                }
-
                 // Complete compilation for this module
                 myCompileEnvironment.completeRecord(m);
                 if (myCompileEnvironment.flags.isFlagSet(ResolveCompiler.FLAG_DEBUG)) {
@@ -354,7 +346,8 @@ class Controller {
         }
 
         // Build the intermediate representation
-        TreeBuildingListener v = new TreeBuildingListener(file, myCompileEnvironment.getTypeGraph());
+        TreeBuildingListener v = new TreeBuildingListener(file, myCompileEnvironment.getTypeGraph(),
+                myCompileEnvironment.getStatusHandler());
         ParseTreeWalker.DEFAULT.walk(v, rootModuleCtx);
 
         return v.getModule();
