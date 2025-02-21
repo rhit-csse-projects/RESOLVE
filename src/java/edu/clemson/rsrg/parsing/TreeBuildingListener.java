@@ -2332,7 +2332,7 @@ public class TreeBuildingListener extends ResolveParserBaseListener {
             declChecker.checkFunctionOpDecl();
         }
 
-        Exp assertionExp = dec.getRequires().getAssertionExp();
+        Exp assertionExp = dec.getEnsures().getAssertionExp();
         for (ParameterVarDec pvd: dec.getParameters()) {
             switch (pvd.getMode()) {
                 case RESTORES:

@@ -20,7 +20,6 @@ import edu.clemson.rsrg.init.flag.FlagDependencies;
 import edu.clemson.rsrg.init.output.OutputListener;
 import edu.clemson.rsrg.misc.Utilities;
 import edu.clemson.rsrg.nProver.GeneralPurposeProver;
-import edu.clemson.rsrg.parametermodechecking.ParameterModeChecker;
 import edu.clemson.rsrg.prover.CongruenceClassProver;
 import edu.clemson.rsrg.statushandling.Fault;
 import edu.clemson.rsrg.statushandling.FaultType;
@@ -486,7 +485,6 @@ public class ResolveCompiler {
             JavaTranslator.setUpFlags();
             Populator.setUpFlags();
             VCGenerator.setUpFlags();
-            ParameterModeChecker.setUpFlags();
             CongruenceClassProver.setUpFlags();
             GeneralPurposeProver.setUpFlags();
             FlagDependencies.seal();
