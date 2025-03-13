@@ -175,7 +175,8 @@ public class LoopChangingTest {
                     "cp test/resources/Inject_Front_Realiz_Left_SwapStmnt_Illegally_Changing.rb RESOLVE-Workspace/Main/Concepts/Queue_Template/Inject_Front_Realiz_Left_SwapStmnt_Illegally_Changing.rb",
                     "");
 
-            executeCommand("java -jar " + JAR_FILE_NAME + " -VCs Inject_Front_Realiz_Left_SwapStmnt_Illegally_Changing.rb",
+            executeCommand(
+                    "java -jar " + JAR_FILE_NAME + " -VCs Inject_Front_Realiz_Left_SwapStmnt_Illegally_Changing.rb",
                     "RESOLVE-Workspace/Main/Concepts/Queue_Template/");
 
             BufferedReader stderrReader = new BufferedReader(new InputStreamReader(new FileInputStream("stderr.txt")));
@@ -219,7 +220,8 @@ public class LoopChangingTest {
                     "cp test/resources/Inject_Front_Realiz_Right_SwapStmnt_Illegally_Changing.rb RESOLVE-Workspace/Main/Concepts/Queue_Template/Inject_Front_Realiz_Right_SwapStmnt_Illegally_Changing.rb",
                     "");
 
-            executeCommand("java -jar " + JAR_FILE_NAME + " -VCs Inject_Front_Realiz_Right_SwapStmnt_Illegally_Changing.rb",
+            executeCommand(
+                    "java -jar " + JAR_FILE_NAME + " -VCs Inject_Front_Realiz_Right_SwapStmnt_Illegally_Changing.rb",
                     "RESOLVE-Workspace/Main/Concepts/Queue_Template/");
 
             BufferedReader stderrReader = new BufferedReader(new InputStreamReader(new FileInputStream("stderr.txt")));
@@ -263,7 +265,9 @@ public class LoopChangingTest {
                     "cp test/resources/Inject_Front_Realiz_FuncAssignStmt_Causing_Illegal_Var_Change.rb RESOLVE-Workspace/Main/Concepts/Queue_Template/Inject_Front_Realiz_FuncAssignStmt_Causing_Illegal_Var_Change.rb",
                     "");
 
-            executeCommand("java -jar " + JAR_FILE_NAME + " -VCs Inject_Front_Realiz_FuncAssignStmt_Causing_Illegal_Var_Change.rb",
+            executeCommand(
+                    "java -jar " + JAR_FILE_NAME
+                            + " -VCs Inject_Front_Realiz_FuncAssignStmt_Causing_Illegal_Var_Change.rb",
                     "RESOLVE-Workspace/Main/Concepts/Queue_Template/");
 
             BufferedReader stderrReader = new BufferedReader(new InputStreamReader(new FileInputStream("stderr.txt")));
