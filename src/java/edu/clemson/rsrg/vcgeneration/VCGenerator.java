@@ -53,6 +53,8 @@ import edu.clemson.rsrg.parsing.data.LocationDetailModel;
 import edu.clemson.rsrg.parsing.data.PosSymbol;
 import edu.clemson.rsrg.prover.immutableadts.ImmutableList;
 import edu.clemson.rsrg.statushandling.exception.SourceErrorException;
+import edu.clemson.rsrg.statushandling.Fault;
+import edu.clemson.rsrg.statushandling.FaultType;
 import edu.clemson.rsrg.treewalk.TreeWalker;
 import edu.clemson.rsrg.treewalk.TreeWalkerVisitor;
 import edu.clemson.rsrg.typeandpopulate.entry.*;
@@ -1687,18 +1689,27 @@ public class VCGenerator extends TreeWalkerVisitor {
                 handleWhileCheck(new_stmts, changingVars);
             } else if (subStatement instanceof SwapStmt) {
                 if (!changingVars.contains(((SwapStmt) subStatement).getLeft())) {
-                    System.out.println("Error: variable " + ((SwapStmt) subStatement).getLeft().asString(0, 0)
-                            + " appears in a swap statement but not the changing clause");
+                    myCompileEnvironment.getStatusHandler()
+                            .registerAndStreamFault(
+                                    new Fault(FaultType.COMPILER_EXCEPTION, subStatement.getLocation(),
+                                            "Error: left variable " + ((SwapStmt) subStatement).getLeft().asString(0, 0)
+                                                    + " appears in a swap statement but not the changing clause",
+                                            true));
                 }
                 if (!changingVars.contains(((SwapStmt) subStatement).getRight())) {
-                    System.out.println("Error: variable " + ((SwapStmt) subStatement).getRight().asString(0, 0)
-                            + " appears in a swap statement but not the changing clause");
+                    myCompileEnvironment.getStatusHandler()
+                            .registerAndStreamFault(new Fault(FaultType.COMPILER_EXCEPTION, subStatement.getLocation(),
+                                    "Error: right variable " + ((SwapStmt) subStatement).getRight().asString(0, 0)
+                                            + " appears in a swap statement but not the changing clause",
+                                    true));
                 }
             } else if (subStatement instanceof FuncAssignStmt) {
                 if (!changingVars.contains(((FuncAssignStmt) subStatement).getVariableExp())) {
-                    System.out.println(
-                            "Error: variable " + ((FuncAssignStmt) subStatement).getVariableExp().asString(0, 0)
-                                    + " appears in an assign statement but not the changing clause");
+                    myCompileEnvironment.getStatusHandler()
+                            .registerAndStreamFault(new Fault(FaultType.COMPILER_EXCEPTION, subStatement.getLocation(),
+                                    "Error: variable " + ((FuncAssignStmt) subStatement).getVariableExp().asString(0, 0)
+                                            + " appears in an assign statement but not the changing clause",
+                                    true));
                 }
             } else if (subStatement instanceof CallStmt) {
                 List<ProgramExp> args = ((CallStmt) subStatement).getFunctionExp().getArguments();
@@ -1715,8 +1726,12 @@ public class VCGenerator extends TreeWalkerVisitor {
                             || param.getParameterMode().name().equals("UPDATES")
                             || param.getParameterMode().name().equals("CLEARS")
                             || param.getParameterMode().name().equals("REPLACES"))) {
-                        System.out.println("Error: variable " + arg.asString(0, 0)
-                                + " appears in a call statement but not the changing clause");
+                        myCompileEnvironment.getStatusHandler()
+                                .registerAndStreamFault(
+                                        new Fault(FaultType.COMPILER_EXCEPTION, subStatement.getLocation(),
+                                                "Error: variable " + arg.asString(0, 0)
+                                                        + " appears in a call statement but not the changing clause",
+                                                true));
                     }
                 }
             }

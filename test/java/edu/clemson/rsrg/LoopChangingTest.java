@@ -12,16 +12,16 @@
  */
 package edu.clemson.rsrg;
 
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeAll;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class LoopChangingTest {
 
@@ -49,19 +49,17 @@ public class LoopChangingTest {
                 processBuilder.directory(new File(System.getProperty("user.dir")));
             }
 
+            File stdoutFile = new File("stdout.txt");
+            File stderrFile = new File("stderr.txt");
+            processBuilder.redirectOutput(stdoutFile);
+            processBuilder.redirectError(stderrFile);
+
             // Start the process
             Process process = processBuilder.start();
 
-            // Capture output
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-            }
-
             // Wait for the process to complete
             int exitCode = process.waitFor();
-            System.out.println("Exited with code: " + exitCode);
+            System.out.println("Exited with code: " + exitCode + " for command: " + command);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -115,15 +113,58 @@ public class LoopChangingTest {
     @Test
     public void loopChangingTest_no_modifications_expectSuccess() {
         // Run the RESOLVE compiler
-        executeCommand("java -jar " + JAR_FILE_NAME + " -VCs Inject_Front_Realiz.rb", "RESOLVE-Workspace/Main/Concepts/Queue_Template/");
+        executeCommand("java -jar " + JAR_FILE_NAME + " -VCs Inject_Front_Realiz.rb",
+                "RESOLVE-Workspace/Main/Concepts/Queue_Template/");
 
         // Check if the output file exists
         assert new File("RESOLVE-Workspace/Main/Concepts/Queue_Template/Inject_Front_Realiz.asrt").exists();
+
+        executeCommand("rm Inject_Front_Realiz.asrt", "RESOLVE-Workspace/Main/Concepts/Queue_Template/");
     }
 
-    @AfterEach
-    public void delete_output_files() {
-        executeCommand("rm -r *.asrt", "RESOLVE-Workspace/Main/Concepts/Queue_Template/");
+    @Test
+    public void loopChangingTest_illegal_CallStmt_expectCompilerException() {
+
+        try {
+            // Run the RESOLVE compiler
+            executeCommand(
+                    "cp test/resources/Inject_Front_Realiz_CallStmt_Illegally_Changing.rb RESOLVE-Workspace/Main/Concepts/Queue_Template/Inject_Front_Realiz_CallStmt_Illegally_Changing.rb",
+                    "");
+
+            executeCommand("java -jar " + JAR_FILE_NAME + " -VCs Inject_Front_Realiz_CallStmt_Illegally_Changing.rb",
+                    "RESOLVE-Workspace/Main/Concepts/Queue_Template/");
+
+            BufferedReader stderrReader = new BufferedReader(new InputStreamReader(new FileInputStream("stderr.txt")));
+            String errorString = "";
+            String stderrLine;
+            boolean foundError = false;
+            while ((stderrLine = stderrReader.readLine()) != null) {
+                errorString += stderrLine + "\n";
+            }
+            stderrReader.close();
+
+            Pattern pattern = Pattern.compile("CRITICAL Fault: (.*)\\n.*\\nError: (.*)", Pattern.CASE_INSENSITIVE);
+
+            Matcher matcher = pattern.matcher(errorString);
+
+            if (matcher.find()) {
+                Assertions.assertEquals("Compiler Exception", matcher.group(1),
+                        "Expected 'Compiler Exception' but found: " + matcher.group(1));
+                Assertions.assertEquals("variable T appears in a call statement but not the changing clause",
+                        matcher.group(2), "Expected specific error message but found: " + matcher.group(2));
+            } else {
+                Assertions.fail("Compiler Exception not found in stderr.txt");
+            }
+
+            // Check if the output file exists
+        } catch (FileNotFoundException e) {
+            Assertions.fail("FileNotFoundException occurred: " + e.getMessage());
+        } catch (IOException e) {
+            Assertions.fail("IOException occurred: " + e.getMessage());
+        } finally {
+            executeCommand("rm Inject_Front_Realiz_CallStmt_Illegally_Changing.rb",
+                    "RESOLVE-Workspace/Main/Concepts/Queue_Template/");
+        }
     }
 
 }
