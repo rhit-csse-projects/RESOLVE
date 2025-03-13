@@ -11,7 +11,7 @@ Realization Inject_Front_Realiz_CallStmt_Illegally_Changing for Inject_Front_Cap
 			decreasing |Q|;
 		do
 			Dequeue(E,Q);
-			-- T is changing but it is not supposed to change as E is being queued onto T, as it is not in the changing clause
+			-- T is not supposed to change as specified in the changing clause, but the value E is being enqueued to T
 			Enqueue(E,T);
 			Q :=: T;
 		end;
