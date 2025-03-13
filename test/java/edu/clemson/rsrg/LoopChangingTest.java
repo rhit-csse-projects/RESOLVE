@@ -143,7 +143,7 @@ public class LoopChangingTest {
             }
             stderrReader.close();
 
-            Pattern pattern = Pattern.compile("CRITICAL Fault: (.*)\\n.*\\nError: (.*)", Pattern.CASE_INSENSITIVE);
+            Pattern pattern = Pattern.compile(".*Fault: (.*)\\n.*\\nError: (.*)", Pattern.CASE_INSENSITIVE);
 
             Matcher matcher = pattern.matcher(errorString);
 
@@ -187,7 +187,7 @@ public class LoopChangingTest {
             }
             stderrReader.close();
 
-            Pattern pattern = Pattern.compile("CRITICAL Fault: (.*)\\n.*\\nError: (.*)", Pattern.CASE_INSENSITIVE);
+            Pattern pattern = Pattern.compile(".*Fault: (.*)\\n.*\\nError: (.*)", Pattern.CASE_INSENSITIVE);
 
             Matcher matcher = pattern.matcher(errorString);
 
@@ -206,7 +206,7 @@ public class LoopChangingTest {
         } catch (IOException e) {
             Assertions.fail("IOException occurred: " + e.getMessage());
         } finally {
-            executeCommand("rm Inject_Front_Realiz_Left_SwapStmnt_Illegally_Changing",
+            executeCommand("rm Inject_Front_Realiz_Left_SwapStmnt_Illegally_Changing.rb",
                     "RESOLVE-Workspace/Main/Concepts/Queue_Template/");
         }
     }
@@ -231,7 +231,7 @@ public class LoopChangingTest {
             }
             stderrReader.close();
 
-            Pattern pattern = Pattern.compile("CRITICAL Fault: (.*)\\n.*\\nError: (.*)", Pattern.CASE_INSENSITIVE);
+            Pattern pattern = Pattern.compile(".*Fault: (.*)\\n.*\\nError: (.*)", Pattern.CASE_INSENSITIVE);
 
             Matcher matcher = pattern.matcher(errorString);
 
@@ -250,7 +250,51 @@ public class LoopChangingTest {
         } catch (IOException e) {
             Assertions.fail("IOException occurred: " + e.getMessage());
         } finally {
-            executeCommand("rm Inject_Front_Realiz_Right_SwapStmnt_Illegally_Changing",
+            executeCommand("rm Inject_Front_Realiz_Right_SwapStmnt_Illegally_Changing.rb",
+                    "RESOLVE-Workspace/Main/Concepts/Queue_Template/");
+        }
+    }
+
+    @Test
+    public void loopChangingTest_illegal_FuncAssignStmt_expectCompilerException() {
+        try {
+            // Run the RESOLVE compiler
+            executeCommand(
+                    "cp test/resources/Inject_Front_Realiz_FuncAssignStmt_Causing_Illegal_Var_Change.rb RESOLVE-Workspace/Main/Concepts/Queue_Template/Inject_Front_Realiz_FuncAssignStmt_Causing_Illegal_Var_Change.rb",
+                    "");
+
+            executeCommand("java -jar " + JAR_FILE_NAME + " -VCs Inject_Front_Realiz_FuncAssignStmt_Causing_Illegal_Var_Change.rb",
+                    "RESOLVE-Workspace/Main/Concepts/Queue_Template/");
+
+            BufferedReader stderrReader = new BufferedReader(new InputStreamReader(new FileInputStream("stderr.txt")));
+            String errorString = "";
+            String stderrLine;
+            boolean foundError = false;
+            while ((stderrLine = stderrReader.readLine()) != null) {
+                errorString += stderrLine + "\n";
+            }
+            stderrReader.close();
+
+            Pattern pattern = Pattern.compile(".*Fault: (.*)\\n.*\\nError: (.*)", Pattern.CASE_INSENSITIVE);
+
+            Matcher matcher = pattern.matcher(errorString);
+
+            if (matcher.find()) {
+                Assertions.assertEquals("Compiler Exception", matcher.group(1),
+                        "Expected 'Compiler Exception' but found: " + matcher.group(1));
+                Assertions.assertEquals("variable Y appears in an assign statement but not the changing clause",
+                        matcher.group(2), "Expected specific error message but found: " + matcher.group(2));
+            } else {
+                Assertions.fail("Compiler Exception not found in stderr.txt");
+            }
+
+            // Check if the output file exists
+        } catch (FileNotFoundException e) {
+            Assertions.fail("FileNotFoundException occurred: " + e.getMessage());
+        } catch (IOException e) {
+            Assertions.fail("IOException occurred: " + e.getMessage());
+        } finally {
+            executeCommand("rm Inject_Front_Realiz_FuncAssignStmt_Causing_Illegal_Var_Change.rb",
                     "RESOLVE-Workspace/Main/Concepts/Queue_Template/");
         }
     }
