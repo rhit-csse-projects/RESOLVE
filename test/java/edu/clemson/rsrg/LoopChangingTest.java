@@ -60,23 +60,6 @@ public class LoopChangingTest {
             // Wait for the process to complete
             int exitCode = process.waitFor();
             System.out.println("Exited with code: " + exitCode + " for command: " + command);
-
-            BufferedReader stdoutReader = new BufferedReader(new InputStreamReader(new FileInputStream("stdout.txt")));
-            BufferedReader stderrReader = new BufferedReader(new InputStreamReader(new FileInputStream("stderr.txt")));
-            String stdoutLine;
-            String stderrLine;
-
-            System.out.println("Standard Output:");
-            while ((stdoutLine = stdoutReader.readLine()) != null) {
-                System.out.println(stdoutLine);
-            }
-            stdoutReader.close();
-
-            System.out.println("Standard Error:");
-            while ((stderrLine = stderrReader.readLine()) != null) {
-                System.out.println(stderrLine);
-            }
-            stderrReader.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
