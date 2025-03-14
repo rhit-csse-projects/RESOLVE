@@ -109,11 +109,15 @@ public class LoopChangingTest {
         files = jarFileFolder.list(jarFilter);
         // Check if the jar file exists
         boolean jarFileExists = false;
+
         for (String file : files) {
             Matcher matcher = pattern.matcher(file);
             if (matcher.find()) {
                 System.out.println("Jar file found: " + file);
+                File jarFile = new File(jarFileFolder, file);
+                JAR_FILE_NAME = jarFile.getAbsolutePath();
                 jarFileExists = true;
+                break;
             }
         }
 
@@ -121,9 +125,6 @@ public class LoopChangingTest {
             System.out.println("Jar file not found. Exiting...");
             System.exit(1);
         }
-
-        File jarFile = new File(jarFileFolder, files[0]);
-        JAR_FILE_NAME = jarFile.getAbsolutePath();
 
     }
 
