@@ -57,8 +57,6 @@ public class LoopChangingTest {
             // Start the process
             Process process = processBuilder.start();
 
-
-
             // Wait for the process to complete
             int exitCode = process.waitFor();
             System.out.println("Exited with code: " + exitCode + " for command: " + command);
