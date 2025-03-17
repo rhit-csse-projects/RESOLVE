@@ -340,6 +340,10 @@ public class CongruenceClassRegistry<T1, T2, T3, T4> {
         }
     }
 
+    public boolean isClassDesignator(int label) {
+        return label <= topCongruenceClassDesignator;
+    }
+
     /**
      * <p>
      * This operatipon checks if the cluster to be registered already exists in the registry. It involves checking into
@@ -2317,5 +2321,9 @@ public class CongruenceClassRegistry<T1, T2, T3, T4> {
 
     public CongruenceClass[] getCongruenceClassArray() {
         return congruenceClassArray;
+    }
+
+    public void display(){
+
     }
 }
