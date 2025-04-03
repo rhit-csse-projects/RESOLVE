@@ -49,9 +49,10 @@ public class RegistryCI {
             if (input.equals("?")) {
                 sendStartupMessage();
             } else if (input.equals("D")){
-                registry.display();
+                registry.displayCongruence(mappingToSymbol, 1);
+            } else {
+                processCommand(input);
             }
-            processCommand(input);
         }
     }
 

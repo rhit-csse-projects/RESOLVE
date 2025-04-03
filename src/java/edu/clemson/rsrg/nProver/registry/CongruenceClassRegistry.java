@@ -2323,7 +2323,40 @@ public class CongruenceClassRegistry<T1, T2, T3, T4> {
         return congruenceClassArray;
     }
 
-    public void display(){
+    public void displayCongruence(List<String> symbolMapping, int classIndex){
+        StringBuilder sb = new StringBuilder();
 
+        CongruenceClass congruenceClass = congruenceClassArray[classIndex];
+        Plantation plantation = plantationArray[congruenceClass.getFirstPlantation()];
+
+        sb.append("CC" + classIndex + " -> ");
+
+        CongruenceCluster congruenceCluster = clusterArray[plantation.getFirstPlantationCluster()];;
+        while (congruenceCluster.getIndexToTag() != 0) {
+            displayCluster(symbolMapping, congruenceCluster, sb);
+            if (congruenceCluster.getNextPlantationCluster() != 0) {
+                sb.append(" | ");
+            }
+
+            congruenceCluster = clusterArray[congruenceCluster.getNextPlantationCluster()];
+        }
+
+        System.out.println(sb.toString());
     }
+
+    private void displayCluster(List<String> symbolMapping, CongruenceCluster cluster, StringBuilder sb) {
+        String operator = symbolMapping.get(cluster.getTreeNodeLabel());
+        ClusterArgument argument = clusterArgumentArray[cluster.getIndexToArgList()];
+
+        sb.append(operator + " ");
+
+        while (argument.getPrevClusterArg() != 0) {
+            sb.append("CC" + argument.getCcNumber());
+
+            argument = clusterArgumentArray[argument.getPrevClusterArg()];
+            if (argument.getPrevClusterArg() != 0)
+                sb.append(", ");
+        }
+    }
+
 }
