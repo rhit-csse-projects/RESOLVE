@@ -35,7 +35,7 @@ public class RegistryCI {
 
     public static void sendStartupMessage() {
         System.out.println(
-                "R - registerCluster\n? - isRegistered\nA - appendToClusterArgList\nM - makeCongruent\nQ - quit");
+                "R - registerCluster\n? - isRegistered\nA - appendToClusterArgList\nM - makeCongruent\nD - display\nQ - quit");
     }
 
     public void runCommandLoop() {
@@ -45,6 +45,11 @@ public class RegistryCI {
             String input = scan.nextLine();
             if (input.equals("Q")) {
                 break;
+            }
+            if (input.equals("?")) {
+                sendStartupMessage();
+            } else if (input.equals("D")){
+                registry.display();
             }
             processCommand(input);
         }
@@ -75,9 +80,14 @@ public class RegistryCI {
                 int num = Integer.parseInt(parsedCommand[1]);
                 if (num < 0) {
                     System.out.println("Argument must be non-negative.");
+                    break;
                 }
                 // should check if it's a valid designator first but not sure how - only checks appear to be for labels
                 // registry.
+                if (!registry.isClassDesignator(num)) {
+                    System.out.println("Not a valid congruence class.");
+                    break;
+                }
                 registry.appendToClusterArgList(num);
                 System.out.println("Added to argument list");
             } catch (NumberFormatException e) {
