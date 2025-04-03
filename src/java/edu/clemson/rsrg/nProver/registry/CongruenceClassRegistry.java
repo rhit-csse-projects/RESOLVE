@@ -2331,14 +2331,22 @@ public class CongruenceClassRegistry<T1, T2, T3, T4> {
 
         sb.append("CC" + classIndex + " -> ");
 
-        CongruenceCluster congruenceCluster = clusterArray[plantation.getFirstPlantationCluster()];;
-        while (congruenceCluster.getIndexToTag() != 0) {
-            displayCluster(symbolMapping, congruenceCluster, sb);
-            if (congruenceCluster.getNextPlantationCluster() != 0) {
-                sb.append(" | ");
+        while (plantation.getPlantationTag() != 0) {
+            CongruenceCluster congruenceCluster = clusterArray[plantation.getFirstPlantationCluster()];
+
+            while (congruenceCluster.getIndexToTag() != 0) {
+                displayCluster(symbolMapping, congruenceCluster, sb);
+                if (congruenceCluster.getNextPlantationCluster() != 0) {
+                    sb.append(" | ");
+                }
+
+                congruenceCluster = clusterArray[congruenceCluster.getNextPlantationCluster()];
             }
 
-            congruenceCluster = clusterArray[congruenceCluster.getNextPlantationCluster()];
+            if (plantation.getNextCCPlantation() != 0) {
+                sb.append(" | ");
+            }
+            plantation = plantationArray[plantation.getNextCCPlantation()];
         }
 
         System.out.println(sb.toString());

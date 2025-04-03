@@ -49,7 +49,8 @@ public class RegistryCI {
             if (input.equals("?")) {
                 sendStartupMessage();
             } else if (input.equals("D")){
-                registry.displayCongruence(mappingToSymbol, 1);
+                for (int i = 1;registry.isClassDesignator(i); i++)
+                    registry.displayCongruence(mappingToSymbol, i);
             } else {
                 processCommand(input);
             }
