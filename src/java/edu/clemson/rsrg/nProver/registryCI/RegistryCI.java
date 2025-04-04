@@ -48,8 +48,8 @@ public class RegistryCI {
             }
             if (input.equals("?")) {
                 sendStartupMessage();
-            } else if (input.equals("D")){
-                for (int i = 1;registry.isClassDesignator(i); i++)
+            } else if (input.equals("D")) {
+                for (int i = 1; registry.isClassDesignator(i); i++)
                     registry.displayCongruence(mappingToSymbol, i);
             } else {
                 processCommand(input);
@@ -72,10 +72,15 @@ public class RegistryCI {
                 symbolToMapping.put(parsedCommand[1], currentMapping);
                 mappingToSymbol.add(parsedCommand[1]);
                 mapping = currentMapping;
+                currentMapping++;
             }
-            int designator = registry.registerCluster(mapping);
+            int designator;
+            if (!registry.isRegistryLabel(mapping)) {
+                designator = registry.registerCluster(mapping);
+            } else {
+                designator = registry.getAccessorFor(mapping);
+            }
             System.out.println("Designator: " + designator);
-            currentMapping++;
             break;
         case "A":
             try {

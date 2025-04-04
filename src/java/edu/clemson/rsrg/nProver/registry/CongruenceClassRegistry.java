@@ -2323,10 +2323,13 @@ public class CongruenceClassRegistry<T1, T2, T3, T4> {
         return congruenceClassArray;
     }
 
-    public void displayCongruence(List<String> symbolMapping, int classIndex){
+    public void displayCongruence(List<String> symbolMapping, int classIndex) {
         StringBuilder sb = new StringBuilder();
 
         CongruenceClass congruenceClass = congruenceClassArray[classIndex];
+        if (congruenceClass.getClassTag() != congruenceClass.getDominantCClass()) {
+            congruenceClass = congruenceClassArray[congruenceClass.getDominantCClass()];
+        }
         Plantation plantation = plantationArray[congruenceClass.getFirstPlantation()];
 
         sb.append("CC" + classIndex + " -> ");
@@ -2334,14 +2337,16 @@ public class CongruenceClassRegistry<T1, T2, T3, T4> {
         while (plantation.getPlantationTag() != 0) {
             CongruenceCluster congruenceCluster = clusterArray[plantation.getFirstPlantationCluster()];
 
-            while (congruenceCluster.getIndexToTag() != 0) {
+            do {
                 displayCluster(symbolMapping, congruenceCluster, sb);
-                if (congruenceCluster.getNextPlantationCluster() != 0) {
+                if (congruenceCluster.getNextPlantationCluster() != 0
+                        && congruenceCluster.getIndexToTag() != congruenceCluster.getNextPlantationCluster()) {
                     sb.append(" | ");
                 }
 
                 congruenceCluster = clusterArray[congruenceCluster.getNextPlantationCluster()];
-            }
+            } while (congruenceCluster.getIndexToTag() != 0
+                    && congruenceCluster.getIndexToTag() != congruenceCluster.getNextPlantationCluster());
 
             if (plantation.getNextCCPlantation() != 0) {
                 sb.append(" | ");
