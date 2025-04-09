@@ -68,13 +68,13 @@ jobs:
         with:
           distribution: ${{ matrix.java-dist }}
           java-version: ${{ matrix.java }}
-      - name: Generate New JAR files
-        run: mvn clean package -DskipTests
-      - name: Generate VCs
-        shell: bash
-        run: |
-          chmod +x "${GITHUB_WORKSPACE}/bin/vcgen.sh"
-          "${GITHUB_WORKSPACE}/bin/vcgen.sh"
+#      - name: Generate New JAR files
+#        run: mvn clean package -DskipTests
+#      - name: Generate VCs
+#        shell: bash
+#        run: |
+#          chmod +x "${GITHUB_WORKSPACE}/bin/vcgen.sh"
+#          "${GITHUB_WORKSPACE}/bin/vcgen.sh"
       - name: Cache Maven packages
         uses: actions/cache@v4
         with:
