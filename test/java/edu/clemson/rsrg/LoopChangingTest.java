@@ -25,7 +25,7 @@ public class LoopChangingTest {
     private static String JAR_FILE_NAME;
 
     @BeforeAll
-    public static  void setup() {
+    public static void setup() {
         Utilities.checkforJarFile();
     }
 
