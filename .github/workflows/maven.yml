@@ -83,6 +83,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: Run JUnit Tests
+        shell: bash
         run: mvn test -B
   # This job runs the RESOLVE compiler to analyze files that we know to be working.
 #  run_compiler_analyze_files:
