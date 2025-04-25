@@ -27,6 +27,7 @@ public class LoopChangingTest {
     @BeforeAll
     public static void setup() {
         JAR_FILE_NAME = Utilities.checkforJarFile();
+        Utilities.initializeSubrepos();
     }
 
     @Test

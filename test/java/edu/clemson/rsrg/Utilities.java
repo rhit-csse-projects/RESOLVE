@@ -14,6 +14,10 @@ package edu.clemson.rsrg;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -65,6 +69,23 @@ public class Utilities {
 
         return jarFileName;
 
+    }
+
+    public static void initializeSubrepos() {
+        Utilities.executeCommand("ls RESOLVE-Workspace/", "");
+        File stdoutFile = new File("stdout.txt");
+        if (stdoutFile.exists()) {
+            try {
+                List<String> lines = Files.readAllLines(stdoutFile.toPath(), StandardCharsets.UTF_8);
+                if (lines.isEmpty()) {
+                    Utilities.executeCommand("git submodule update --init --recursive", "");
+                } else {
+                    System.out.println("stdout.txt is not empty.");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public static void executeCommand(String command, String directory) {

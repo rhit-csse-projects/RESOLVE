@@ -35,20 +35,7 @@ public class VCGenerationTest {
     @BeforeAll
     public static void setup() {
         String jarFileName = Utilities.checkforJarFile();
-        Utilities.executeCommand("ls RESOLVE-Workspace/", "");
-        File stdoutFile = new File("stdout.txt");
-        if (stdoutFile.exists()) {
-            try {
-                List<String> lines = Files.readAllLines(stdoutFile.toPath(), StandardCharsets.UTF_8);
-                if (lines.isEmpty()) {
-                    Utilities.executeCommand("git submodule update --init --recursive", "");
-                } else {
-                    System.out.println("stdout.txt is not empty.");
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        Utilities.initializeSubrepos();
 
         String repoPath = System.getProperty("user.dir");
         String executable = jarFileName;
