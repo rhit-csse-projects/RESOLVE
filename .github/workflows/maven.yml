@@ -82,9 +82,15 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-      - name: Run JUnit Tests
-        shell: ${{ runner.os == 'Windows' && 'pwsh' || 'bash' }}
+      - name: Run JUnit Tests on Windows
+        if: runner.os == 'Windows'
         run: mvn test -B
+        shell: pwsh
+
+      - name: Run JUnit Tests on Linux/macOS
+        if: runner.os != 'Windows'
+        run: mvn test -B
+        shell: bash
   # This job runs the RESOLVE compiler to analyze files that we know to be working.
 #  run_compiler_analyze_files:
 #    runs-on: ubuntu-latest
