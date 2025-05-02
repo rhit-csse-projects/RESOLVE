@@ -41,8 +41,8 @@ public class Stand {
     // ===========================================================
 
     // what goes to stand tag should be the index in the stand array, it can act as stand designator
-    public Stand(Integer treeNodeLabel, int firstStandCluster, int standTag, int nextCCStand,
-            int nextVrtyStand, int prvVrtyStand) {
+    public Stand(Integer treeNodeLabel, int firstStandCluster, int standTag, int nextCCStand, int nextVrtyStand,
+            int prvVrtyStand) {
         this.treeNodeLabel = treeNodeLabel;
         this.firstStandCluster = firstStandCluster;
         this.standTag = standTag;
@@ -105,7 +105,7 @@ public class Stand {
     @Override
     public final String toString() {
         return "|" + "treeNodeLabel=" + treeNodeLabel + "||firstStandCluster=" + firstStandCluster + "||standTag="
-                + standTag + "||nextCCStand=" + nextCCStand + "||nextVrtyStand=" + nextVrtyStand
-                + "||prvVrtyStand=" + prvVrtyStand + "|";
+                + standTag + "||nextCCStand=" + nextCCStand + "||nextVrtyStand=" + nextVrtyStand + "||prvVrtyStand="
+                + prvVrtyStand + "|";
     }
 }

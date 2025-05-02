@@ -41,14 +41,14 @@ public class CongruenceCluster {
     // Constructors
     // ===========================================================
 
-    public CongruenceCluster(Integer treeNodeLabel, int toArgList, int toCC, int toClusterTag,
-                             int nextStandCluster, int previousStandCluster, int dominantCluster, int nextWithSameArg) {
+    public CongruenceCluster(Integer treeNodeLabel, int toArgList, int toCC, int toClusterTag, int nextStandCluster,
+            int previousStandCluster, int dominantCluster, int nextWithSameArg) {
         this.treeNodeLabel = treeNodeLabel;
         indexToArgumentList = toArgList;
         indexToCongruenceClass = toCC;
         tag = toClusterTag; // to a structure that keeps the tags
         this.nextStandCluster = nextStandCluster; // next cluster in the stand in same class, having same
-                                                            // root node label
+                                                  // root node label
         this.previousStandCluster = previousStandCluster; // previous cluster
         this.dominantCluster = dominantCluster; // will point to itself initially, and gets the smaller dominant when it
                                                 // is merged to other cluster

@@ -303,8 +303,8 @@ public class CongruenceClassRegistry<T1, T2, T3, T4> {
             // this is the last position in the argument string array in terms of depth from the empty arg string
             int lastArgStringPos = 0;
             // create a stand class object
-            Stand stand = new Stand(treeNodeLabel, indexForStandArray, indexForStandArray, nextCCStand,
-                    nextVrtyStand, prvVrtyStand);
+            Stand stand = new Stand(treeNodeLabel, indexForStandArray, indexForStandArray, nextCCStand, nextVrtyStand,
+                    prvVrtyStand);
             // put the created stand into the stand array
             standArray[indexForStandArray] = stand;
 
@@ -319,8 +319,8 @@ public class CongruenceClassRegistry<T1, T2, T3, T4> {
 
             // create a cluster object, with 0 index to argument list then update later once tags are included
             CongruenceCluster cCluster = new CongruenceCluster(treeNodeLabel, 0, topCongruenceClassDesignator,
-                    topCongruenceClusterDesignator, nextStandCluster, prevStandCluster,
-                    topCongruenceClusterDesignator, nextWithSimilarArgString);
+                    topCongruenceClusterDesignator, nextStandCluster, prevStandCluster, topCongruenceClusterDesignator,
+                    nextWithSimilarArgString);
 
             // put the created cluster into the cluster array
             clusterArray[topCongruenceClusterDesignator] = cCluster;
@@ -573,22 +573,20 @@ public class CongruenceClassRegistry<T1, T2, T3, T4> {
 
         currentStandForTreeNodeLabel = varietyArray[treeNodeLabel].getFirstStand();
 
-        int congruenceClassForCluster = clusterArray[standArray[currentStandForTreeNodeLabel]
-                .getFirstStandCluster()].getIndexToCongruenceClass();
+        int congruenceClassForCluster = clusterArray[standArray[currentStandForTreeNodeLabel].getFirstStandCluster()]
+                .getIndexToCongruenceClass();
         int dominantCongruenceClassForCluster = congruenceClassArray[congruenceClassForCluster].getDominantCClass();
 
         while (currentStandForTreeNodeLabel != 0) {
             if (congruenceClassForCluster == currentCCAccessor
                     || dominantCongruenceClassForCluster == currentCCAccessor) {
-                nextStandInNextClassAccessor = standArray[currentStandForTreeNodeLabel]
-                        .getNextVrtyStand();
+                nextStandInNextClassAccessor = standArray[currentStandForTreeNodeLabel].getNextVrtyStand();
                 congruenceClassForCluster = clusterArray[standArray[nextStandInNextClassAccessor]
                         .getFirstStandCluster()].getIndexToCongruenceClass();
                 dominantCongruenceClassForCluster = congruenceClassArray[congruenceClassForCluster].getDominantCClass();
                 return dominantCongruenceClassForCluster;
             } else {
-                currentStandForTreeNodeLabel = standArray[currentStandForTreeNodeLabel]
-                        .getNextVrtyStand();
+                currentStandForTreeNodeLabel = standArray[currentStandForTreeNodeLabel].getNextVrtyStand();
                 if (currentStandForTreeNodeLabel != 0) {
                     congruenceClassForCluster = clusterArray[standArray[currentStandForTreeNodeLabel]
                             .getFirstStandCluster()].getIndexToCongruenceClass();
@@ -619,23 +617,21 @@ public class CongruenceClassRegistry<T1, T2, T3, T4> {
 
         currentStandForTreeNodeLabel = varietyArray[treeNodeLabel].getFirstStand();
 
-        int congruenceClassForCluster = clusterArray[standArray[currentStandForTreeNodeLabel]
-                .getFirstStandCluster()].getIndexToCongruenceClass();
+        int congruenceClassForCluster = clusterArray[standArray[currentStandForTreeNodeLabel].getFirstStandCluster()]
+                .getIndexToCongruenceClass();
         int dominantCongruenceClassForCluster = congruenceClassArray[congruenceClassForCluster].getDominantCClass();
 
         while (currentStandForTreeNodeLabel != 0) {
             if (congruenceClassForCluster == currentCCAccessor
                     || dominantCongruenceClassForCluster == currentCCAccessor) {
-                nextStandInNextClassAccessor = standArray[currentStandForTreeNodeLabel]
-                        .getNextVrtyStand();
+                nextStandInNextClassAccessor = standArray[currentStandForTreeNodeLabel].getNextVrtyStand();
                 if (nextStandInNextClassAccessor == 0) {
                     return true;
                 } else {
                     return false;
                 }
             } else {
-                currentStandForTreeNodeLabel = standArray[currentStandForTreeNodeLabel]
-                        .getNextVrtyStand();
+                currentStandForTreeNodeLabel = standArray[currentStandForTreeNodeLabel].getNextVrtyStand();
                 if (currentStandForTreeNodeLabel != 0) {
                     congruenceClassForCluster = clusterArray[standArray[currentStandForTreeNodeLabel]
                             .getFirstStandCluster()].getIndexToCongruenceClass();
@@ -777,8 +773,7 @@ public class CongruenceClassRegistry<T1, T2, T3, T4> {
      *
      * @return {@code true} if the stand designator is minimal, otherwise, it returns {@code false}
      */
-    public boolean isMinimalStandClusterDesignator(Integer treeNodeLabel, int cClassAccessor,
-            int clusterAccessor) {
+    public boolean isMinimalStandClusterDesignator(Integer treeNodeLabel, int cClassAccessor, int clusterAccessor) {
         if (clusterArray[clusterAccessor].getDominantCluster() == clusterAccessor
                 && isMinimalVCCDesignator(treeNodeLabel, cClassAccessor)) {
             return true;
@@ -1143,9 +1138,9 @@ public class CongruenceClassRegistry<T1, T2, T3, T4> {
 
     /**
      * <p>
-     * The operation adds a new stand to the variety list designated by {@param treeNodeLabel}. It starts a new
-     * list when the list is not existing or join to the existing list. The stands are kept in ascending order
-     * according to their indices in stand array.
+     * The operation adds a new stand to the variety list designated by {@param treeNodeLabel}. It starts a new list
+     * when the list is not existing or join to the existing list. The stands are kept in ascending order according to
+     * their indices in stand array.
      * </p>
      *
      * @param treeNodeLabel
@@ -1276,8 +1271,8 @@ public class CongruenceClassRegistry<T1, T2, T3, T4> {
 
     /**
      * <p>
-     * The operation removes the class in the variety list after the stand that stood in that class for a root
-     * label is merged to another class
+     * The operation removes the class in the variety list after the stand that stood in that class for a root label is
+     * merged to another class
      * </p>
      *
      * @param treeNodeLabel
@@ -1292,11 +1287,10 @@ public class CongruenceClassRegistry<T1, T2, T3, T4> {
         // it is the first one in the variety array list, now it has to be removed
         if (currentStandInList == standDesignatorToRemove) {
             // get rid of the first one and make the second one in the variety list the first one
-            varietyArray[treeNodeLabel].setFirstStand(
-                    standArray[varietyArray[treeNodeLabel].getFirstStand()].getNextVrtyStand());
+            varietyArray[treeNodeLabel]
+                    .setFirstStand(standArray[varietyArray[treeNodeLabel].getFirstStand()].getNextVrtyStand());
             // make the previous pointer 0
-            standArray[standArray[varietyArray[treeNodeLabel].getFirstStand()].getNextVrtyStand()]
-                    .setPrvVrtyStand(0);
+            standArray[standArray[varietyArray[treeNodeLabel].getFirstStand()].getNextVrtyStand()].setPrvVrtyStand(0);
         } else {
             // it is not the first one in the variety array list, just remove it
             // this assumes stand designator to remove must be in the variety list. If that is the case just
@@ -1381,9 +1375,9 @@ public class CongruenceClassRegistry<T1, T2, T3, T4> {
 
     /**
      * <p>
-     * The operation move a stand from the larger class to the smaller class where it will be merged to the new
-     * list according to their root node label. In this case, the operation covers the merger when the root nodes are
-     * either greater than or less than than each other
+     * The operation move a stand from the larger class to the smaller class where it will be merged to the new list
+     * according to their root node label. In this case, the operation covers the merger when the root nodes are either
+     * greater than or less than than each other
      * </p>
      *
      * @param standDesignator_1
@@ -1405,8 +1399,8 @@ public class CongruenceClassRegistry<T1, T2, T3, T4> {
 
     /**
      * <p>
-     * The operation join clusters in stands that have the same root node label by moving the clusters from the
-     * larger stand to the smaller stand
+     * The operation join clusters in stands that have the same root node label by moving the clusters from the larger
+     * stand to the smaller stand
      * </p>
      *
      * @param standDesignator_1
@@ -1428,11 +1422,9 @@ public class CongruenceClassRegistry<T1, T2, T3, T4> {
                 congruenceClassArray[clusterArray[reserveCurrentStandCluster_1].getIndexToCongruenceClass()]
                         .getDominantCClass());
         // This condition should work if the cluster at index 0 has all 0's. This is done in line 66
-        while (clusterArray[reserveCurrentStandCluster_2]
-                .getNextStandCluster() != reserveCurrentStandCluster_2) {
+        while (clusterArray[reserveCurrentStandCluster_2].getNextStandCluster() != reserveCurrentStandCluster_2) {
             clusterArray[reserveCurrentStandCluster_2].setIndexToCongruenceClass(dominantClassDesignator);
-            reserveCurrentStandCluster_2 = clusterArray[reserveCurrentStandCluster_2]
-                    .getNextStandCluster();
+            reserveCurrentStandCluster_2 = clusterArray[reserveCurrentStandCluster_2].getNextStandCluster();
         }
 
         // This condition will work if the cluster array at index 0 is initialized with zeroes.
@@ -1462,8 +1454,8 @@ public class CongruenceClassRegistry<T1, T2, T3, T4> {
 
     /**
      * <p>
-     * This operation mergers two clusters one for the smaller stand and one from the larger stand, in this
-     * case, the cluster on the smaller stand is less than the cluster on the larger stand
+     * This operation mergers two clusters one for the smaller stand and one from the larger stand, in this case, the
+     * cluster on the smaller stand is less than the cluster on the larger stand
      * </p>
      *
      * @param currentClusterDesignator_1
@@ -1525,8 +1517,7 @@ public class CongruenceClassRegistry<T1, T2, T3, T4> {
         treeNodeLabel_2 = standArray[standDesignator_2].getTreeNodeLabel();
 
         while (treeNodeLabel_1 < treeNodeLabel_2 && standArray[standDesignator_1].getNextCCStand() != 0
-                && standArray[standArray[standDesignator_1].getNextCCStand()]
-                        .getTreeNodeLabel() < treeNodeLabel_2) {
+                && standArray[standArray[standDesignator_1].getNextCCStand()].getTreeNodeLabel() < treeNodeLabel_2) {
             standDesignator_1 = standArray[standDesignator_1].getNextCCStand();
             treeNodeLabel_1 = standArray[standDesignator_1].getTreeNodeLabel();
         }
@@ -1557,8 +1548,8 @@ public class CongruenceClassRegistry<T1, T2, T3, T4> {
 
     /**
      * <p>
-     * This operation mergers two clusters one for the smaller stand and one from the larger stand, in this
-     * case, the cluster on the smaller stand is greater than the cluster on the larger stand
+     * This operation mergers two clusters one for the smaller stand and one from the larger stand, in this case, the
+     * cluster on the smaller stand is greater than the cluster on the larger stand
      * </p>
      *
      * @param currentClusterDesignator_1
