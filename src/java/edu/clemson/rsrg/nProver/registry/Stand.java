@@ -14,7 +14,7 @@ package edu.clemson.rsrg.nProver.registry;
 
 /**
  * <p>
- * This class is for every plantation that is created. Each plantation is designated by its root label and a
+ * This class is for every stand that is created. Each stand is designated by its root label and a
  * {@link CongruenceClass} they belong to
  * </p>
  *
@@ -30,25 +30,25 @@ public class Stand {
     // ===========================================================
 
     private Integer treeNodeLabel;
-    private int firstPlantationCluster;
-    private int plantationTag;
-    private int nextCCPlantation;
-    private int nextVrtyPlantation;
-    private int prvVrtyPlantation;
+    private int firstStandCluster;
+    private int standTag;
+    private int nextCCStand;
+    private int nextVrtyStand;
+    private int prvVrtyStand;
 
     // ===========================================================
     // Constructors
     // ===========================================================
 
-    // what goes to plantation tag should be the index in the plantation array, it can act as plantation designator
-    public Stand(Integer treeNodeLabel, int firstPlantationCluster, int plantationTag, int nextCCPlantation,
-            int nextVrtyPlantation, int prvVrtyPlantation) {
+    // what goes to stand tag should be the index in the stand array, it can act as stand designator
+    public Stand(Integer treeNodeLabel, int firstStandCluster, int standTag, int nextCCStand,
+            int nextVrtyStand, int prvVrtyStand) {
         this.treeNodeLabel = treeNodeLabel;
-        this.firstPlantationCluster = firstPlantationCluster;
-        this.plantationTag = plantationTag;
-        this.nextCCPlantation = nextCCPlantation;
-        this.nextVrtyPlantation = nextVrtyPlantation;
-        this.prvVrtyPlantation = prvVrtyPlantation;
+        this.firstStandCluster = firstStandCluster;
+        this.standTag = standTag;
+        this.nextCCStand = nextCCStand;
+        this.nextVrtyStand = nextVrtyStand;
+        this.prvVrtyStand = prvVrtyStand;
     }
 
     // ===========================================================
@@ -59,53 +59,53 @@ public class Stand {
         return treeNodeLabel;
     }
 
-    public int getFirstPlantationCluster() {
-        return firstPlantationCluster;
+    public int getFirstStandCluster() {
+        return firstStandCluster;
     }
 
-    public void setFirstPlantationCluster(int firstPlantationCluster) {
-        this.firstPlantationCluster = firstPlantationCluster;
+    public void setFirstStandCluster(int firstStandCluster) {
+        this.firstStandCluster = firstStandCluster;
     }
 
-    public int getPlantationTag() {
-        return plantationTag;
+    public int getStandTag() {
+        return standTag;
     }
 
-    public int getNextCCPlantation() {
-        return nextCCPlantation;
+    public int getNextCCStand() {
+        return nextCCStand;
     }
 
-    public void setNextCCPlantation(int nextCCPlantation) {
-        this.nextCCPlantation = nextCCPlantation;
+    public void setNextCCStand(int nextCCStand) {
+        this.nextCCStand = nextCCStand;
     }
 
-    public int getNextVrtyPlantation() {
-        return nextVrtyPlantation;
+    public int getNextVrtyStand() {
+        return nextVrtyStand;
     }
 
-    public void setNextVrtyPlantation(int nextVrtyPlantation) {
-        this.nextVrtyPlantation = nextVrtyPlantation;
+    public void setNextVrtyStand(int nextVrtyStand) {
+        this.nextVrtyStand = nextVrtyStand;
     }
 
-    public void setPrvVrtyPlantation(int prvVrtyPlantation) {
-        this.prvVrtyPlantation = prvVrtyPlantation;
+    public void setPrvVrtyStand(int prvVrtyStand) {
+        this.prvVrtyStand = prvVrtyStand;
     }
 
-    public int getPrvVrtyPlantation() {
-        return prvVrtyPlantation;
+    public int getPrvVrtyStand() {
+        return prvVrtyStand;
     }
 
     /**
      * <p>
-     * This method returns the plantation in string format.
+     * This method returns the stand in string format.
      * </p>
      *
      * @return A string.
      */
     @Override
     public final String toString() {
-        return "|" + "treeNodeLabel=" + treeNodeLabel + "||firstStandCluster=" + firstPlantationCluster + "||standTag="
-                + plantationTag + "||nextCCStand=" + nextCCPlantation + "||nextVrtyStand=" + nextVrtyPlantation
-                + "||prvVrtyStand=" + prvVrtyPlantation + "|";
+        return "|" + "treeNodeLabel=" + treeNodeLabel + "||firstStandCluster=" + firstStandCluster + "||standTag="
+                + standTag + "||nextCCStand=" + nextCCStand + "||nextVrtyStand=" + nextVrtyStand
+                + "||prvVrtyStand=" + prvVrtyStand + "|";
     }
 }
