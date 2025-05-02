@@ -1,5 +1,5 @@
 /*
- * Plantation.java
+ * Stand.java
  * ---------------------------------
  * Copyright (c) 2024
  * RESOLVE Software Research Group
@@ -23,7 +23,7 @@ package edu.clemson.rsrg.nProver.registry;
  * @version v1.0
  */
 
-public class Plantation {
+public class Stand {
 
     // ===========================================================
     // Member Fields
@@ -41,7 +41,7 @@ public class Plantation {
     // ===========================================================
 
     // what goes to plantation tag should be the index in the plantation array, it can act as plantation designator
-    public Plantation(Integer treeNodeLabel, int firstPlantationCluster, int plantationTag, int nextCCPlantation,
+    public Stand(Integer treeNodeLabel, int firstPlantationCluster, int plantationTag, int nextCCPlantation,
             int nextVrtyPlantation, int prvVrtyPlantation) {
         this.treeNodeLabel = treeNodeLabel;
         this.firstPlantationCluster = firstPlantationCluster;

@@ -96,7 +96,7 @@ public class CongruenceClassRegistry<T1, T2, T3, T4> {
      * This array keeps a list of congruence clusters containing the same root node.
      * </p>
      */
-    private Plantation[] plantationArray;
+    private Stand[] standArray;
 
     /**
      * <p>
@@ -209,7 +209,7 @@ public class CongruenceClassRegistry<T1, T2, T3, T4> {
         succedentReflexiveOperatorTest = false;
 
         varietyArray = new VarietyList[rootLabelCapacity];
-        plantationArray = new Plantation[rootLabelCapacity];
+        standArray = new Stand[rootLabelCapacity];
         clusterArray = new CongruenceCluster[cClusterDesignatorCapacity];
         congruenceClassArray = new CongruenceClass[ccDesignatorCapacity];
         clusterArgumentArray = new ClusterArgument[100000];
@@ -228,11 +228,11 @@ public class CongruenceClassRegistry<T1, T2, T3, T4> {
         ClusterArgument cArgument = new ClusterArgument(0, 0, 0, 0, 0);
         clusterArgumentArray[0] = cArgument;
 
-        // start the index 0 with {0,0,0,0,0,0} by creating a plantation
-        Plantation plantation = new Plantation(0, 0, 0, 0, 0, 0);
+        // start the index 0 with {0,0,0,0,0,0} by creating a stand
+        Stand stand = new Stand(0, 0, 0, 0, 0, 0);
 
-        // put the initial created plantation into the array
-        plantationArray[0] = plantation;
+        // put the initial created stand into the array
+        standArray[0] = stand;
 
         // start the index 0 with {0,0,0,0,0} with {0,0,0} attribute in the congruence class array.
         BitSet attribute = new BitSet();
@@ -302,11 +302,11 @@ public class CongruenceClassRegistry<T1, T2, T3, T4> {
 
             // this is the last position in the argument string array in terms of depth from the empty arg string
             int lastArgStringPos = 0;
-            // create a plantation class object
-            Plantation plantation = new Plantation(treeNodeLabel, indexForPlantationArray, indexForPlantationArray,
-                    nextCCPlantation, nextVrtyPlantation, prvVrtyPlantation);
-            // put the created plantation into the plantation array
-            plantationArray[indexForPlantationArray] = plantation;
+            // create a stand class object
+            Stand stand = new Stand(treeNodeLabel, indexForPlantationArray, indexForPlantationArray, nextCCPlantation,
+                    nextVrtyPlantation, prvVrtyPlantation);
+            // put the created stand into the stand array
+            standArray[indexForPlantationArray] = stand;
 
             // create a congruence class object
             // indexInArgArray is the Arg string occurrence position, an index for the created arg string for this
@@ -573,24 +573,24 @@ public class CongruenceClassRegistry<T1, T2, T3, T4> {
 
         currentPlantationForTreeNodeLabel = varietyArray[treeNodeLabel].getFirstPlantation();
 
-        int congruenceClassForCluster = clusterArray[plantationArray[currentPlantationForTreeNodeLabel]
+        int congruenceClassForCluster = clusterArray[standArray[currentPlantationForTreeNodeLabel]
                 .getFirstPlantationCluster()].getIndexToCongruenceClass();
         int dominantCongruenceClassForCluster = congruenceClassArray[congruenceClassForCluster].getDominantCClass();
 
         while (currentPlantationForTreeNodeLabel != 0) {
             if (congruenceClassForCluster == currentCCAccessor
                     || dominantCongruenceClassForCluster == currentCCAccessor) {
-                nextPlantationInNextClassAccessor = plantationArray[currentPlantationForTreeNodeLabel]
+                nextPlantationInNextClassAccessor = standArray[currentPlantationForTreeNodeLabel]
                         .getNextVrtyPlantation();
-                congruenceClassForCluster = clusterArray[plantationArray[nextPlantationInNextClassAccessor]
+                congruenceClassForCluster = clusterArray[standArray[nextPlantationInNextClassAccessor]
                         .getFirstPlantationCluster()].getIndexToCongruenceClass();
                 dominantCongruenceClassForCluster = congruenceClassArray[congruenceClassForCluster].getDominantCClass();
                 return dominantCongruenceClassForCluster;
             } else {
-                currentPlantationForTreeNodeLabel = plantationArray[currentPlantationForTreeNodeLabel]
+                currentPlantationForTreeNodeLabel = standArray[currentPlantationForTreeNodeLabel]
                         .getNextVrtyPlantation();
                 if (currentPlantationForTreeNodeLabel != 0) {
-                    congruenceClassForCluster = clusterArray[plantationArray[currentPlantationForTreeNodeLabel]
+                    congruenceClassForCluster = clusterArray[standArray[currentPlantationForTreeNodeLabel]
                             .getFirstPlantationCluster()].getIndexToCongruenceClass();
                     dominantCongruenceClassForCluster = congruenceClassArray[congruenceClassForCluster]
                             .getDominantCClass();
@@ -619,14 +619,14 @@ public class CongruenceClassRegistry<T1, T2, T3, T4> {
 
         currentPlantationForTreeNodeLabel = varietyArray[treeNodeLabel].getFirstPlantation();
 
-        int congruenceClassForCluster = clusterArray[plantationArray[currentPlantationForTreeNodeLabel]
+        int congruenceClassForCluster = clusterArray[standArray[currentPlantationForTreeNodeLabel]
                 .getFirstPlantationCluster()].getIndexToCongruenceClass();
         int dominantCongruenceClassForCluster = congruenceClassArray[congruenceClassForCluster].getDominantCClass();
 
         while (currentPlantationForTreeNodeLabel != 0) {
             if (congruenceClassForCluster == currentCCAccessor
                     || dominantCongruenceClassForCluster == currentCCAccessor) {
-                nextPlantationInNextClassAccessor = plantationArray[currentPlantationForTreeNodeLabel]
+                nextPlantationInNextClassAccessor = standArray[currentPlantationForTreeNodeLabel]
                         .getNextVrtyPlantation();
                 if (nextPlantationInNextClassAccessor == 0) {
                     return true;
@@ -634,10 +634,10 @@ public class CongruenceClassRegistry<T1, T2, T3, T4> {
                     return false;
                 }
             } else {
-                currentPlantationForTreeNodeLabel = plantationArray[currentPlantationForTreeNodeLabel]
+                currentPlantationForTreeNodeLabel = standArray[currentPlantationForTreeNodeLabel]
                         .getNextVrtyPlantation();
                 if (currentPlantationForTreeNodeLabel != 0) {
-                    congruenceClassForCluster = clusterArray[plantationArray[currentPlantationForTreeNodeLabel]
+                    congruenceClassForCluster = clusterArray[standArray[currentPlantationForTreeNodeLabel]
                             .getFirstPlantationCluster()].getIndexToCongruenceClass();
                     dominantCongruenceClassForCluster = congruenceClassArray[congruenceClassForCluster]
                             .getDominantCClass();
@@ -1165,19 +1165,18 @@ public class CongruenceClassRegistry<T1, T2, T3, T4> {
             if (newPlantation < currentPlantationInVarietyList) {
                 // put it at the front
                 // set the next plantation on the new plantation
-                plantationArray[newPlantation].setNextVrtyPlantation(currentPlantationInVarietyList);
-                plantationArray[currentPlantationInVarietyList].setPrvVrtyPlantation(newPlantation);
+                standArray[newPlantation].setNextVrtyPlantation(currentPlantationInVarietyList);
+                standArray[currentPlantationInVarietyList].setPrvVrtyPlantation(newPlantation);
                 // update the fist plantation in the variety list in array
                 varietyArray[treeNodeLabel].setFirstPlantation(newPlantation);
             } else {
                 // put it at the end of the list or somewhere suitable according to the order
                 while (newPlantation > currentPlantationInVarietyList
-                        && plantationArray[currentPlantationInVarietyList].getNextVrtyPlantation() != 0) {
-                    currentPlantationInVarietyList = plantationArray[currentPlantationInVarietyList]
-                            .getNextVrtyPlantation();
+                        && standArray[currentPlantationInVarietyList].getNextVrtyPlantation() != 0) {
+                    currentPlantationInVarietyList = standArray[currentPlantationInVarietyList].getNextVrtyPlantation();
                 }
-                plantationArray[currentPlantationInVarietyList].setNextVrtyPlantation(newPlantation);
-                plantationArray[newPlantation].setPrvVrtyPlantation(currentPlantationInVarietyList);
+                standArray[currentPlantationInVarietyList].setNextVrtyPlantation(newPlantation);
+                standArray[newPlantation].setPrvVrtyPlantation(currentPlantationInVarietyList);
             }
 
         }
@@ -1294,21 +1293,21 @@ public class CongruenceClassRegistry<T1, T2, T3, T4> {
         if (currentPlantationInList == plantationDesignatorToRemove) {
             // get rid of the first one and make the second one in the variety list the first one
             varietyArray[treeNodeLabel].setFirstPlantation(
-                    plantationArray[varietyArray[treeNodeLabel].getFirstPlantation()].getNextVrtyPlantation());
+                    standArray[varietyArray[treeNodeLabel].getFirstPlantation()].getNextVrtyPlantation());
             // make the previous pointer 0
-            plantationArray[plantationArray[varietyArray[treeNodeLabel].getFirstPlantation()].getNextVrtyPlantation()]
+            standArray[standArray[varietyArray[treeNodeLabel].getFirstPlantation()].getNextVrtyPlantation()]
                     .setPrvVrtyPlantation(0);
         } else {
             // it is not the first one in the variety array list, just remove it
             // this assumes plantation designator to remove must be in the variety list. If that is the case just
             // remove it by re-allocating the pointers
-            previousPlantationInList = plantationArray[plantationDesignatorToRemove].getPrvVrtyPlantation();
-            nextPlantationInList = plantationArray[plantationDesignatorToRemove].getNextVrtyPlantation();
+            previousPlantationInList = standArray[plantationDesignatorToRemove].getPrvVrtyPlantation();
+            nextPlantationInList = standArray[plantationDesignatorToRemove].getNextVrtyPlantation();
 
-            plantationArray[previousPlantationInList].setNextVrtyPlantation(nextPlantationInList);
+            standArray[previousPlantationInList].setNextVrtyPlantation(nextPlantationInList);
             if (nextPlantationInList != 0) {
                 // note we have P0 as the initial plantation in
-                plantationArray[nextPlantationInList].setPrvVrtyPlantation(previousPlantationInList);
+                standArray[nextPlantationInList].setPrvVrtyPlantation(previousPlantationInList);
             }
         }
     }
@@ -1335,13 +1334,13 @@ public class CongruenceClassRegistry<T1, T2, T3, T4> {
         int nextPlantationDesignator_1, nextPlantationDesignator_2;
         while (plantationDesignator_2 != 0) {
 
-            treeNodeLabel_2 = plantationArray[plantationDesignator_2].getTreeNodeLabel();
+            treeNodeLabel_2 = standArray[plantationDesignator_2].getTreeNodeLabel();
             // get the tree node label for this plantation
-            treeNodeLabel_1 = plantationArray[plantationDesignator_1].getTreeNodeLabel();
+            treeNodeLabel_1 = standArray[plantationDesignator_1].getTreeNodeLabel();
 
             // things may be changed and re-arranged, keep this record and use it later
-            nextPlantationDesignator_1 = plantationArray[plantationDesignator_1].getNextCCPlantation();
-            nextPlantationDesignator_2 = plantationArray[plantationDesignator_2].getNextCCPlantation();
+            nextPlantationDesignator_1 = standArray[plantationDesignator_1].getNextCCPlantation();
+            nextPlantationDesignator_2 = standArray[plantationDesignator_2].getNextCCPlantation();
 
             // compare the tree node labels and do what is necessary
             if (treeNodeLabel_2.equals(treeNodeLabel_1)) {
@@ -1394,8 +1393,8 @@ public class CongruenceClassRegistry<T1, T2, T3, T4> {
      *
      */
     private void joinPlantationFrom2ndListToFirstList(int plantationDesignator_1, int plantationDesignator_2) {
-        Integer treeNodeLabel_1 = plantationArray[plantationDesignator_1].getTreeNodeLabel();
-        Integer treeNodeLabel_2 = plantationArray[plantationDesignator_2].getTreeNodeLabel();
+        Integer treeNodeLabel_1 = standArray[plantationDesignator_1].getTreeNodeLabel();
+        Integer treeNodeLabel_2 = standArray[plantationDesignator_2].getTreeNodeLabel();
 
         if (treeNodeLabel_1 < treeNodeLabel_2) {
             plantationJoinCase_01(plantationDesignator_1, plantationDesignator_2);
@@ -1416,8 +1415,8 @@ public class CongruenceClassRegistry<T1, T2, T3, T4> {
      *            index to the larger plantation
      */
     private void joinClustersOnSameRootNodePlantation(int plantationDesignator_1, int plantationDesignator_2) {
-        int currentClusterDesignator_1 = plantationArray[plantationDesignator_1].getFirstPlantationCluster();
-        int currentClusterDesignator_2 = plantationArray[plantationDesignator_2].getFirstPlantationCluster();
+        int currentClusterDesignator_1 = standArray[plantationDesignator_1].getFirstPlantationCluster();
+        int currentClusterDesignator_2 = standArray[plantationDesignator_2].getFirstPlantationCluster();
 
         int reserveCurrentPlantationCluster_1 = currentClusterDesignator_1;
         int reserveCurrentPlantationCluster_2 = currentClusterDesignator_2;
@@ -1456,7 +1455,7 @@ public class CongruenceClassRegistry<T1, T2, T3, T4> {
 
                 // under the assumption this will only be executed once and that will now be our fist cluster in the
                 // list_1
-                plantationArray[plantationDesignator_1].setFirstPlantationCluster(currentClusterDesignator_1);
+                standArray[plantationDesignator_1].setFirstPlantationCluster(currentClusterDesignator_1);
             }
         }
     }
@@ -1522,28 +1521,28 @@ public class CongruenceClassRegistry<T1, T2, T3, T4> {
 
         // sort them using tree node labels
         Integer treeNodeLabel_1, treeNodeLabel_2;
-        treeNodeLabel_1 = plantationArray[plantationDesignator_1].getTreeNodeLabel();
-        treeNodeLabel_2 = plantationArray[plantationDesignator_2].getTreeNodeLabel();
+        treeNodeLabel_1 = standArray[plantationDesignator_1].getTreeNodeLabel();
+        treeNodeLabel_2 = standArray[plantationDesignator_2].getTreeNodeLabel();
 
-        while (treeNodeLabel_1 < treeNodeLabel_2 && plantationArray[plantationDesignator_1].getNextCCPlantation() != 0
-                && plantationArray[plantationArray[plantationDesignator_1].getNextCCPlantation()]
+        while (treeNodeLabel_1 < treeNodeLabel_2 && standArray[plantationDesignator_1].getNextCCPlantation() != 0
+                && standArray[standArray[plantationDesignator_1].getNextCCPlantation()]
                         .getTreeNodeLabel() < treeNodeLabel_2) {
-            plantationDesignator_1 = plantationArray[plantationDesignator_1].getNextCCPlantation();
-            treeNodeLabel_1 = plantationArray[plantationDesignator_1].getTreeNodeLabel();
+            plantationDesignator_1 = standArray[plantationDesignator_1].getNextCCPlantation();
+            treeNodeLabel_1 = standArray[plantationDesignator_1].getTreeNodeLabel();
         }
         // the tree nodes for the plantations are the same, join the clusters
         if (treeNodeLabel_2.equals(treeNodeLabel_1)) {
             joinClustersOnSameRootNodePlantation(plantationDesignator_1, plantationDesignator_2);
         } else {
             // keep records of all pointers
-            next_1 = plantationArray[plantationDesignator_1].getNextCCPlantation();
+            next_1 = standArray[plantationDesignator_1].getNextCCPlantation();
 
-            plantationArray[plantationDesignator_1].setNextCCPlantation(plantationDesignator_2);
-            plantationArray[plantationDesignator_2].setNextCCPlantation(next_1);
+            standArray[plantationDesignator_1].setNextCCPlantation(plantationDesignator_2);
+            standArray[plantationDesignator_2].setNextCCPlantation(next_1);
 
             // update all clusters in the plantation to belong to the new class by changing their class field
-            currentPlantationCluster_2 = plantationArray[plantationDesignator_2].getFirstPlantationCluster();
-            currentPlantationCluster_1 = plantationArray[plantationDesignator_1].getFirstPlantationCluster();
+            currentPlantationCluster_2 = standArray[plantationDesignator_2].getFirstPlantationCluster();
+            currentPlantationCluster_1 = standArray[plantationDesignator_1].getFirstPlantationCluster();
             // we are using the dominant class
             dominantClassDesignator = getTheUltimateDominantClass(
                     congruenceClassArray[clusterArray[currentPlantationCluster_1].getIndexToCongruenceClass()]
@@ -1608,11 +1607,11 @@ public class CongruenceClassRegistry<T1, T2, T3, T4> {
     private void plantationJoinCase_02(int plantationDesignator_1, int plantationDesignator_2) {
         int currentPlantationCluster_2, currentPlantationCluster_1, dominantClassDesignator;
 
-        plantationArray[plantationDesignator_2].setNextCCPlantation(plantationDesignator_1);
+        standArray[plantationDesignator_2].setNextCCPlantation(plantationDesignator_1);
 
         // update all clusters in the plantation to belong to the new class by changing their class field
-        currentPlantationCluster_2 = plantationArray[plantationDesignator_2].getFirstPlantationCluster();
-        currentPlantationCluster_1 = plantationArray[plantationDesignator_1].getFirstPlantationCluster();
+        currentPlantationCluster_2 = standArray[plantationDesignator_2].getFirstPlantationCluster();
+        currentPlantationCluster_1 = standArray[plantationDesignator_1].getFirstPlantationCluster();
         // assign the dominant class
         dominantClassDesignator = getTheUltimateDominantClass(
                 congruenceClassArray[clusterArray[currentPlantationCluster_1].getIndexToCongruenceClass()]
@@ -2311,8 +2310,8 @@ public class CongruenceClassRegistry<T1, T2, T3, T4> {
         return clusterArray;
     }
 
-    public Plantation[] getPlantationArray() {
-        return plantationArray;
+    public Stand[] getPlantationArray() {
+        return standArray;
     }
 
     public CongruenceClass[] getCongruenceClassArray() {

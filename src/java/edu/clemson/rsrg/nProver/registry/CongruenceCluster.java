@@ -12,17 +12,10 @@
  */
 package edu.clemson.rsrg.nProver.registry;
 
-import edu.clemson.rsrg.nProver.registry.CongruenceClass;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 /**
  * <p>
  * This class is for every cluster that is created and belonging to one of the {@link CongruenceClass} all clusters are
- * also belong to one of the {@link Plantation}
+ * also belong to one of the {@link Stand}
  * </p>
  *
  * @author Nicodemus Msafiri J. M.
