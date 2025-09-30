@@ -392,7 +392,6 @@ public class GeneralPurposeProver {
                  * System.out.println("==========SubSubExpressions========"); for(Exp
                  * e:te.getAssertion().getSubExpressions()){ System.out.println(e.getSubExpressions()); for(Exp
                  * e2:e.getSubExpressions()){ System.out.println(e2.getClass().getSimpleName()); } }
-                 *
                  */
 
             }
@@ -400,10 +399,7 @@ public class GeneralPurposeProver {
             // System.out.println(rules.getMyElaborationRules().size());
             /*
              * for(ElaborationRule eR : rules.getMyElaborationRules()){ System.out.println("Precursors" +
-             * eR.getPrecursorClauses()); System.out.println("==>" + eR.getResultantClause());
-             *
-             * }
-             *
+             * eR.getPrecursorClauses()); System.out.println("==>" + eR.getResultantClause()); }
              */
         }
 
