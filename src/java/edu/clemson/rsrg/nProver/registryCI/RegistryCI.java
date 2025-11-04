@@ -64,69 +64,70 @@ public class RegistryCI {
             return;
         }
         switch (parsedCommand[0]) {
-        case "R":
-            int mapping = 0;
-            if (symbolToMapping.containsKey(parsedCommand[1])) {
-                mapping = symbolToMapping.get(parsedCommand[1]);
-            } else {
-                symbolToMapping.put(parsedCommand[1], currentMapping);
-                mappingToSymbol.add(parsedCommand[1]);
-                mapping = currentMapping;
-                currentMapping++;
-            }
-            int designator;
-            if (!registry.isRegistryLabel(mapping)) {
-                designator = registry.registerCluster(mapping);
-            } else {
-                designator = registry.getAccessorFor(mapping);
-            }
-            System.out.println("Designator: " + designator);
-            break;
-        case "A":
-            try {
-                int num = Integer.parseInt(parsedCommand[1]);
-                if (num < 0) {
-                    System.out.println("Argument must be non-negative.");
-                    break;
+            case "R":
+                int mapping = 0;
+                if (symbolToMapping.containsKey(parsedCommand[1])) {
+                    mapping = symbolToMapping.get(parsedCommand[1]);
+                } else {
+                    symbolToMapping.put(parsedCommand[1], currentMapping);
+                    mappingToSymbol.add(parsedCommand[1]);
+                    mapping = currentMapping;
+                    currentMapping++;
                 }
-                // should check if it's a valid designator first but not sure how - only checks appear to be for labels
-                // registry.
-                if (!registry.isClassDesignator(num)) {
-                    System.out.println("Not a valid congruence class.");
-                    break;
+                int designator;
+                if (!registry.isRegistryLabel(mapping)) {
+                    designator = registry.registerCluster(mapping);
+                } else {
+                    designator = registry.getAccessorFor(mapping);
                 }
-                registry.appendToClusterArgList(num);
-                System.out.println("Added to argument list");
-            } catch (NumberFormatException e) {
-                System.out.println("Argument must be a number.");
-            }
-            break;
-        case "?":
-            if (symbolToMapping.containsKey(parsedCommand[1])) {
-                int label = symbolToMapping.get(parsedCommand[1]);
-                if (registry.isRegistryLabel(label)) {
-                    System.out.println("Registered");
-                    break;
+                System.out.println("Designator: " + designator);
+                break;
+            case "A":
+                try {
+                    int num = Integer.parseInt(parsedCommand[1]);
+                    if (num < 0) {
+                        System.out.println("Argument must be non-negative.");
+                        break;
+                    }
+                    // should check if it's a valid designator first but not sure how - only checks appear to be for
+                    // labels
+                    // registry.
+                    if (!registry.isClassDesignator(num)) {
+                        System.out.println("Not a valid congruence class.");
+                        break;
+                    }
+                    registry.appendToClusterArgList(num);
+                    System.out.println("Added to argument list");
+                } catch (NumberFormatException e) {
+                    System.out.println("Argument must be a number.");
                 }
-            }
-            System.out.println("Not registered");
-            break;
-        case "M":
-            if (parsedCommand.length < 3) {
-                System.out.println("Invalid input \"" + command + "\". Command must have two arguments.");
-                return;
-            }
-            try {
-                int designator1 = Integer.parseInt(parsedCommand[1]);
-                int designator2 = Integer.parseInt(parsedCommand[2]);
-                registry.makeCongruent(designator1, designator2);
-                System.out.println("Made congruent.");
-            } catch (NumberFormatException e) {
-                System.out.println("Arguments must be numbers.");
-            }
-            break;
-        default:
-            System.out.println("Unspecified command: " + command);
+                break;
+            case "?":
+                if (symbolToMapping.containsKey(parsedCommand[1])) {
+                    int label = symbolToMapping.get(parsedCommand[1]);
+                    if (registry.isRegistryLabel(label)) {
+                        System.out.println("Registered");
+                        break;
+                    }
+                }
+                System.out.println("Not registered");
+                break;
+            case "M":
+                if (parsedCommand.length < 3) {
+                    System.out.println("Invalid input \"" + command + "\". Command must have two arguments.");
+                    return;
+                }
+                try {
+                    int designator1 = Integer.parseInt(parsedCommand[1]);
+                    int designator2 = Integer.parseInt(parsedCommand[2]);
+                    registry.makeCongruent(designator1, designator2);
+                    System.out.println("Made congruent.");
+                } catch (NumberFormatException e) {
+                    System.out.println("Arguments must be numbers.");
+                }
+                break;
+            default:
+                System.out.println("Unspecified command: " + command);
         }
     }
 
