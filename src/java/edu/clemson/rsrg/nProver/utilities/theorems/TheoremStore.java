@@ -54,7 +54,7 @@ public final class TheoremStore implements TheoremManager {
                 res.add(e.toString());
             }
         }
-        return Collections.unmodifiableSet(res);
+        return res;
     }
 
     private Set<String> getAllExpStrings(Exp exp) {
@@ -83,15 +83,18 @@ public final class TheoremStore implements TheoremManager {
     }
 
     @Override
-    public Set<TheoremEntry> getRelevantTheorems(List<Exp> expressions) {
-        Set<TheoremEntry> theorems = new HashSet<>();
+    public List<TheoremEntry> getRelevantTheorems(List<Exp> expressions) {
+        List<TheoremEntry> theorems = new ArrayList<>();
         for (Exp expr : expressions) {
             Set<String> exprStrings = getAllExpStrings(expr);
             for (TheoremEntry theorem : theoremToOps.keySet()) {
                 Set<String> ops = theoremToOps.get(theorem);
-                ops.removeIf((exp) -> !opStrings.contains(exp));
-                if (exprStrings.containsAll(ops)) {
-                    theorems.add(theorem);
+                // TODO show that this isn't masking a bug (yell at Carson if it is)
+                if (ops != null) {
+                    ops.removeIf((exp) -> !opStrings.contains(exp));
+                    if (exprStrings.containsAll(ops)) {
+                        theorems.add(theorem);
+                    }
                 }
             }
         }

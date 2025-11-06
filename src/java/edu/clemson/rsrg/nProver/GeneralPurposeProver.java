@@ -381,7 +381,7 @@ public class GeneralPurposeProver {
             storeVCProofVerboseDetail(vc, result, registry, expLabels);
 
             System.out.println("============ CongruenceClassRegistry ===============");
-            System.out.println(registry.toString());
+            // System.out.println(registry.toString());
 
             System.out.println("============ Operators in VC ===============");
             // trying to check the stored operators on the sequent VC's no need for
