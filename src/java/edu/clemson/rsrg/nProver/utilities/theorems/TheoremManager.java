@@ -18,5 +18,5 @@ import edu.clemson.rsrg.typeandpopulate.entry.TheoremEntry;
 import java.util.Set;
 
 public interface TheoremManager {
-    Set<TheoremEntry> getRelevantTheorems(Set<Exp> expressions);
+    Set<TheoremEntry> getRelevantTheorems(List<Exp> expressions);
 }

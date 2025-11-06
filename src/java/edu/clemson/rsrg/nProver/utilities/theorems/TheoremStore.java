@@ -17,16 +17,12 @@ import edu.clemson.rsrg.typeandpopulate.entry.TheoremEntry;
 import edu.clemson.rsrg.typeandpopulate.query.EntryTypeQuery;
 import edu.clemson.rsrg.typeandpopulate.symboltables.MathSymbolTable;
 import edu.clemson.rsrg.typeandpopulate.symboltables.ModuleScope;
-import edu.clemson.rsrg.vcgeneration.sequents.Sequent;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public final class TheoremStore implements TheoremManager {
 
-    private final List<TheoremEntry> allTheorems;
     private final Map<TheoremEntry, Set<String>> theoremToOps;
-    private final Map<String, Set<TheoremEntry>> opToTheorems;
-    private final Set<TheoremEntry> zeroOpTheorems;
+    private final Set<String> opStrings;
 
     public TheoremStore(ModuleScope scope) {
         Objects.requireNonNull(scope, "scope");
@@ -35,21 +31,14 @@ public final class TheoremStore implements TheoremManager {
                 .query(new EntryTypeQuery<>(TheoremEntry.class, MathSymbolTable.ImportStrategy.IMPORT_RECURSIVE,
                         MathSymbolTable.FacilityStrategy.FACILITY_INSTANTIATE));
 
-        this.allTheorems = Collections.unmodifiableList(new ArrayList<>(programTheorems));
         this.theoremToOps = new LinkedHashMap<>(programTheorems.size());
-        this.opToTheorems = new LinkedHashMap<>();
-        this.zeroOpTheorems = new LinkedHashSet<>();
+        this.opStrings = new HashSet<>();
 
         // Build indices
         for (TheoremEntry te : programTheorems) {
             Set<String> opStrings = toOperatorStrings(te.getOperators());
+            this.opStrings.addAll(opStrings);
             theoremToOps.put(te, opStrings);
-            if (opStrings.isEmpty()) {
-                zeroOpTheorems.add(te);
-            }
-            for (String op : opStrings) {
-                opToTheorems.computeIfAbsent(op, k -> new LinkedHashSet<>()).add(te);
-            }
         }
     }
 
@@ -68,79 +57,13 @@ public final class TheoremStore implements TheoremManager {
         return Collections.unmodifiableSet(res);
     }
 
-    /**
-     * Find all theorems whose operator set is a subset of the provided sequent operators.
-     *
-     * @param sequentOperators
-     *            A set of operator strings extracted from the target sequent.
-     *
-     * @return A list of relevant {@link TheoremEntry} objects.
-     */
-    public List<TheoremEntry> findRelevantTheorems(Set<String> sequentOperators) {
-        if (allTheorems.isEmpty()) {
-            return Collections.emptyList();
-        }
-        Set<String> ops = (sequentOperators == null) ? Collections.emptySet() : sequentOperators;
-
-        // Fast path: if sequent has no operators, only theorems with no operators can match (rare)
-        if (ops.isEmpty()) {
-            return allTheorems.stream().filter(te -> theoremToOps.getOrDefault(te, Collections.emptySet()).isEmpty())
-                    .collect(Collectors.toList());
-        }
-
-        // Candidate reduction: union of theorems that contain at least one sequent operator
-        // This avoids scanning all theorems for typical cases
-        Set<TheoremEntry> candidates = new LinkedHashSet<>(zeroOpTheorems);
-        for (String op : ops) {
-            Set<TheoremEntry> bucket = opToTheorems.get(op);
-            if (bucket != null) {
-                candidates.addAll(bucket);
-            }
-        }
-        // If union is empty (no overlap), there are no relevant theorems
-        if (candidates.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        // Final filter: must be subset-of
-        List<TheoremEntry> relevant = new ArrayList<>();
-        for (TheoremEntry te : candidates) {
-            Set<String> theoOps = theoremToOps.getOrDefault(te, Collections.emptySet());
-            if (ops.containsAll(theoOps)) {
-                relevant.add(te);
-            }
-        }
-
-        return relevant;
-    }
-
-    /** Number of preloaded theorems. */
-    public int size() {
-        return allTheorems.size();
-    }
-
-    /** Expose all theorems if needed for diagnostics. */
-    public List<TheoremEntry> getAllTheorems() {
-        return allTheorems;
-    }
-
-    private List<String> getAllExpStrings(Exp exp) {
-        List<String> expStrings = new ArrayList<>();
+    private Set<String> getAllExpStrings(Exp exp) {
+        Set<String> expStrings = new HashSet<>();
         expStrings.add(exp.toString());
         for (Exp subExp : exp.getSubExpressions()) {
             expStrings.addAll(getAllExpStrings(subExp));
         }
         return expStrings;
-    }
-
-    public List<Sequent> applyTheoremsToSequent(Sequent sequent) {
-        List<Sequent> results = new ArrayList<>();
-        List<String> antStrings = new ArrayList<>();
-        for (Exp ant : sequent.getAntecedents()) {
-            antStrings.addAll(getAllExpStrings(ant));
-        }
-        System.out.println("Sequents: " + antStrings);
-        return null;
     }
 
     /**
@@ -149,7 +72,7 @@ public final class TheoremStore implements TheoremManager {
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        for (TheoremEntry theoremEntry : allTheorems) {
+        for (TheoremEntry theoremEntry : theoremToOps.keySet()) {
             sb.append("Name: ");
             sb.append(theoremEntry.getName());
             sb.append("\n");
@@ -160,7 +83,18 @@ public final class TheoremStore implements TheoremManager {
     }
 
     @Override
-    public Set<TheoremEntry> getRelevantTheorems(Set<Exp> expressions) {
-        return Set.of();
+    public Set<TheoremEntry> getRelevantTheorems(List<Exp> expressions) {
+        Set<TheoremEntry> theorems = new HashSet<>();
+        for (Exp expr : expressions) {
+            Set<String> exprStrings = getAllExpStrings(expr);
+            for (TheoremEntry theorem : theoremToOps.keySet()) {
+                Set<String> ops = theoremToOps.get(theorem);
+                ops.removeIf((exp) -> !opStrings.contains(exp));
+                if (exprStrings.containsAll(ops)) {
+                    theorems.add(theorem);
+                }
+            }
+        }
+        return theorems;
     }
 }

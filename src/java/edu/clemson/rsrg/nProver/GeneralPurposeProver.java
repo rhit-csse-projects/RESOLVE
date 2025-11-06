@@ -343,8 +343,6 @@ public class GeneralPurposeProver {
             // Obtain the sequent to be proved
             Sequent sequent = vc.getSequent();
 
-            theoremStore.applyTheoremsToSequent(sequent);
-
             // Create a registry and label map
             CongruenceClassRegistry<Integer, String, String, String> registry = new CongruenceClassRegistry<>(1000,
                     1000, 1000, 1000);
@@ -411,7 +409,7 @@ public class GeneralPurposeProver {
             // Find all preloaded theorems whose operator sets are subsets of the sequent
             // operators
             System.out.println("New: Using TheoremStore");
-            relevantTheorems = theoremStore.findRelevantTheorems(expLabels.keySet());
+            relevantTheorems = theoremStore.getRelevantTheorems(sequent.getAntecedents());
             System.out.println("From new TheoremStore relevant theorems: " + relevantTheorems.size());
             System.out.println("========= TheoremStore Contents =========");
             System.out.println(theoremStore.toString());
