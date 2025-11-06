@@ -29,10 +29,7 @@ public interface TheoremManager {
      * <p>
      * Ensures: getRelevantTheorems = all theorems whose operators are a subset of the provide set (list).
      * </p>
-     * 
-     * {@param} expressions: The expressions to be analyzed for relevant theorems.
-     * 
-     * {@return}A list of relevant theorems.
+     * {@param} expressions: The expressions to be analyzed for relevant theorems. {@return}A list of relevant theorems.
      */
     List<TheoremEntry> getRelevantTheorems(List<Exp> expressions);
 }
