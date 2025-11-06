@@ -33,7 +33,7 @@ import java.util.*;
  * @param <T4>
  */
 
-public class CongruenceClassRegistry<T1, T2, T3, T4> {
+public class CongruenceClassRegistry {
 
     /**
      * <p>

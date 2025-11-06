@@ -48,8 +48,7 @@ public class RegisterSuccedent extends AbstractRegisterSequent {
      * @param nextLabel
      *            The number to be assigned initially as a label.
      */
-    public RegisterSuccedent(CongruenceClassRegistry<Integer, String, String, String> registry,
-            Map<String, Integer> expLabels, int nextLabel) {
+    public RegisterSuccedent(CongruenceClassRegistry registry, Map<String, Integer> expLabels, int nextLabel) {
         super(registry, expLabels, nextLabel);
     }
 

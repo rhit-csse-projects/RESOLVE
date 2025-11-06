@@ -39,7 +39,7 @@ public class CCRegWithTheoremTest {
      * A {@link CongruenceClassRegistry} object to store the antecedents and succedents.
      * </p>
      */
-    private CongruenceClassRegistry<Integer, String, String, String> myRegistry;
+    private CongruenceClassRegistry myRegistry;
 
     // ===========================================================
     // Set up Method
@@ -52,7 +52,7 @@ public class CCRegWithTheoremTest {
      */
     @Before
     public final void setUp() {
-        myRegistry = new CongruenceClassRegistry<>(100, 100, 100, 100);
+        myRegistry = new CongruenceClassRegistry(100, 100, 100, 100);
     }
 
     // ===========================================================
