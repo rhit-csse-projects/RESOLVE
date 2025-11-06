@@ -82,6 +82,9 @@ public final class TheoremStore implements TheoremManager {
         return sb.toString();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<TheoremEntry> getRelevantTheorems(List<Exp> expressions) {
         List<TheoremEntry> theorems = new ArrayList<>();

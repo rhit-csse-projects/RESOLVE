@@ -18,5 +18,21 @@ import edu.clemson.rsrg.typeandpopulate.entry.TheoremEntry;
 import java.util.List;
 
 public interface TheoremManager {
+    /**
+     * <p>
+     * Given a list of expressions, this method returns a list of relevant theorems based on the operators found.
+     * Requires: true
+     * </p>
+     * <p>
+     * Restores: expressions
+     * </p>
+     * <p>
+     * Ensures: getRelevantTheorems = all theorems whose operators are a subset of the provide set (list).
+     * </p>
+     * 
+     * {@param} expressions: The expressions to be analyzed for relevant theorems.
+     * 
+     * {@return}A list of relevant theorems.
+     */
     List<TheoremEntry> getRelevantTheorems(List<Exp> expressions);
 }
