@@ -77,7 +77,7 @@ public abstract class AbstractRegisterSequent extends TreeWalkerStackVisitor {
      * This registry contains the target sequent VC to be proved.
      * </p>
      */
-    protected final CongruenceClassRegistry<Integer, String, String, String> myRegistry;
+    protected final CongruenceClassRegistry myRegistry;
 
     // ===========================================================
     // Global Operator Labels
@@ -113,8 +113,7 @@ public abstract class AbstractRegisterSequent extends TreeWalkerStackVisitor {
      * @param nextLabel
      *            The number to be assigned initially as a label.
      */
-    protected AbstractRegisterSequent(CongruenceClassRegistry<Integer, String, String, String> registry,
-            Map<String, Integer> expLabels, int nextLabel) {
+    protected AbstractRegisterSequent(CongruenceClassRegistry registry, Map<String, Integer> expLabels, int nextLabel) {
         myArgumentsCache = new LinkedHashMap<>();
         myRegistry = registry;
         myExpLabels = expLabels;
@@ -474,7 +473,7 @@ public abstract class AbstractRegisterSequent extends TreeWalkerStackVisitor {
      *
      * @return The registry containing the sequent we are trying to prove.
      */
-    public final CongruenceClassRegistry<Integer, String, String, String> getRegistry() {
+    public final CongruenceClassRegistry getRegistry() {
         return myRegistry;
     }
 

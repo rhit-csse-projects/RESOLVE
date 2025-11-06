@@ -344,8 +344,7 @@ public class GeneralPurposeProver {
             Sequent sequent = vc.getSequent();
 
             // Create a registry and label map
-            CongruenceClassRegistry<Integer, String, String, String> registry = new CongruenceClassRegistry<>(1000,
-                    1000, 1000, 1000);
+            CongruenceClassRegistry registry = new CongruenceClassRegistry(1000, 1000, 1000, 1000);
             Map<String, Integer> expLabels = new LinkedHashMap<>();
             List<TheoremEntry> relevantTheorems;
 
@@ -459,8 +458,8 @@ public class GeneralPurposeProver {
      * @param expLabels
      *            The expression labels assigned to the expressions in this {@code VC}.
      */
-    private void storeVCProofVerboseDetail(VerificationCondition vc, String result,
-            CongruenceClassRegistry<Integer, String, String, String> registry, Map<String, Integer> expLabels) {
+    private void storeVCProofVerboseDetail(VerificationCondition vc, String result, CongruenceClassRegistry registry,
+            Map<String, Integer> expLabels) {
         // Create a model for adding all the details associated with this VC.
         LocationDetailModel detailModel = vc.getLocationDetailModel();
         ST vcModel = mySTGroup.getInstanceOf("outputVC");

@@ -26,7 +26,7 @@ public class RegistryCI {
     private static String prompt = "> ";
 
     public RegistryCI() {
-        registry = new CongruenceClassRegistry<>(100, 100, 100, 100);
+        registry = new CongruenceClassRegistry(100, 100, 100, 100);
         symbolToMapping = new HashMap<String, Integer>();
         mappingToSymbol = new ArrayList<String>();
         scan = new Scanner(System.in);

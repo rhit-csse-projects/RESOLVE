@@ -1,0 +1,25 @@
+<!--
+
+    Main.run.xml
+    ---------------------------------
+    Copyright (c) 2024
+    RESOLVE Software Research Group
+    School of Computing
+    Clemson University
+    All rights reserved.
+    ---------------------------------
+    This file is subject to the terms and conditions defined in
+    file 'LICENSE.txt', which is part of this source code package.
+
+-->
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Main" type="Application" factoryName="Application" nameIsGenerated="true">
+    <option name="MAIN_CLASS_NAME" value="edu.clemson.rsrg.Main" />
+    <module name="RESOLVE" />
+    <option name="PROGRAM_PARAMETERS" value="-VCs Do_Nothing_Realiz.rb" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/RESOLVE-Workspace/Main/Concepts/Stack_Template" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
