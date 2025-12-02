@@ -1,0 +1,173 @@
+/*
+ * TheoremStoreTest.java
+ * ---------------------------------
+ * Copyright (c) 2024
+ * RESOLVE Software Research Group
+ * School of Computing
+ * Clemson University
+ * All rights reserved.
+ * ---------------------------------
+ * This file is subject to the terms and conditions defined in
+ * file 'LICENSE.txt', which is part of this source code package.
+ */
+package edu.clemson.rsrg;
+
+import edu.clemson.rsrg.absyn.expressions.Exp;
+import edu.clemson.rsrg.nProver.utilities.theorems.TheoremStore;
+import edu.clemson.rsrg.typeandpopulate.entry.TheoremEntry;
+import edu.clemson.rsrg.typeandpopulate.query.EntryTypeQuery;
+import edu.clemson.rsrg.typeandpopulate.symboltables.MathSymbolTable;
+import edu.clemson.rsrg.typeandpopulate.symboltables.ModuleScope;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.util.*;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+public class TheoremStoreTest {
+
+    @Mock
+    private ModuleScope mockModuleScope;
+
+    @Mock
+    private TheoremEntry mockTheorem1;
+
+    @Mock
+    private TheoremEntry mockTheorem2;
+
+    @Mock
+    private Exp mockOp1;
+
+    @Mock
+    private Exp mockOp2;
+
+    @Mock
+    private Exp mockExp;
+
+    private TheoremStore theoremStore;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+
+        // Mock operators
+        when(mockOp1.toString()).thenReturn("op1");
+        when(mockOp2.toString()).thenReturn("op2");
+        when(mockOp1.getSubExpressions()).thenReturn(Collections.emptyList());
+        when(mockOp2.getSubExpressions()).thenReturn(Collections.emptyList());
+
+        // Mock theorems
+        when(mockTheorem1.getName()).thenReturn("theorem1");
+        when(mockTheorem1.getOperators()).thenReturn(new HashSet<>(Collections.singletonList(mockOp1)));
+
+        when(mockTheorem2.getName()).thenReturn("theorem2");
+        when(mockTheorem2.getOperators()).thenReturn(new HashSet<>(Arrays.asList(mockOp1, mockOp2)));
+
+        // Mock module scope
+        List<TheoremEntry> theorems = Arrays.asList(mockTheorem1, mockTheorem2);
+        when(mockModuleScope.query(any(EntryTypeQuery.class))).thenReturn(theorems);
+
+        theoremStore = new TheoremStore(mockModuleScope);
+    }
+
+    @Test
+    void getRelevantTheorems_shouldReturnAllMatchingTheorems() {
+        // Arrange
+        when(mockExp.toString()).thenReturn("op1 and op2");
+        when(mockExp.getSubExpressions()).thenReturn(Arrays.asList(mockOp1, mockOp2));
+
+        List<Exp> expressions = Collections.singletonList(mockExp);
+
+        // Act
+        Set<TheoremEntry> relevantTheorems = theoremStore.getRelevantTheorems(expressions);
+
+        // Assert
+        assertEquals(2, relevantTheorems.size());
+        assertTrue(relevantTheorems.contains(mockTheorem1));
+        assertTrue(relevantTheorems.contains(mockTheorem2));
+    }
+
+    @Test
+    void getRelevantTheorems_shouldReturnEmptySetWhenNoOperatorsMatch() {
+        // Arrange
+        Exp mockOtherOp = mock(Exp.class);
+        when(mockOtherOp.toString()).thenReturn("op3");
+        when(mockOtherOp.getSubExpressions()).thenReturn(Collections.emptyList());
+        when(mockExp.toString()).thenReturn("op3");
+        when(mockExp.getSubExpressions()).thenReturn(Collections.singletonList(mockOtherOp));
+        List<Exp> expressions = Collections.singletonList(mockExp);
+
+        // Act
+        Set<TheoremEntry> relevantTheorems = theoremStore.getRelevantTheorems(expressions);
+
+        // Assert
+        assertTrue(relevantTheorems.isEmpty());
+    }
+
+    @Test
+    void getRelevantTheorems_shouldReturnPartiallyMatchingTheorems() {
+        // Arrange
+        when(mockExp.toString()).thenReturn("op1");
+        when(mockExp.getSubExpressions()).thenReturn(Collections.singletonList(mockOp1));
+        List<Exp> expressions = Collections.singletonList(mockExp);
+
+        // Act
+        Set<TheoremEntry> relevantTheorems = theoremStore.getRelevantTheorems(expressions);
+
+        // Assert
+        assertEquals(1, relevantTheorems.size());
+        assertTrue(relevantTheorems.contains(mockTheorem1));
+        assertFalse(relevantTheorems.contains(mockTheorem2)); // mockTheorem2 needs op1 and op2
+    }
+
+    @Test
+    void getRelevantTheorems_shouldReturnEmptySetForEmptyExpressions() {
+        // Arrange
+        List<Exp> expressions = Collections.emptyList();
+
+        // Act
+        Set<TheoremEntry> relevantTheorems = theoremStore.getRelevantTheorems(expressions);
+
+        // Assert
+        assertTrue(relevantTheorems.isEmpty());
+    }
+
+    @Test
+    void getRelevantTheorems_shouldBeIdempotent() {
+        // Arrange
+        when(mockExp.toString()).thenReturn("op1 and op2");
+        when(mockExp.getSubExpressions()).thenReturn(Arrays.asList(mockOp1, mockOp2));
+
+        List<Exp> expressions = Collections.singletonList(mockExp);
+
+        // Act
+        Set<TheoremEntry> result1 = theoremStore.getRelevantTheorems(expressions);
+        Set<TheoremEntry> result2 = theoremStore.getRelevantTheorems(expressions);
+
+        // Assert
+        assertEquals(result1, result2);
+        assertEquals(2, result2.size());
+    }
+
+    @Test
+    void toString_shouldContainTheoremInfo() {
+        // Arrange
+        when(mockTheorem1.toString()).thenReturn("Theorem 1 details");
+        when(mockTheorem2.toString()).thenReturn("Theorem 2 details");
+
+        // Act
+        String result = theoremStore.toString();
+
+        // Assert
+        assertTrue(result.contains("Name: theorem1"));
+        assertTrue(result.contains("Theorem 1 details"));
+        assertTrue(result.contains("Name: theorem2"));
+        assertTrue(result.contains("Theorem 2 details"));
+    }
+}
