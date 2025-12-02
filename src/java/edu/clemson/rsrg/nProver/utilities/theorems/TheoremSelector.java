@@ -35,7 +35,7 @@ public class TheoremSelector {
 
     }
 
-    public List<TheoremEntry> selectTheorems(List<Exp> expressions, List<String> operators) {
+    public Set<TheoremEntry> selectTheorems(List<Exp> expressions, List<String> operators) {
 
         List<Exp> filteredList = expressions.stream().filter(exp -> operators.contains(this.getAllExpStrings(exp)))
                 .collect(Collectors.toList());
@@ -57,7 +57,7 @@ public class TheoremSelector {
         //
         // }
         // }
-        List<TheoremEntry> relevantTheorems = theorems.getRelevantTheorems(filteredList);
+        Set<TheoremEntry> relevantTheorems = theorems.getRelevantTheorems(filteredList);
         return relevantTheorems;
 
     }
