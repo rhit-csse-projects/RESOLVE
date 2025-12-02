@@ -333,10 +333,11 @@ public class GeneralPurposeProver {
         // query the collection of theorems once referring to the uses statement.
         theorems.theoremEntryQuery();
 
+        // Use the new TheoremStore to preload theorems for fast lookup.
+        TheoremStore theoremStore = new TheoremStore(myCurrentModuleScope);
+
         // Loop through each of the VCs and attempt to prove them
         for (VerificationCondition vc : myVerificationConditions) {
-            // Use the new TheoremStore to preload theorems for fast lookup.
-            TheoremStore theoremStore = new TheoremStore(myCurrentModuleScope);
 
             // Store the start time for generating proofs for this VC
             long startTime = System.nanoTime();
