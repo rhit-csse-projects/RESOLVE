@@ -86,8 +86,8 @@ public final class TheoremStore implements TheoremManager {
      * {@inheritDoc}
      */
     @Override
-    public List<TheoremEntry> getRelevantTheorems(List<Exp> expressions) {
-        List<TheoremEntry> theorems = new ArrayList<>();
+    public Set<TheoremEntry> getRelevantTheorems(List<Exp> expressions) {
+        Set<TheoremEntry> theorems = new HashSet<>();
         for (Exp expr : expressions) {
             Set<String> exprStrings = getAllExpStrings(expr);
             for (TheoremEntry theorem : theoremToOps.keySet()) {

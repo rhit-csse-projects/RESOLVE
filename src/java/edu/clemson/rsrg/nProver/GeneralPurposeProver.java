@@ -40,8 +40,6 @@ import edu.clemson.rsrg.vcgeneration.utilities.VerificationCondition;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import javax.print.event.PrintJobAdapter;
-
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
@@ -347,7 +345,7 @@ public class GeneralPurposeProver {
             // Create a registry and label map
             CongruenceClassRegistry registry = new CongruenceClassRegistry(1000, 1000, 1000, 1000);
             Map<String, Integer> expLabels = new LinkedHashMap<>();
-            List<TheoremEntry> relevantTheorems;
+            Set<TheoremEntry> relevantTheorems;
 
             // NM: 0, 1 are spared for <= (1), = (2), etc., the list can expand with more
             // reflexive operators
@@ -392,7 +390,7 @@ public class GeneralPurposeProver {
             System.out.println("============ Relevant Theorem===============");
             System.out.println("Old: Using RelevantTheoremExtractor");
             relevantTheorems = theorems.getSequentVCTheorems(expLabels);
-            ElaborationRules rules = new ElaborationRules(relevantTheorems);
+            ElaborationRules rules = new ElaborationRules(new ArrayList<>(relevantTheorems));
 
             for (TheoremEntry te : relevantTheorems) {
                 System.out.println(te.getAssertion());
@@ -414,7 +412,7 @@ public class GeneralPurposeProver {
             System.out.println("========= TheoremStore Contents =========");
             System.out.println(theoremStore.toString());
 
-            rules = new ElaborationRules(relevantTheorems);
+            rules = new ElaborationRules(new ArrayList<>(relevantTheorems));
 
             for (TheoremEntry te : relevantTheorems) {
                 System.out.println(te.getAssertion());

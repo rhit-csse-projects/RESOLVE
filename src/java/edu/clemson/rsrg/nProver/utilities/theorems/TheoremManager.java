@@ -16,6 +16,7 @@ import edu.clemson.rsrg.absyn.expressions.Exp;
 import edu.clemson.rsrg.typeandpopulate.entry.TheoremEntry;
 
 import java.util.List;
+import java.util.Set;
 
 public interface TheoremManager {
     /**
@@ -31,5 +32,5 @@ public interface TheoremManager {
      * </p>
      * {@param} expressions: The expressions to be analyzed for relevant theorems. {@return}A list of relevant theorems.
      */
-    List<TheoremEntry> getRelevantTheorems(List<Exp> expressions);
+    Set<TheoremEntry> getRelevantTheorems(List<Exp> expressions);
 }

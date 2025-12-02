@@ -13,14 +13,10 @@
 package edu.clemson.rsrg.nProver.utilities.theorems;
 
 import edu.clemson.rsrg.absyn.expressions.Exp;
-import edu.clemson.rsrg.absyn.expressions.mathexpr.VarExp;
-import edu.clemson.rsrg.prover.utilities.theorems.Theorem;
 import edu.clemson.rsrg.typeandpopulate.entry.TheoremEntry;
 import edu.clemson.rsrg.typeandpopulate.query.EntryTypeQuery;
 import edu.clemson.rsrg.typeandpopulate.symboltables.MathSymbolTable;
 import edu.clemson.rsrg.typeandpopulate.symboltables.ModuleScope;
-import edu.clemson.rsrg.typeandpopulate.utilities.ModuleIdentifier;
-import edu.clemson.rsrg.vcgeneration.sequents.Sequent;
 
 import java.util.*;
 
@@ -43,10 +39,10 @@ public class RelevantTheoremExtractor {
     }
 
     // get all those theorems including all operators and constants on the sequent VC to be proved
-    public List<TheoremEntry> getSequentVCTheorems(Map<String, Integer> expLabels) {
+    public Set<TheoremEntry> getSequentVCTheorems(Map<String, Integer> expLabels) {
 
         // set of relevant theorems to the sequent VC
-        List<TheoremEntry> relevantTheorems = new ArrayList<>();
+        Set<TheoremEntry> relevantTheorems = new HashSet<>();
         // set of theorem operators
         Set<Exp> setOfTheoremOperators;
 
