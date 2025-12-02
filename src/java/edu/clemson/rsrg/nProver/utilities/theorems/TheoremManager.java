@@ -16,6 +16,7 @@ import edu.clemson.rsrg.absyn.expressions.Exp;
 import edu.clemson.rsrg.typeandpopulate.entry.TheoremEntry;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public interface TheoremManager {
@@ -33,4 +34,14 @@ public interface TheoremManager {
      * {@param} expressions: The expressions to be analyzed for relevant theorems. {@return}A list of relevant theorems.
      */
     Set<TheoremEntry> getRelevantTheorems(List<Exp> expressions);
+
+    /**
+     * <p>
+     * Returns a map of operators to their numbers. <= & = are always 1 & 2, respectively. Requires: true
+     * </p>
+     * <p>
+     * Ensures getExpLabels = all operators mapped to their unique integer labels.
+     * </p>
+     */
+    Map<String, Integer> getExpLabels();
 }

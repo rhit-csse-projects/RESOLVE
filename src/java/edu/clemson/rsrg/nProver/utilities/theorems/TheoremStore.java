@@ -13,6 +13,7 @@
 package edu.clemson.rsrg.nProver.utilities.theorems;
 
 import edu.clemson.rsrg.absyn.expressions.Exp;
+import edu.clemson.rsrg.nProver.utilities.treewakers.AbstractRegisterSequent;
 import edu.clemson.rsrg.typeandpopulate.entry.TheoremEntry;
 import edu.clemson.rsrg.typeandpopulate.query.EntryTypeQuery;
 import edu.clemson.rsrg.typeandpopulate.symboltables.MathSymbolTable;
@@ -102,5 +103,24 @@ public final class TheoremStore implements TheoremManager {
             }
         }
         return theorems;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<String, Integer> getExpLabels() {
+        // NM: 0, 1 are spared for <= (1), = (2), etc., the list can expand with more
+        // reflexive operators
+        // preload <=, = into the map
+        Map<String, Integer> expLabels = new LinkedHashMap<>();
+        expLabels.put("<=", AbstractRegisterSequent.OP_LESS_THAN_OR_EQUALS);
+        expLabels.put("=", AbstractRegisterSequent.OP_EQUALS);
+        int i = 3;
+        for (String opString : opStrings) {
+            expLabels.put(opString, i);
+            i++;
+        }
+        return expLabels;
     }
 }

@@ -333,6 +333,7 @@ public class GeneralPurposeProver {
 
         // Use the new TheoremStore to preload theorems for fast lookup.
         TheoremStore theoremStore = new TheoremStore(myCurrentModuleScope);
+        Map<String, Integer> expLabels = theoremStore.getExpLabels();
 
         // Loop through each of the VCs and attempt to prove them
         for (VerificationCondition vc : myVerificationConditions) {
@@ -344,14 +345,7 @@ public class GeneralPurposeProver {
 
             // Create a registry and label map
             CongruenceClassRegistry registry = new CongruenceClassRegistry(1000, 1000, 1000, 1000);
-            Map<String, Integer> expLabels = new LinkedHashMap<>();
             Set<TheoremEntry> relevantTheorems;
-
-            // NM: 0, 1 are spared for <= (1), = (2), etc., the list can expand with more
-            // reflexive operators
-            // preload <=, = into the map
-            expLabels.put("<=", AbstractRegisterSequent.OP_LESS_THAN_OR_EQUALS);
-            expLabels.put("=", AbstractRegisterSequent.OP_EQUALS);
 
             // Visit antecedents
             RegisterAntecedent regAntecedent = new RegisterAntecedent(registry, expLabels, 3);
