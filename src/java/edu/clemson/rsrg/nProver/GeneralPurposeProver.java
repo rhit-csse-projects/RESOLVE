@@ -397,7 +397,6 @@ public class GeneralPurposeProver {
                  */
 
             }
-            rules.createElaborationRules();
             // Find all preloaded theorems whose operator sets are subsets of the sequent
             // operators
             System.out.println("New: Using TheoremStore");
@@ -419,7 +418,6 @@ public class GeneralPurposeProver {
                  */
 
             }
-            rules.createElaborationRules();
             // System.out.println(rules.getMyElaborationRules().size());
             /*
              * for(ElaborationRule eR : rules.getMyElaborationRules()){ System.out.println("Precursors" +

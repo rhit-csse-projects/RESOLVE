@@ -13,10 +13,8 @@
 package edu.clemson.rsrg.nProver.utilities.theorems;
 
 import edu.clemson.rsrg.absyn.expressions.Exp;
-import edu.clemson.rsrg.absyn.expressions.mathexpr.VarExp;
 import edu.clemson.rsrg.typeandpopulate.entry.TheoremEntry;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -32,12 +30,13 @@ public class ElaborationRules {
     // constructor
     public ElaborationRules(List<TheoremEntry> relevantTheorems) {
         myRelevantTheorems = relevantTheorems;
+	createElaborationRules();
     }
 
     /**
      * Creates a list of elaboration rules out of a list of relevant theorems
      */
-    public List<ElaborationRule> createElaborationRules() {
+    private List<ElaborationRule> createElaborationRules() {
         List<Exp> myTheoremExpressions;
         // list of sub sub expressions for theorems with one clause
         List<Exp> myTheoremSubExpressions;
@@ -133,9 +132,6 @@ public class ElaborationRules {
      * @return a {@link List} of {@link ElaborationRule}
      */
     public List<ElaborationRule> getMyElaborationRules() {
-        if (myElaborationRules == null) {
-            createElaborationRules();
-        }
         return myElaborationRules;
     }
 
