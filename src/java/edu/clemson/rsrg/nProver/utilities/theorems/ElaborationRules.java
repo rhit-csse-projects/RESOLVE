@@ -30,7 +30,7 @@ public class ElaborationRules {
     // constructor
     public ElaborationRules(List<TheoremEntry> relevantTheorems) {
         myRelevantTheorems = relevantTheorems;
-	createElaborationRules();
+        createElaborationRules();
     }
 
     /**
