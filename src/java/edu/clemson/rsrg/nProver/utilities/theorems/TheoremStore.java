@@ -88,6 +88,11 @@ public final class TheoremStore implements TheoremManager {
      */
     @Override
     public Set<TheoremEntry> getRelevantTheorems(List<Exp> expressions) {
+        // The following line is the only thing from TheoremSelector that did anything.
+        // It seems to exist to filter out expressions by their operators, but we seem to be doing that anyways.
+        // What's worse is that the unit tests show that this line just removes all the expressions
+        // List<Exp> filteredList = expressions.stream().filter(exp -> opStrings.contains(this.getAllExpStrings(exp)))
+        // .collect(Collectors.toList());
         Set<TheoremEntry> theorems = new HashSet<>();
         for (Exp expr : expressions) {
             Set<String> exprStrings = getAllExpStrings(expr);

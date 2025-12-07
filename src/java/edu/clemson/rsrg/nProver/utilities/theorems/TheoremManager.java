@@ -26,7 +26,7 @@ public interface TheoremManager {
      * Requires: true
      * </p>
      * <p>
-     * Restores: expressions
+     * Restores: expressions, operators
      * </p>
      * <p>
      * Ensures: getRelevantTheorems = all theorems whose operators are a subset of the provide set (list).
