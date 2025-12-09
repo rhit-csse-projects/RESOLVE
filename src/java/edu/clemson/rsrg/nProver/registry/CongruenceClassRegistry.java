@@ -24,13 +24,6 @@ import java.util.*;
  *
  * @version v1.0
  *
- * @param <T1>
- *            type of tree node label selected
- * @param <T2>
- *            tree category tag
- * @param <T3>
- *            default tree category attribute
- * @param <T4>
  */
 
 public class CongruenceClassRegistry {
@@ -2341,6 +2334,44 @@ public class CongruenceClassRegistry {
                 sb.append(", ");
         }
     }
+
+    public void displayAllRoots(List<String> symbolMapping) {
+        for (int i = 1; i < topCongruenceClusterDesignator; i++) {
+            CongruenceCluster cluster = clusterArray[i];
+            if (cluster != null) {
+                String operator = symbolMapping.get(cluster.getTreeNodeLabel());
+                ClusterArgument argument = clusterArgumentArray[cluster.getIndexToArgList()];
+
+                StringBuilder sb = new StringBuilder();
+                sb.append(operator);
+
+                while (argument.getPrevClusterArg() != 0) {
+                    argument = clusterArgumentArray[argument.getPrevClusterArg()];
+                }
+
+                System.out.println(sb);
+            }
+        }
+    }
+
+    // public Set<Integer> getAllRoots() {
+    // Set<Integer> roots = new HashSet<>();
+    // for (int i = 1; i < topCongruenceClusterDesignator; i++) {
+    // CongruenceCluster cluster = clusterArray[i];
+    // if (cluster != null) {
+    // Integer operator = cluster.getTreeNodeLabel();
+    // ClusterArgument argument = clusterArgumentArray[cluster.getIndexToArgList()];
+    //
+    // roots.add(operator);
+    //
+    // while (argument.getPrevClusterArg() != 0) {
+    // argument = clusterArgumentArray[argument.getPrevClusterArg()];
+    // }
+    // return roots;
+    // }
+    // }
+    // return roots;
+    // }
 
     // public methods to help me visualize the arrays for testing: TO BE DELETED
     public ClusterArgument[] getClusterArgArray() {

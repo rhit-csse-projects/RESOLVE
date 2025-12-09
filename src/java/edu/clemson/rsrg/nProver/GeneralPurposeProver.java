@@ -23,7 +23,6 @@ import edu.clemson.rsrg.nProver.registry.CongruenceClassRegistry;
 import edu.clemson.rsrg.nProver.utilities.theorems.ElaborationRules;
 import edu.clemson.rsrg.nProver.utilities.theorems.RelevantTheoremExtractor;
 import edu.clemson.rsrg.nProver.utilities.theorems.TheoremStore;
-import edu.clemson.rsrg.nProver.utilities.treewakers.AbstractRegisterSequent;
 import edu.clemson.rsrg.nProver.utilities.treewakers.RegisterAntecedent;
 import edu.clemson.rsrg.nProver.utilities.treewakers.RegisterSuccedent;
 import edu.clemson.rsrg.parsing.data.LocationDetailModel;
@@ -400,6 +399,11 @@ public class GeneralPurposeProver {
             // Find all preloaded theorems whose operator sets are subsets of the sequent
             // operators
             System.out.println("New: Using TheoremStore");
+            // List<Exp> antecedentsAndConcequents = new ArrayList<>();
+            // antecedentsAndConcequents.addAll(sequent.getAntecedents());
+            // antecedentsAndConcequents.addAll(sequent.getConcequents());
+            // relevantTheorems = theoremStore.getRelevantTheorems(new ArrayList<>(new
+            // LinkedHashSet<>(antecedentsAndConcequents)));
             relevantTheorems = theoremStore.getRelevantTheorems(sequent.getAntecedents());
             System.out.println("From new TheoremStore relevant theorems: " + relevantTheorems.size());
             System.out.println("========= TheoremStore Contents =========");
