@@ -54,7 +54,7 @@ public class RegistryCI {
             } else if (input.equals("G")) {
                 Set<Integer> tempSet = registry.getAllRoots();
                 for (Integer i : tempSet) {
-                    System.out.println("Root: " + i + " Symbol: " + mappingToSymbol.get(i));
+                    System.out.println("Root: " + (i + 1) + " Symbol: " + mappingToSymbol.get(i));
                 }
             } else {
                 processCommand(input);
