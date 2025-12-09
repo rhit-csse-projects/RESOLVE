@@ -15,6 +15,7 @@ package edu.clemson.rsrg.nProver.utilities.theorems;
 import edu.clemson.rsrg.absyn.expressions.Exp;
 import edu.clemson.rsrg.typeandpopulate.entry.TheoremEntry;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -30,13 +31,14 @@ public class ElaborationRules {
     // constructor
     public ElaborationRules(List<TheoremEntry> relevantTheorems) {
         myRelevantTheorems = relevantTheorems;
-        createElaborationRules();
+	myElaborationRules = createElaborationRules();
     }
 
     /**
      * Creates a list of elaboration rules out of a list of relevant theorems
      */
     private List<ElaborationRule> createElaborationRules() {
+	List<ElaborationRule> elaborationRules = new ArrayList<>();
         List<Exp> myTheoremExpressions;
         // list of sub sub expressions for theorems with one clause
         List<Exp> myTheoremSubExpressions;
@@ -60,7 +62,7 @@ public class ElaborationRules {
                         // exp here has to be the whole theorem assertion and not only part of
                         // the expression
                         ElaborationRule rule = new ElaborationRule(copyOfMyTheoremSubExpressions, t.getAssertion());
-                        myElaborationRules.add(rule);
+                        elaborationRules.add(rule);
                     }
                 }
 
@@ -74,12 +76,12 @@ public class ElaborationRules {
                     if (isDeterministic(copyOfTheoremExpressions, te)) {
                         // System.out.println("It was determinant");
                         ElaborationRule rule = new ElaborationRule(copyOfTheoremExpressions, te);
-                        myElaborationRules.add(rule);
+                        elaborationRules.add(rule);
                     }
                 }
             }
         }
-        return myElaborationRules;
+        return elaborationRules;
     }
 
     /**
@@ -155,5 +157,16 @@ public class ElaborationRules {
             }
         }
         return setOfPrecursorVars;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+	StringBuilder sb = new StringBuilder();
+	sb.append("Elaboration Rules: \n");
+	sb.append(myElaborationRules.toString());
+	return sb.toString();
     }
 }
