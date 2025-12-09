@@ -2336,7 +2336,7 @@ public class CongruenceClassRegistry {
 
     public Set<Integer> getAllRoots() {
         Set<Integer> roots = new HashSet<>();
-        for (int i = 1; i < topCongruenceClusterDesignator; i++) {
+        for (int i = 1; isClassDesignator(i); i++) {
             CongruenceCluster cluster = clusterArray[i];
             if (cluster != null) {
                 Integer operator = cluster.getTreeNodeLabel();
