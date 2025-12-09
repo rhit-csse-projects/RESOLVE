@@ -51,8 +51,11 @@ public class RegistryCI {
             } else if (input.equals("D")) {
                 for (int i = 1; registry.isClassDesignator(i); i++)
                     registry.displayCongruence(mappingToSymbol, i);
-            } else if (input.equals("S")) {
-                registry.displayAllRoots(mappingToSymbol);
+            } else if (input.equals("G")) {
+                Set<Integer> tempSet = registry.getAllRoots();
+                for (Integer i : tempSet) {
+                    System.out.println("Root: " + i + " Symbol: " + mappingToSymbol.get(i));
+                }
             } else {
                 processCommand(input);
             }

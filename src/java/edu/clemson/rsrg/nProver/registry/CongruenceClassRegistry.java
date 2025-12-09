@@ -23,7 +23,6 @@ import java.util.*;
  * @author Nicodemus Msafiri J. M.
  *
  * @version v1.0
- *
  */
 
 public class CongruenceClassRegistry {
@@ -2335,43 +2334,23 @@ public class CongruenceClassRegistry {
         }
     }
 
-    public void displayAllRoots(List<String> symbolMapping) {
+    public Set<Integer> getAllRoots() {
+        Set<Integer> roots = new HashSet<>();
         for (int i = 1; i < topCongruenceClusterDesignator; i++) {
             CongruenceCluster cluster = clusterArray[i];
             if (cluster != null) {
-                String operator = symbolMapping.get(cluster.getTreeNodeLabel());
+                Integer operator = cluster.getTreeNodeLabel();
                 ClusterArgument argument = clusterArgumentArray[cluster.getIndexToArgList()];
 
-                StringBuilder sb = new StringBuilder();
-                sb.append(operator);
+                roots.add(operator);
 
                 while (argument.getPrevClusterArg() != 0) {
                     argument = clusterArgumentArray[argument.getPrevClusterArg()];
                 }
-
-                System.out.println(sb);
             }
         }
+        return roots;
     }
-
-    // public Set<Integer> getAllRoots() {
-    // Set<Integer> roots = new HashSet<>();
-    // for (int i = 1; i < topCongruenceClusterDesignator; i++) {
-    // CongruenceCluster cluster = clusterArray[i];
-    // if (cluster != null) {
-    // Integer operator = cluster.getTreeNodeLabel();
-    // ClusterArgument argument = clusterArgumentArray[cluster.getIndexToArgList()];
-    //
-    // roots.add(operator);
-    //
-    // while (argument.getPrevClusterArg() != 0) {
-    // argument = clusterArgumentArray[argument.getPrevClusterArg()];
-    // }
-    // return roots;
-    // }
-    // }
-    // return roots;
-    // }
 
     // public methods to help me visualize the arrays for testing: TO BE DELETED
     public ClusterArgument[] getClusterArgArray() {
