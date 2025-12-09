@@ -388,6 +388,7 @@ public class GeneralPurposeProver {
                  */
 
             }
+
             // System.out.println(rules.getMyElaborationRules().size());
             /*
              * for(ElaborationRule eR : rules.getMyElaborationRules()){ System.out.println("Precursors" +
