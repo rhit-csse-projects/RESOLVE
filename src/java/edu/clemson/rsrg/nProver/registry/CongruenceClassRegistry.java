@@ -344,7 +344,29 @@ public class CongruenceClassRegistry {
      *
      * @return {@code true} if the cluster exists in the registry, otherwise, it returns false.
      */
-    public boolean checkIfRegistered(Integer treeNodeLabel) { /* Is_Already_Reg_Clstr */
+    public boolean checkIfRegistered(Integer treeNodeLabel) {
+        return getClusterByLabel(treeNodeLabel) != null;
+    }
+
+    public boolean containsStructure(Integer treeNodeLabel, int numChildren) {
+        CongruenceCluster cluster = getClusterByLabel(treeNodeLabel);
+        if (cluster == null) {
+            return false;
+        }
+        int clusterArgInd = cluster.getIndexToArgList();
+        ClusterArgument args = clusterArgumentArray[clusterArgInd];
+        int len = 0;
+        while(true) {
+            args = clusterArgumentArray[args.getNextClusterArg()];
+            if (args == null) {
+                break;
+            }
+            len++;
+        }
+        return len == numChildren;
+    }
+
+    public CongruenceCluster getClusterByLabel(Integer treeNodeLabel) { /* Is_Already_Reg_Clstr */
         int classDesignator = 0;
         int nextClusterArgIndex = 0;
         int count = 0;
@@ -355,14 +377,14 @@ public class CongruenceClassRegistry {
         if (argStringLengh == 0) {
             if (clusterArgumentArray[currentClusterArgIndex] == null) {
                 // there is nothing in the argument string yet, just return false
-                return false;
+                return null;
             } else {
                 // The condition checks if the label and the argument is the same as one to be registered
                 if (clusterArray[clusterArgumentArray[currentClusterArgIndex].getClusterNumber()]
                         .getTreeNodeLabel() == treeNodeLabel
                         && clusterArray[clusterArgumentArray[currentClusterArgIndex].getClusterNumber()]
-                                .getIndexToArgList() == currentClusterArgIndex) {
-                    return true;
+                        .getIndexToArgList() == currentClusterArgIndex) {
+                    return clusterArray[clusterArgumentArray[currentClusterArgIndex].getClusterNumber()];
                 }
                 // The while loop checks clusters in cluster array with one argument by following a pointer next with
                 // same argument filed until we find one or we get to the end.
@@ -371,24 +393,24 @@ public class CongruenceClassRegistry {
                 while (clusterArray[currentClusterIndex].getNextWithSameArg() != 0) {
                     if (clusterArray[currentClusterIndex].getTreeNodeLabel() == treeNodeLabel
                             && clusterArray[currentClusterIndex].getIndexToArgList() == currentClusterArgIndex) {
-                        return true;
+                        return clusterArray[currentClusterIndex];
                     }
                     currentClusterIndex = clusterArray[currentClusterIndex].getNextWithSameArg();
                     if (currentClusterIndex == 0) {
                         // if it is 0 there is nothing more we can do, it is not there.
-                        return false;
+                        return null;
                     }
                 }
 
                 if (clusterArray[currentClusterIndex].getNextWithSameArg() == 0) {
                     if (clusterArray[currentClusterIndex].getTreeNodeLabel() == treeNodeLabel
                             && clusterArray[currentClusterIndex].getIndexToArgList() == currentClusterArgIndex) {
-                        return true;
+                        return clusterArray[currentClusterIndex];
                     }
                 }
 
             }
-            return false;
+            return null;
         }
         // The while loop checks for clusters with arguments, and assumed they are already appended in the argument list
         while (clusterArgumentString.size() > 0) {
@@ -406,7 +428,7 @@ public class CongruenceClassRegistry {
                 while (tempQueue.size() > 0) {
                     appendToClusterArgList(tempQueue.remove());
                 }
-                return false;
+                return null;
             } else {
                 if (getTheUltimateDominantClass(
                         congruenceClassArray[clusterArgumentArray[nextClusterArgIndex].getCcNumber()]
@@ -424,7 +446,7 @@ public class CongruenceClassRegistry {
                         while (tempQueue.size() > 0) {
                             appendToClusterArgList(tempQueue.remove());
                         }
-                        return false;
+                        return null;
                     }
                     // check the alternative args if we can find it
                     while (clusterArgumentArray[nextClusterArgIndex].getAlternativeArg() != 0) {
@@ -450,12 +472,12 @@ public class CongruenceClassRegistry {
                 if (clusterArray[clusterArgumentArray[currentClusterArgIndex].getClusterNumber()]
                         .getTreeNodeLabel() == treeNodeLabel
                         && clusterArray[clusterArgumentArray[currentClusterArgIndex].getClusterNumber()]
-                                .getIndexToArgList() == currentClusterArgIndex) {
+                        .getIndexToArgList() == currentClusterArgIndex) {
                     // restore the cluster argument list
                     while (tempQueue.size() > 0) {
                         appendToClusterArgList(tempQueue.remove());
                     }
-                    return true;
+                    return clusterArray[clusterArgumentArray[currentClusterArgIndex].getClusterNumber()];
                 }
                 int clusterNumber = clusterArray[clusterArgumentArray[currentClusterArgIndex].getClusterNumber()]
                         .getNextWithSameArg();
@@ -466,7 +488,7 @@ public class CongruenceClassRegistry {
                         while (tempQueue.size() > 0) {
                             appendToClusterArgList(tempQueue.remove());
                         }
-                        return true;
+                        return clusterArray[clusterNumber];
                     }
                     clusterNumber = clusterArray[clusterNumber].getNextWithSameArg();
                 }
@@ -477,7 +499,7 @@ public class CongruenceClassRegistry {
         while (tempQueue.size() > 0) {
             appendToClusterArgList(tempQueue.remove());
         }
-        return false;
+        return null;
     }
 
     /**

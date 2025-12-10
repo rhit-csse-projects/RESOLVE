@@ -15,6 +15,7 @@ package edu.clemson.rsrg.nProver.utilities.theorems;
 import edu.clemson.rsrg.absyn.expressions.Exp;
 import edu.clemson.rsrg.typeandpopulate.entry.TheoremEntry;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -30,6 +31,7 @@ public class ElaborationRules {
     // constructor
     public ElaborationRules(List<TheoremEntry> relevantTheorems) {
         myRelevantTheorems = relevantTheorems;
+        myElaborationRules = new ArrayList<>();
         createElaborationRules();
     }
 
