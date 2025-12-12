@@ -55,7 +55,7 @@ public class CCRegGetFunctionTest {
      */
     @Before
     public final void setUp() {
-        myRegistry = new CongruenceClassRegistry(100, 100, 100, 100);
+        myRegistry = new CongruenceClassRegistry(8, 8, 8, 8);
     }
 
     // ===========================================================
@@ -67,18 +67,20 @@ public class CCRegGetFunctionTest {
         String[] ops = {"g", "f", "="};
 
         //Register g and f
-        myRegistry.registerCluster(0);
-        myRegistry.registerCluster(1);
+        int g = myRegistry.registerCluster(1);
+        int f = myRegistry.registerCluster(2);
 
         //Register = with g and f as arguments
-        myRegistry.appendToClusterArgList(0);
-        myRegistry.appendToClusterArgList(1);
-        myRegistry.registerCluster(2);
+        myRegistry.appendToClusterArgList(g);
+        myRegistry.appendToClusterArgList(f);
+        myRegistry.registerCluster(3);
 
-        assertTrue("= should be registered", myRegistry.checkIfRegistered(2));
+        System.out.println(myRegistry.toString());
+
+        assertTrue("= should be registered", myRegistry.checkIfRegistered(3));
 
         //Check if registry contains "=" with 2 arguments
-        assertTrue("Registry should contain '=' with 2 arguments.", myRegistry.containsStructure(2, 2));
+        assertTrue("Registry should contain '=' with 2 arguments.", myRegistry.containsStructure(3, 2));
     }
 
 }

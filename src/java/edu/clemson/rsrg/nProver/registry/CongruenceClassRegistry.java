@@ -205,7 +205,7 @@ public class CongruenceClassRegistry {
         standArray = new Stand[rootLabelCapacity];
         clusterArray = new CongruenceCluster[cClusterDesignatorCapacity];
         congruenceClassArray = new CongruenceClass[ccDesignatorCapacity];
-        clusterArgumentArray = new ClusterArgument[100000];
+        clusterArgumentArray = new ClusterArgument[argumentListCapacity];
         clusterArgumentString = new ArrayDeque<>();
         classMergeList = new ArrayDeque<>();
         succedentReflexiveOperatorsSet = new HashSet<>();
@@ -354,19 +354,30 @@ public class CongruenceClassRegistry {
             return false;
         }
         int clusterArgInd = cluster.getIndexToArgList();
-        ClusterArgument args = clusterArgumentArray[clusterArgInd];
+        ClusterArgument args;
         int len = 0;
-        while(true) {
-            args = clusterArgumentArray[args.getNextClusterArg()];
-            if (args == null) {
-                break;
-            }
+        while(len <= argumentListCapacity) {
+            args = clusterArgumentArray[clusterArgInd];
             len++;
+            if (args.getNextClusterArg() == clusterArgInd) {
+                break;
+            } else {
+                clusterArgInd = args.getNextClusterArg();
+            }
         }
         return len == numChildren;
     }
 
-    public CongruenceCluster getClusterByLabel(Integer treeNodeLabel) { /* Is_Already_Reg_Clstr */
+    public CongruenceCluster getClusterByLabel(Integer treeNodeLabel) {
+        for(CongruenceCluster cluster : clusterArray) {
+            if (cluster.getTreeNodeLabel() == treeNodeLabel){
+                return cluster;
+            }
+        }
+        return null;
+    }
+
+    /*public CongruenceCluster getClusterByLabel(Integer treeNodeLabel) { /* Is_Already_Reg_Clstr
         int classDesignator = 0;
         int nextClusterArgIndex = 0;
         int count = 0;
@@ -500,7 +511,7 @@ public class CongruenceClassRegistry {
             appendToClusterArgList(tempQueue.remove());
         }
         return null;
-    }
+    }*/
 
     /**
      * <p>
