@@ -155,7 +155,7 @@
                 <configuration>
                     <argLine>-Xmx2G</argLine>
                     <excludes>
-                        <exclude>**/CCReg*.java</exclude>
+                        <exclude>**/CCReg*Theorem*.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>
