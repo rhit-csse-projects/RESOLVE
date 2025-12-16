@@ -1,5 +1,5 @@
 /*
- * CCRegNoTheoremTest.java
+ * CCRegGetFunctionTest.java
  * ---------------------------------
  * Copyright (c) 2024
  * RESOLVE Software Research Group
@@ -60,11 +60,11 @@ public class CCRegGetFunctionTest {
 
     @Test
     public final void testContainsStructure() {
-        //Register a and b
+        // Register a and b
         int a = myRegistry.registerCluster(1);
         int b = myRegistry.registerCluster(2);
 
-        //Register = with a and b as arguments
+        // Register = with a and b as arguments
         myRegistry.appendToClusterArgList(a);
         myRegistry.appendToClusterArgList(b);
         myRegistry.registerCluster(3);
@@ -73,7 +73,7 @@ public class CCRegGetFunctionTest {
 
         assertTrue("= should be registered", myRegistry.checkIfRegistered(3));
 
-        //Check if registry contains "=" with 2 arguments
+        // Check if registry contains "=" with 2 arguments
         assertTrue("Registry should contain '=' with 2 arguments.", myRegistry.containsStructure(3, 2));
     }
 

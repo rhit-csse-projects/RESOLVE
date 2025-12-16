@@ -355,7 +355,7 @@ public class CongruenceClassRegistry {
         int clusterArgInd = cluster.getIndexToArgList();
         ClusterArgument args;
         int len = 0;
-        while(len <= argumentListCapacity) {
+        while (len <= argumentListCapacity) {
             args = clusterArgumentArray[clusterArgInd];
             len++;
             if (args.getNextClusterArg() == clusterArgInd) {
@@ -368,149 +368,70 @@ public class CongruenceClassRegistry {
     }
 
     public CongruenceCluster getClusterByLabel(Integer treeNodeLabel) {
-        for(CongruenceCluster cluster : clusterArray) {
-            if (cluster.getTreeNodeLabel() == treeNodeLabel){
+        for (CongruenceCluster cluster : clusterArray) {
+            if (cluster.getTreeNodeLabel() == treeNodeLabel) {
                 return cluster;
             }
         }
         return null;
     }
 
-    /*public CongruenceCluster getClusterByLabel(Integer treeNodeLabel) { /* Is_Already_Reg_Clstr
-        int classDesignator = 0;
-        int nextClusterArgIndex = 0;
-        int count = 0;
-        int argStringLengh = argListLength(clusterArgumentString);
-        int currentClusterArgIndex = 1;
-        Queue<Integer> tempQueue = new ArrayDeque<>();
-        // if argStringLength is 0, it is variable or constant
-        if (argStringLengh == 0) {
-            if (clusterArgumentArray[currentClusterArgIndex] == null) {
-                // there is nothing in the argument string yet, just return false
-                return null;
-            } else {
-                // The condition checks if the label and the argument is the same as one to be registered
-                if (clusterArray[clusterArgumentArray[currentClusterArgIndex].getClusterNumber()]
-                        .getTreeNodeLabel() == treeNodeLabel
-                        && clusterArray[clusterArgumentArray[currentClusterArgIndex].getClusterNumber()]
-                        .getIndexToArgList() == currentClusterArgIndex) {
-                    return clusterArray[clusterArgumentArray[currentClusterArgIndex].getClusterNumber()];
-                }
-                // The while loop checks clusters in cluster array with one argument by following a pointer next with
-                // same argument filed until we find one or we get to the end.
-                int currentClusterIndex = clusterArray[clusterArgumentArray[currentClusterArgIndex].getClusterNumber()]
-                        .getNextWithSameArg();
-                while (clusterArray[currentClusterIndex].getNextWithSameArg() != 0) {
-                    if (clusterArray[currentClusterIndex].getTreeNodeLabel() == treeNodeLabel
-                            && clusterArray[currentClusterIndex].getIndexToArgList() == currentClusterArgIndex) {
-                        return clusterArray[currentClusterIndex];
-                    }
-                    currentClusterIndex = clusterArray[currentClusterIndex].getNextWithSameArg();
-                    if (currentClusterIndex == 0) {
-                        // if it is 0 there is nothing more we can do, it is not there.
-                        return null;
-                    }
-                }
-
-                if (clusterArray[currentClusterIndex].getNextWithSameArg() == 0) {
-                    if (clusterArray[currentClusterIndex].getTreeNodeLabel() == treeNodeLabel
-                            && clusterArray[currentClusterIndex].getIndexToArgList() == currentClusterArgIndex) {
-                        return clusterArray[currentClusterIndex];
-                    }
-                }
-
-            }
-            return null;
-        }
-        // The while loop checks for clusters with arguments, and assumed they are already appended in the argument list
-        while (clusterArgumentString.size() > 0) {
-            classDesignator = removeFirstArgDesignator();
-            tempQueue.add(classDesignator);
-            classDesignator = getTheUltimateDominantClass(congruenceClassArray[classDesignator].getDominantCClass());
-
-            nextClusterArgIndex = clusterArgumentArray[currentClusterArgIndex].getNextClusterArg();
-            if (nextClusterArgIndex == 0) {
-                // This if statement is entered if there is no next level after the argument being checked.
-                // Just restore the argument list and return false.
-                while (clusterArgumentString.size() > 0) {
-                    tempQueue.add(clusterArgumentString.remove());
-                }
-                while (tempQueue.size() > 0) {
-                    appendToClusterArgList(tempQueue.remove());
-                }
-                return null;
-            } else {
-                if (getTheUltimateDominantClass(
-                        congruenceClassArray[clusterArgumentArray[nextClusterArgIndex].getCcNumber()]
-                                .getDominantCClass()) == classDesignator) {
-                    count++;
-                    currentClusterArgIndex = nextClusterArgIndex;
-                } else {
-                    // it didn't have even the first class for the first argument, just return false and exit
-                    if (clusterArgumentArray[nextClusterArgIndex].getAlternativeArg() == 0) {
-
-                        while (clusterArgumentString.size() > 0) {
-                            tempQueue.add(clusterArgumentString.remove());
-                        }
-                        // restore the cluster argument list
-                        while (tempQueue.size() > 0) {
-                            appendToClusterArgList(tempQueue.remove());
-                        }
-                        return null;
-                    }
-                    // check the alternative args if we can find it
-                    while (clusterArgumentArray[nextClusterArgIndex].getAlternativeArg() != 0) {
-
-                        if (getTheUltimateDominantClass(
-                                clusterArgumentArray[clusterArgumentArray[nextClusterArgIndex].getAlternativeArg()]
-                                        .getCcNumber()) == classDesignator) {
-                            // argument found, increase the count and exit
-                            count++;
-                            currentClusterArgIndex = clusterArgumentArray[nextClusterArgIndex].getAlternativeArg();
-                            break;
-                        } else {
-                            // argument not found, check the next one
-                            nextClusterArgIndex = clusterArgumentArray[nextClusterArgIndex].getAlternativeArg();
-                        }
-                    }
-                }
-
-            }
-            // check if we found all arguments
-            if (argStringLengh == count) {
-                // now check if the cluster exists by checking the label and the arg string
-                if (clusterArray[clusterArgumentArray[currentClusterArgIndex].getClusterNumber()]
-                        .getTreeNodeLabel() == treeNodeLabel
-                        && clusterArray[clusterArgumentArray[currentClusterArgIndex].getClusterNumber()]
-                        .getIndexToArgList() == currentClusterArgIndex) {
-                    // restore the cluster argument list
-                    while (tempQueue.size() > 0) {
-                        appendToClusterArgList(tempQueue.remove());
-                    }
-                    return clusterArray[clusterArgumentArray[currentClusterArgIndex].getClusterNumber()];
-                }
-                int clusterNumber = clusterArray[clusterArgumentArray[currentClusterArgIndex].getClusterNumber()]
-                        .getNextWithSameArg();
-                while (clusterNumber != 0) {
-                    if (clusterArray[clusterNumber].getTreeNodeLabel() == treeNodeLabel
-                            && clusterArray[clusterNumber].getIndexToArgList() == currentClusterArgIndex) {
-                        // restore the cluster argument list
-                        while (tempQueue.size() > 0) {
-                            appendToClusterArgList(tempQueue.remove());
-                        }
-                        return clusterArray[clusterNumber];
-                    }
-                    clusterNumber = clusterArray[clusterNumber].getNextWithSameArg();
-                }
-            }
-        }
-
-        // restore the cluster argument list
-        while (tempQueue.size() > 0) {
-            appendToClusterArgList(tempQueue.remove());
-        }
-        return null;
-    }*/
+    /*
+     * public CongruenceCluster getClusterByLabel(Integer treeNodeLabel) { /* Is_Already_Reg_Clstr int classDesignator =
+     * 0; int nextClusterArgIndex = 0; int count = 0; int argStringLengh = argListLength(clusterArgumentString); int
+     * currentClusterArgIndex = 1; Queue<Integer> tempQueue = new ArrayDeque<>(); // if argStringLength is 0, it is
+     * variable or constant if (argStringLengh == 0) { if (clusterArgumentArray[currentClusterArgIndex] == null) { //
+     * there is nothing in the argument string yet, just return false return null; } else { // The condition checks if
+     * the label and the argument is the same as one to be registered if
+     * (clusterArray[clusterArgumentArray[currentClusterArgIndex].getClusterNumber()] .getTreeNodeLabel() ==
+     * treeNodeLabel && clusterArray[clusterArgumentArray[currentClusterArgIndex].getClusterNumber()]
+     * .getIndexToArgList() == currentClusterArgIndex) { return
+     * clusterArray[clusterArgumentArray[currentClusterArgIndex].getClusterNumber()]; } // The while loop checks
+     * clusters in cluster array with one argument by following a pointer next with // same argument filed until we find
+     * one or we get to the end. int currentClusterIndex =
+     * clusterArray[clusterArgumentArray[currentClusterArgIndex].getClusterNumber()] .getNextWithSameArg(); while
+     * (clusterArray[currentClusterIndex].getNextWithSameArg() != 0) { if
+     * (clusterArray[currentClusterIndex].getTreeNodeLabel() == treeNodeLabel &&
+     * clusterArray[currentClusterIndex].getIndexToArgList() == currentClusterArgIndex) { return
+     * clusterArray[currentClusterIndex]; } currentClusterIndex =
+     * clusterArray[currentClusterIndex].getNextWithSameArg(); if (currentClusterIndex == 0) { // if it is 0 there is
+     * nothing more we can do, it is not there. return null; } } if
+     * (clusterArray[currentClusterIndex].getNextWithSameArg() == 0) { if
+     * (clusterArray[currentClusterIndex].getTreeNodeLabel() == treeNodeLabel &&
+     * clusterArray[currentClusterIndex].getIndexToArgList() == currentClusterArgIndex) { return
+     * clusterArray[currentClusterIndex]; } } } return null; } // The while loop checks for clusters with arguments, and
+     * assumed they are already appended in the argument list while (clusterArgumentString.size() > 0) { classDesignator
+     * = removeFirstArgDesignator(); tempQueue.add(classDesignator); classDesignator =
+     * getTheUltimateDominantClass(congruenceClassArray[classDesignator].getDominantCClass()); nextClusterArgIndex =
+     * clusterArgumentArray[currentClusterArgIndex].getNextClusterArg(); if (nextClusterArgIndex == 0) { // This if
+     * statement is entered if there is no next level after the argument being checked. // Just restore the argument
+     * list and return false. while (clusterArgumentString.size() > 0) { tempQueue.add(clusterArgumentString.remove());
+     * } while (tempQueue.size() > 0) { appendToClusterArgList(tempQueue.remove()); } return null; } else { if
+     * (getTheUltimateDominantClass( congruenceClassArray[clusterArgumentArray[nextClusterArgIndex].getCcNumber()]
+     * .getDominantCClass()) == classDesignator) { count++; currentClusterArgIndex = nextClusterArgIndex; } else { // it
+     * didn't have even the first class for the first argument, just return false and exit if
+     * (clusterArgumentArray[nextClusterArgIndex].getAlternativeArg() == 0) { while (clusterArgumentString.size() > 0) {
+     * tempQueue.add(clusterArgumentString.remove()); } // restore the cluster argument list while (tempQueue.size() >
+     * 0) { appendToClusterArgList(tempQueue.remove()); } return null; } // check the alternative args if we can find it
+     * while (clusterArgumentArray[nextClusterArgIndex].getAlternativeArg() != 0) { if (getTheUltimateDominantClass(
+     * clusterArgumentArray[clusterArgumentArray[nextClusterArgIndex].getAlternativeArg()] .getCcNumber()) ==
+     * classDesignator) { // argument found, increase the count and exit count++; currentClusterArgIndex =
+     * clusterArgumentArray[nextClusterArgIndex].getAlternativeArg(); break; } else { // argument not found, check the
+     * next one nextClusterArgIndex = clusterArgumentArray[nextClusterArgIndex].getAlternativeArg(); } } } } // check if
+     * we found all arguments if (argStringLengh == count) { // now check if the cluster exists by checking the label
+     * and the arg string if (clusterArray[clusterArgumentArray[currentClusterArgIndex].getClusterNumber()]
+     * .getTreeNodeLabel() == treeNodeLabel &&
+     * clusterArray[clusterArgumentArray[currentClusterArgIndex].getClusterNumber()] .getIndexToArgList() ==
+     * currentClusterArgIndex) { // restore the cluster argument list while (tempQueue.size() > 0) {
+     * appendToClusterArgList(tempQueue.remove()); } return
+     * clusterArray[clusterArgumentArray[currentClusterArgIndex].getClusterNumber()]; } int clusterNumber =
+     * clusterArray[clusterArgumentArray[currentClusterArgIndex].getClusterNumber()] .getNextWithSameArg(); while
+     * (clusterNumber != 0) { if (clusterArray[clusterNumber].getTreeNodeLabel() == treeNodeLabel &&
+     * clusterArray[clusterNumber].getIndexToArgList() == currentClusterArgIndex) { // restore the cluster argument list
+     * while (tempQueue.size() > 0) { appendToClusterArgList(tempQueue.remove()); } return clusterArray[clusterNumber];
+     * } clusterNumber = clusterArray[clusterNumber].getNextWithSameArg(); } } } // restore the cluster argument list
+     * while (tempQueue.size() > 0) { appendToClusterArgList(tempQueue.remove()); } return null; }
+     */
 
     /**
      * <p>
