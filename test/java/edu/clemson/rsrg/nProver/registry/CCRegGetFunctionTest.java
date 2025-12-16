@@ -12,13 +12,9 @@
  */
 package edu.clemson.rsrg.nProver.registry;
 
-import edu.clemson.rsrg.nProver.utilities.treewakers.AbstractRegisterSequent;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.BitSet;
-
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -64,15 +60,13 @@ public class CCRegGetFunctionTest {
 
     @Test
     public final void testContainsStructure() {
-        String[] ops = {"g", "f", "="};
+        //Register a and b
+        int a = myRegistry.registerCluster(1);
+        int b = myRegistry.registerCluster(2);
 
-        //Register g and f
-        int g = myRegistry.registerCluster(1);
-        int f = myRegistry.registerCluster(2);
-
-        //Register = with g and f as arguments
-        myRegistry.appendToClusterArgList(g);
-        myRegistry.appendToClusterArgList(f);
+        //Register = with a and b as arguments
+        myRegistry.appendToClusterArgList(a);
+        myRegistry.appendToClusterArgList(b);
         myRegistry.registerCluster(3);
 
         System.out.println(myRegistry.toString());
