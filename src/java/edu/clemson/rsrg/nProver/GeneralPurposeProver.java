@@ -21,7 +21,6 @@ import edu.clemson.rsrg.init.output.OutputListener;
 import edu.clemson.rsrg.nProver.output.VCProverResult;
 import edu.clemson.rsrg.nProver.registry.CongruenceClassRegistry;
 import edu.clemson.rsrg.nProver.utilities.theorems.ElaborationRules;
-import edu.clemson.rsrg.nProver.utilities.theorems.RelevantTheoremExtractor;
 import edu.clemson.rsrg.nProver.utilities.theorems.TheoremStore;
 import edu.clemson.rsrg.nProver.utilities.treewakers.RegisterAntecedent;
 import edu.clemson.rsrg.nProver.utilities.treewakers.RegisterSuccedent;
@@ -326,10 +325,6 @@ public class GeneralPurposeProver {
         myTotalElapsedTime = System.currentTimeMillis();
         int numUnproved = 0;
 
-        RelevantTheoremExtractor theorems = new RelevantTheoremExtractor(myCurrentModuleScope);
-        // query the collection of theorems once referring to the uses statement.
-        theorems.theoremEntryQuery();
-
         // Use the new TheoremStore to preload theorems for fast lookup.
         TheoremStore theoremStore = new TheoremStore(myCurrentModuleScope);
         Map<String, Integer> expLabels = theoremStore.getExpLabels();
@@ -344,7 +339,7 @@ public class GeneralPurposeProver {
 
             // Create a registry and label map
             CongruenceClassRegistry registry = new CongruenceClassRegistry(1000, 1000, 1000, 1000);
-            Set<TheoremEntry> relevantTheorems;
+            Set<TheoremEntry> relevantTheorems = theoremStore.getRelevantTheorems(sequent.getAntecedents());
 
             // Visit antecedents
             RegisterAntecedent regAntecedent = new RegisterAntecedent(registry, expLabels, 3);
@@ -380,9 +375,6 @@ public class GeneralPurposeProver {
             for (String operators : expLabels.keySet()) {
                 System.out.println(operators);
             }
-            System.out.println("============ Relevant Theorem===============");
-            System.out.println("Old: Using RelevantTheoremExtractor");
-            relevantTheorems = theorems.getSequentVCTheorems(expLabels);
             ElaborationRules rules = new ElaborationRules(new ArrayList<>(relevantTheorems));
 
             for (TheoremEntry te : relevantTheorems) {
@@ -396,32 +388,10 @@ public class GeneralPurposeProver {
                  */
 
             }
-            // Find all preloaded theorems whose operator sets are subsets of the sequent
-            // operators
-            System.out.println("New: Using TheoremStore");
-            // List<Exp> antecedentsAndConcequents = new ArrayList<>();
-            // antecedentsAndConcequents.addAll(sequent.getAntecedents());
-            // antecedentsAndConcequents.addAll(sequent.getConcequents());
-            // relevantTheorems = theoremStore.getRelevantTheorems(new ArrayList<>(new
-            // LinkedHashSet<>(antecedentsAndConcequents)));
-            relevantTheorems = theoremStore.getRelevantTheorems(sequent.getAntecedents());
-            System.out.println("From new TheoremStore relevant theorems: " + relevantTheorems.size());
-            System.out.println("========= TheoremStore Contents =========");
-            System.out.println(theoremStore.toString());
 
-            rules = new ElaborationRules(new ArrayList<>(relevantTheorems));
+            System.out.println("============ Elaboration Rules ===============");
+            System.out.println(rules.toString());
 
-            for (TheoremEntry te : relevantTheorems) {
-                System.out.println(te.getAssertion());
-                // System.out.println("==========sub-expressions=============");
-                // System.out.println(te.getAssertion().getSubExpressions());
-                /*
-                 * System.out.println("==========SubSubExpressions========"); for(Exp
-                 * e:te.getAssertion().getSubExpressions()){ System.out.println(e.getSubExpressions()); for(Exp
-                 * e2:e.getSubExpressions()){ System.out.println(e2.getClass().getSimpleName()); } }
-                 */
-
-            }
             // System.out.println(rules.getMyElaborationRules().size());
             /*
              * for(ElaborationRule eR : rules.getMyElaborationRules()){ System.out.println("Precursors" +

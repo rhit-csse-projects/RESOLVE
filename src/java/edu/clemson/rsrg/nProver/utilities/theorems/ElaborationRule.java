@@ -33,4 +33,16 @@ public class ElaborationRule {
         return myResultantClause;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Precursor Clauses: ");
+        sb.append(myPrecursorClauses.toString());
+        sb.append("\n Resultant Clause: ");
+        sb.append(myResultantClause.toString());
+        return sb.toString();
+    }
 }
