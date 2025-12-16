@@ -31,14 +31,14 @@ public class ElaborationRules {
     // constructor
     public ElaborationRules(List<TheoremEntry> relevantTheorems) {
         myRelevantTheorems = relevantTheorems;
-	myElaborationRules = createElaborationRules();
+        myElaborationRules = createElaborationRules();
     }
 
     /**
      * Creates a list of elaboration rules out of a list of relevant theorems
      */
     private List<ElaborationRule> createElaborationRules() {
-	List<ElaborationRule> elaborationRules = new ArrayList<>();
+        List<ElaborationRule> elaborationRules = new ArrayList<>();
         List<Exp> myTheoremExpressions;
         // list of sub sub expressions for theorems with one clause
         List<Exp> myTheoremSubExpressions;
@@ -158,15 +158,15 @@ public class ElaborationRules {
         }
         return setOfPrecursorVars;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
     public String toString() {
-	StringBuilder sb = new StringBuilder();
-	sb.append("Elaboration Rules: \n");
-	sb.append(myElaborationRules.toString());
-	return sb.toString();
+        StringBuilder sb = new StringBuilder();
+        sb.append("Elaboration Rules: \n");
+        sb.append(myElaborationRules.toString());
+        return sb.toString();
     }
 }

@@ -335,14 +335,7 @@ public class AssertiveCodeBlock implements BasicCapabilities, Cloneable {
      * @return {@code true} if it contains this free var, {@code false} otherwise.
      */
     public final boolean containsFreeVar(Exp var) {
-        boolean contains = false;
-        Iterator<Exp> freeVarIt = myFreeVars.iterator();
-        while (freeVarIt.hasNext() && !contains) {
-            Exp freeVar = freeVarIt.next();
-            contains = freeVar.equivalent(var);
-        }
-
-        return contains;
+        return myFreeVars.contains(var);
     }
 
     /**

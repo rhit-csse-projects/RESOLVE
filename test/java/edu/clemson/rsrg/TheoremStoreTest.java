@@ -59,8 +59,8 @@ public class TheoremStoreTest {
         // Mock operators
         when(mockOp1.toString()).thenReturn("op1");
         when(mockOp2.toString()).thenReturn("op2");
-        when(mockOp1.getSubExpressions()).thenReturn(Collections.emptyList());
-        when(mockOp2.getSubExpressions()).thenReturn(Collections.emptyList());
+        when(mockOp1.getSubExpressionsWithOperators()).thenReturn(Collections.emptyList());
+        when(mockOp2.getSubExpressionsWithOperators()).thenReturn(Collections.emptyList());
 
         // Mock theorems
         when(mockTheorem1.getName()).thenReturn("theorem1");

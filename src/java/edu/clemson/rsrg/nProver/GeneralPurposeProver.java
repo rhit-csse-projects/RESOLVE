@@ -388,9 +388,9 @@ public class GeneralPurposeProver {
                  */
 
             }
-	    
-	    System.out.println("============ Elaboration Rules ===============");
-	    System.out.println(rules.toString());
+
+            System.out.println("============ Elaboration Rules ===============");
+            System.out.println(rules.toString());
 
             // System.out.println(rules.getMyElaborationRules().size());
             /*

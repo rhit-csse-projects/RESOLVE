@@ -61,8 +61,10 @@ public final class TheoremStore implements TheoremManager {
     private Set<String> getAllExpStrings(Exp exp) {
         Set<String> expStrings = new HashSet<>();
         expStrings.add(exp.toString());
+        System.out.println(exp);
         for (Exp subExp : exp.getSubExpressions()) {
             expStrings.addAll(getAllExpStrings(subExp));
+            System.out.println(subExp);
         }
         return expStrings;
     }
