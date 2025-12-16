@@ -17,7 +17,6 @@ import edu.clemson.rsrg.absyn.expressions.mathexpr.VarExp;
 import edu.clemson.rsrg.parsing.data.Location;
 import edu.clemson.rsrg.parsing.data.LocationDetailModel;
 import edu.clemson.rsrg.parsing.data.PosSymbol;
-import edu.clemson.rsrg.prover.absyn.PExp;
 import edu.clemson.rsrg.statushandling.exception.MiscErrorException;
 import edu.clemson.rsrg.typeandpopulate.mathtypes.MTType;
 
@@ -275,12 +274,17 @@ public abstract class Exp extends ResolveConceptualElement {
 
     /**
      * <p>
-     * Returns all subexpressions & the operators that connect them. This method will need to be overridden by
-     * expressions that have operators.
+     * Returns all operators found in our subexpressions. This method will need to be overridden by expressions that
+     * have operators.
      * </p>
+     * {@return} all operators found in our subexpressions.
      */
-    public List<Exp> getSubExpressionsWithOperators() {
-        return getSubExpressions();
+    public Set<String> getOperatorStrings() {
+        Set<String> ops = new HashSet<>();
+        for (Exp subExp : getSubExpressions()) {
+            ops.addAll(subExp.getOperatorStrings());
+        }
+        return ops;
     }
 
     /**

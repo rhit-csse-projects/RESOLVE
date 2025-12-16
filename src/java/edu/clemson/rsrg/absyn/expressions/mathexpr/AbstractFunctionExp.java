@@ -21,6 +21,7 @@ import edu.clemson.rsrg.typeandpopulate.mathtypes.MTType;
 import edu.clemson.rsrg.typeandpopulate.typereasoning.TypeGraph;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -228,6 +229,16 @@ public abstract class AbstractFunctionExp extends MathExp {
             throw new UnsupportedOperationException(
                     "The function " + getOperatorAsString() + " does not support " + "quantification.");
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Set<String> getOperatorStrings() {
+        Set<String> ops = super.getOperatorStrings();
+        ops.add(getOperatorAsString());
+        return ops;
     }
 
     // ===========================================================

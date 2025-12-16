@@ -16,7 +16,6 @@ import edu.clemson.rsrg.absyn.expressions.Exp;
 import edu.clemson.rsrg.nProver.utilities.theorems.TheoremStore;
 import edu.clemson.rsrg.typeandpopulate.entry.TheoremEntry;
 import edu.clemson.rsrg.typeandpopulate.query.EntryTypeQuery;
-import edu.clemson.rsrg.typeandpopulate.symboltables.MathSymbolTable;
 import edu.clemson.rsrg.typeandpopulate.symboltables.ModuleScope;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,6 +49,10 @@ public class TheoremStoreTest {
     @Mock
     private Exp mockExp;
 
+    private String opString1 = "op1";
+
+    private String opString2 = "op2";
+
     private TheoremStore theoremStore;
 
     @BeforeEach
@@ -57,10 +60,10 @@ public class TheoremStoreTest {
         MockitoAnnotations.openMocks(this);
 
         // Mock operators
-        when(mockOp1.toString()).thenReturn("op1");
-        when(mockOp2.toString()).thenReturn("op2");
-        when(mockOp1.getSubExpressionsWithOperators()).thenReturn(Collections.emptyList());
-        when(mockOp2.getSubExpressionsWithOperators()).thenReturn(Collections.emptyList());
+        when(mockOp1.toString()).thenReturn(opString1);
+        when(mockOp2.toString()).thenReturn(opString2);
+        when(mockOp1.getOperatorStrings()).thenReturn(Collections.emptySet());
+        when(mockOp2.getOperatorStrings()).thenReturn(Collections.emptySet());
 
         // Mock theorems
         when(mockTheorem1.getName()).thenReturn("theorem1");
@@ -80,7 +83,7 @@ public class TheoremStoreTest {
     void getRelevantTheorems_shouldReturnAllMatchingTheorems() {
         // Arrange
         when(mockExp.toString()).thenReturn("op1 and op2");
-        when(mockExp.getSubExpressions()).thenReturn(Arrays.asList(mockOp1, mockOp2));
+        when(mockExp.getOperatorStrings()).thenReturn(Set.of(opString1, opString2));
 
         List<Exp> expressions = Collections.singletonList(mockExp);
 
@@ -97,10 +100,11 @@ public class TheoremStoreTest {
     void getRelevantTheorems_shouldReturnEmptySetWhenNoOperatorsMatch() {
         // Arrange
         Exp mockOtherOp = mock(Exp.class);
-        when(mockOtherOp.toString()).thenReturn("op3");
-        when(mockOtherOp.getSubExpressions()).thenReturn(Collections.emptyList());
-        when(mockExp.toString()).thenReturn("op3");
-        when(mockExp.getSubExpressions()).thenReturn(Collections.singletonList(mockOtherOp));
+        String otherOpString = "op3";
+        when(mockOtherOp.toString()).thenReturn(otherOpString);
+        when(mockOtherOp.getOperatorStrings()).thenReturn(Collections.emptySet());
+        when(mockExp.toString()).thenReturn(otherOpString);
+        when(mockExp.getOperatorStrings()).thenReturn(Set.of(otherOpString));
         List<Exp> expressions = Collections.singletonList(mockExp);
 
         // Act
@@ -113,8 +117,8 @@ public class TheoremStoreTest {
     @Test
     void getRelevantTheorems_shouldReturnPartiallyMatchingTheorems() {
         // Arrange
-        when(mockExp.toString()).thenReturn("op1");
-        when(mockExp.getSubExpressions()).thenReturn(Collections.singletonList(mockOp1));
+        when(mockExp.toString()).thenReturn(opString1);
+        when(mockExp.getOperatorStrings()).thenReturn(Set.of(opString1));
         List<Exp> expressions = Collections.singletonList(mockExp);
 
         // Act
@@ -142,7 +146,7 @@ public class TheoremStoreTest {
     void getRelevantTheorems_shouldBeIdempotent() {
         // Arrange
         when(mockExp.toString()).thenReturn("op1 and op2");
-        when(mockExp.getSubExpressions()).thenReturn(Arrays.asList(mockOp1, mockOp2));
+        when(mockExp.getOperatorStrings()).thenReturn(Set.of(opString1, opString2));
 
         List<Exp> expressions = Collections.singletonList(mockExp);
 

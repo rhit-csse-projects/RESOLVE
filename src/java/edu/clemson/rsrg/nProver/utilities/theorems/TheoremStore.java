@@ -97,7 +97,8 @@ public final class TheoremStore implements TheoremManager {
         // .collect(Collectors.toList());
         Set<TheoremEntry> theorems = new HashSet<>();
         for (Exp expr : expressions) {
-            Set<String> exprStrings = getAllExpStrings(expr);
+            // Set<String> exprStrings = getAllExpStrings(expr);
+            Set<String> exprStrings = expr.getOperatorStrings();
             for (TheoremEntry theorem : theoremToOps.keySet()) {
                 Set<String> ops = theoremToOps.get(theorem);
                 // TODO show that this isn't masking a bug (yell at Carson if it is)
