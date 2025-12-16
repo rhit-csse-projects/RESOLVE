@@ -35,7 +35,7 @@ public class RegistryCI {
 
     public static void sendStartupMessage() {
         System.out.println(
-                "R - registerCluster\n? - isRegistered\nA - appendToClusterArgList\nM - makeCongruent\nD - display\nQ - quit");
+                "R - registerCluster (uses arg list)\nC - checkIfRegistered (uses arg list)\n? - isRegistryLabel\nA - appendToClusterArgList\nM - makeCongruent\nD - display\nQ - quit");
     }
 
     public void runCommandLoop() {
@@ -130,6 +130,16 @@ public class RegistryCI {
                 } catch (NumberFormatException e) {
                     System.out.println("Arguments must be numbers.");
                 }
+                break;
+            case "C":
+                if (symbolToMapping.containsKey(parsedCommand[1])) {
+                    int label = symbolToMapping.get(parsedCommand[1]);
+                    if (registry.checkIfRegistered(label)) {
+                        System.out.println("Registered");
+                        break;
+                    }
+                }
+                System.out.println("Not registered");
                 break;
             default:
                 System.out.println("Unspecified command: " + command);
