@@ -38,7 +38,7 @@ public class RegisterSuccedent extends AbstractRegisterSequent {
 
     /**
      * <p>
-     * This creates an object that labels all relevant {@link Exp} in the antecedents with a number and registers them.
+     * This creates an object that labels all relevant {@link Exp} in the succedents with a number and registers them.
      * </p>
      *
      * @param registry
