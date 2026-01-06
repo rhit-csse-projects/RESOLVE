@@ -17,60 +17,78 @@ import edu.clemson.rsrg.nProver.registry.CongruenceClassRegistry;
 import java.util.*;
 
 public class RegistryCI {
-    private CongruenceClassRegistry registry;
-    private Map<String, Integer> symbolToMapping;
-    private List<String> mappingToSymbol;
-    private Scanner scan;
+    private final CongruenceClassRegistry registry;
+    private final Map<String, Integer> symbolToMapping;
+    private final List<String> mappingToSymbol;
+    private final Scanner scan;
     private int currentMapping;
-
-    private static String prompt = "> ";
+    private int succedentLevel;
 
     public RegistryCI() {
         registry = new CongruenceClassRegistry(100, 100, 100, 100);
-        symbolToMapping = new HashMap<String, Integer>();
-        mappingToSymbol = new ArrayList<String>();
+        symbolToMapping = new HashMap<>();
+        mappingToSymbol = new ArrayList<>();
         scan = new Scanner(System.in);
         currentMapping = 0;
+        succedentLevel = 0;
     }
 
     public static void sendStartupMessage() {
-        System.out.println(
-                "R - registerCluster (uses arg list)\nC - checkIfRegistered (uses arg list)\n? - isRegistryLabel\nA - appendToClusterArgList\nM - makeCongruent\nD - display\nQ - quit");
+        System.out.println("""
+                R - registerCluster (uses arg list)
+                RS - registerClusterForSuccedent (uses arg list)
+                C - checkIfRegistered (uses arg list)
+                ? - isRegistryLabel
+                A - appendToClusterArgList
+                M - makeCongruent
+                P - checkIfProved
+                D - display
+                Q - quit""");
     }
 
     public void runCommandLoop() {
         sendStartupMessage();
-        while (true) {
+        label: while (true) {
+            String prompt = "> ";
             System.out.print(prompt);
             String input = scan.nextLine();
-            if (input.equals("Q")) {
-                break;
-            }
-            if (input.equals("?")) {
-                sendStartupMessage();
-            } else if (input.equals("D")) {
-                for (int i = 1; registry.isClassDesignator(i); i++)
-                    registry.displayCongruence(mappingToSymbol, i);
-            } else if (input.equals("G")) {
-                Set<Integer> tempSet = registry.getAllRoots();
-                for (Integer i : tempSet) {
-                    System.out.println("Root: " + (i + 1) + " Symbol: " + mappingToSymbol.get(i));
-                }
-            } else {
-                processCommand(input);
+            switch (input) {
+                case "Q":
+                    break label;
+                case "?":
+                    sendStartupMessage();
+                    break;
+                case "D":
+                    for (int i = 1; registry.isClassDesignator(i); i++)
+                        registry.displayCongruence(mappingToSymbol, i);
+                    break;
+                case "G":
+                    Set<Integer> tempSet = registry.getAllRoots();
+                    for (Integer i : tempSet) {
+                        System.out.println("Root: " + (i + 1) + " Symbol: " + mappingToSymbol.get(i));
+                    }
+                    break;
+                case "P":
+                    String result = registry.checkIfProved() ? "Proved" : "Not Proved";
+                    System.out.println(result);
+                    break;
+                default:
+                    processCommand(input);
+                    break;
             }
         }
     }
 
     public void processCommand(String command) {
-        String parsedCommand[] = command.split(" ");
+        String[] parsedCommand = command.split(" ");
         if (parsedCommand.length < 2) {
             System.out.println("Invalid input \"" + command + "\". Command must have an argument.");
             return;
         }
+        int mapping;
+
         switch (parsedCommand[0]) {
             case "R":
-                int mapping = 0;
                 if (symbolToMapping.containsKey(parsedCommand[1])) {
                     mapping = symbolToMapping.get(parsedCommand[1]);
                 } else {
@@ -86,6 +104,62 @@ public class RegistryCI {
                     designator = registry.getAccessorFor(mapping);
                 }
                 System.out.println("Designator: " + designator);
+                break;
+            case "RS":
+                if (symbolToMapping.containsKey(parsedCommand[1])) {
+                    mapping = symbolToMapping.get(parsedCommand[1]);
+                } else {
+                    symbolToMapping.put(parsedCommand[1], currentMapping);
+                    mappingToSymbol.add(parsedCommand[1]);
+                    mapping = currentMapping;
+                    currentMapping++;
+                }
+                int accessor;
+                if (succedentLevel == 0) {
+                    BitSet attb = new BitSet();
+                    attb.set(1); // set the class succedent
+                    attb.set(2); // set the class ultimate
+
+                    if (Objects.equals(parsedCommand[1], "=")) { // if it is succedent equal
+                        registry.addOperatorToSuccedentReflexiveOperatorSet(mapping);
+                        accessor = registry.registerCluster(mapping);
+                        if (!registry.checkIfProved()) {
+                            registry.updateClassAttributes(accessor, attb);
+                        }
+                        System.out.println("Designator: " + accessor);
+
+                    } else if (Objects.equals(parsedCommand[1], "<=")) { // if it is succedent <=
+                        registry.addOperatorToSuccedentReflexiveOperatorSet(mapping);
+                        if (registry.checkIfRegistered(mapping)) {
+                            registry.updateClassAttributes(registry.getAccessorFor(mapping), attb);
+                            System.out.println("Designator: " + registry.getAccessorFor(mapping));
+
+                        } else {
+                            accessor = registry.registerCluster(mapping);
+                            registry.updateClassAttributes(accessor, attb);
+                            System.out.println("Designator: " + accessor);
+
+                        }
+                    } else {
+                        if (registry.checkIfRegistered(mapping)) {
+                            accessor = registry.getAccessorFor(mapping);
+
+                        } else {
+                            accessor = registry.registerCluster(mapping);
+
+                        }
+                        registry.updateClassAttributes(accessor, attb);
+                        System.out.println("Designator: " + accessor);
+                    }
+                } else {
+                    if (!registry.isRegistryLabel(mapping)) {
+                        accessor = registry.registerCluster(mapping);
+                    } else {
+                        accessor = registry.getAccessorFor(mapping);
+                    }
+                    System.out.println("Designator: " + accessor);
+                }
+                succedentLevel++;
                 break;
             case "A":
                 try {
