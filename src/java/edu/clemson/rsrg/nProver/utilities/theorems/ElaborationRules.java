@@ -16,20 +16,21 @@ import edu.clemson.rsrg.absyn.expressions.Exp;
 import edu.clemson.rsrg.typeandpopulate.entry.TheoremEntry;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class ElaborationRules {
 
-    private List<TheoremEntry> myRelevantTheorems;
+    private Collection<TheoremEntry> myRelevantTheorems;
 
     // private Exp resultantExpression;
 
     private List<ElaborationRule> myElaborationRules;
 
     // constructor
-    public ElaborationRules(List<TheoremEntry> relevantTheorems) {
+    public ElaborationRules(Collection<TheoremEntry> relevantTheorems) {
         myRelevantTheorems = relevantTheorems;
         myElaborationRules = createElaborationRules();
     }
@@ -43,9 +44,12 @@ public class ElaborationRules {
         // list of sub sub expressions for theorems with one clause
         List<Exp> myTheoremSubExpressions;
         // pick each relevant theorem one at a time
+        System.out.println(
+                "============================Is Deterministic (false means no rule is generated)===============================");
         for (TheoremEntry t : myRelevantTheorems) {
             // get the sub expressions out of t
             myTheoremExpressions = t.getAssertion().getSubExpressions();
+            // System.out.println(myTheoremExpressions);
 
             // System.out.println("The size of the clause is: " +
             // myTheoremExpressions.size());
@@ -58,6 +62,7 @@ public class ElaborationRules {
                     List<Exp> copyOfMyTheoremSubExpressions = myTheoremExpressions.get(0).getSubExpressions();
                     // x1*x2 = x2 * x1 will create two rules with each sub exp becoming the
                     // precursor
+                    System.out.println(isDeterministic(copyOfMyTheoremSubExpressions, exp));
                     if (isDeterministic(copyOfMyTheoremSubExpressions, exp)) {
                         // exp here has to be the whole theorem assertion and not only part of
                         // the expression
@@ -71,6 +76,7 @@ public class ElaborationRules {
                 // and the reset precursors
                 for (Exp te : myTheoremExpressions) {
                     List<Exp> copyOfTheoremExpressions = t.getAssertion().getSubExpressions();
+                    System.out.println(isDeterministic(copyOfTheoremExpressions, te));
                     // check if the rule will be deterministic, and for the moment, if not
                     // deterministic ignore it
                     if (isDeterministic(copyOfTheoremExpressions, te)) {
@@ -102,27 +108,16 @@ public class ElaborationRules {
         List<Exp> resultantSubExpressions = resultantExpression.getSubExpressions();
         // Declare the set that will collect all variables in the precursor expressions
         Set<Exp> collectionOfPrecursorVars;
-        // a flag to indicate if all variables in the resultant expression are in the
-        // precursor expressions
-        Boolean fullyContained = false;
 
         // collect all the variables in the precursor expressions
         collectionOfPrecursorVars = collectVariables(theoremExpressionList);
 
         // check if collection of precursor vars contain all e's, if so return true
         for (Exp e : resultantSubExpressions) {
-            if (collectionOfPrecursorVars.contains(e)) {
-                fullyContained = true;
-            } else {
-                fullyContained = false;
-                break;
-            }
+            if (!collectionOfPrecursorVars.contains(e))
+                return false; // a variable in the resultant is not in the precursors
         }
-        if (fullyContained) {
-            return true;
-        } else {
-            return false;
-        }
+        return true; // all variables in the resultant are in the precursors
 
     }
 

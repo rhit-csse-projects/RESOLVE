@@ -340,8 +340,6 @@ public class GeneralPurposeProver {
             // Create a registry and label map
             CongruenceClassRegistry registry = new CongruenceClassRegistry(1000, 1000, 1000, 1000);
             Set<TheoremEntry> relevantTheorems = theoremStore.getRelevantTheorems(sequent.getAntecedents());
-            System.out.println("===========================Relevant Theorems===========================");
-            System.out.println(relevantTheorems);
 
             // Visit antecedents
             RegisterAntecedent regAntecedent = new RegisterAntecedent(registry, expLabels, 3);
@@ -377,8 +375,9 @@ public class GeneralPurposeProver {
             for (String operators : expLabels.keySet()) {
                 System.out.println(operators);
             }
-            ElaborationRules rules = new ElaborationRules(new ArrayList<>(relevantTheorems));
+            ElaborationRules rules = new ElaborationRules(relevantTheorems);
 
+            System.out.println("===========================Relevant Theorems===========================");
             for (TheoremEntry te : relevantTheorems) {
                 System.out.println(te.getAssertion());
                 // System.out.println("==========sub-expressions=============");
