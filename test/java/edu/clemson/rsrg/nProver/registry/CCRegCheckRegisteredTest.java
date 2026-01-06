@@ -72,8 +72,6 @@ public class CCRegCheckRegisteredTest {
         myRegistry.appendToClusterArgList(f);
         myRegistry.registerCluster(3);
 
-        System.out.println(myRegistry.toString());
-
         myRegistry.appendToClusterArgList(g);
         myRegistry.appendToClusterArgList(f);
         assertTrue("= should be registered", myRegistry.checkIfRegistered(3));

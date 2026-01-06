@@ -142,11 +142,11 @@ public class ElaborationRules {
      * @param precursorExpList
      *            The list of precursor expressions
      */
-    public Set<Exp> collectVariables(List<Exp> precursorExpList) {
+    public static Set<Exp> collectVariables(List<Exp> precursorExpList) {
         Set<Exp> setOfPrecursorVars = new HashSet<>();
         for (Exp e : precursorExpList) {
             for (Exp ve : e.getSubExpressions()) {
-                if (ve.getClass().getSimpleName() == "VarExp") {
+                if (ve.getClass().getSimpleName().equals("VarExp")) {
                     setOfPrecursorVars.add(ve);
                 }
             }
