@@ -34,14 +34,21 @@ public class RegistryCI {
     }
 
     public static void sendStartupMessage() {
-        System.out.println(
-                "R - registerCluster (uses arg list)\nC - checkIfRegistered (uses arg list)\n? - isRegistryLabel\nA - appendToClusterArgList\nM - makeCongruent\nD - display\nQ - quit");
+        System.out.println("""
+                R - registerCluster (uses arg list)
+                RS - registerClusterForSuccedent (uses arg list)
+                C - checkIfRegistered (uses arg list)
+                ? - isRegistryLabel
+                A - appendToClusterArgList
+                M - makeCongruent
+                P - checkIfProved
+                D - display
+                Q - quit""");
     }
 
     public void runCommandLoop() {
         sendStartupMessage();
-        label:
-        while (true) {
+        label: while (true) {
             String prompt = "> ";
             System.out.print(prompt);
             String input = scan.nextLine();
