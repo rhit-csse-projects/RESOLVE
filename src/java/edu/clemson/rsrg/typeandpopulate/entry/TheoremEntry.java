@@ -21,6 +21,7 @@ import edu.clemson.rsrg.typeandpopulate.typereasoning.TypeGraph;
 import edu.clemson.rsrg.typeandpopulate.utilities.ModuleIdentifier;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -64,6 +65,13 @@ public class TheoremEntry extends SymbolTableEntry {
      */
     private final MathAssertionDec.TheoremSubtype myTheoremSubtype;
 
+    /**
+     * <p>
+     * True if this entry was generated from the antecedent of a VC.
+     * </p>
+     */
+    private boolean isAntecedent;
+
     // ===========================================================
     // Constructors
     // ===========================================================
@@ -92,6 +100,30 @@ public class TheoremEntry extends SymbolTableEntry {
         myOperators = operators;
         myMathSymbolAlterEgo = new MathSymbolEntry(g, name, Quantification.NONE, definingElement, g.BOOLEAN, null, null,
                 null, sourceModule);
+    }
+
+    /**
+     * <p>
+     * This creates a symbol table entry for a mathematical theorem.
+     * </p>
+     *
+     * @param g
+     *            The current type graph.
+     * @param name
+     *            Name associated with this entry.
+     * @param definingElement
+     *            The element that created this entry.
+     * @param operators
+     *            The operators associated with this entry.
+     * @param sourceModule
+     *            The module where this entry was created from.
+     * @param isAntecedent
+     *            Whether or not this theorem entry was created from the antecedent of a VC.
+     */
+    public TheoremEntry(TypeGraph g, String name, MathAssertionDec definingElement, Set<Exp> operators,
+            ModuleIdentifier sourceModule, boolean isAntecedent) {
+        this(g, name, definingElement, operators, sourceModule);
+        this.isAntecedent = isAntecedent;
     }
 
     // ===========================================================
@@ -249,5 +281,15 @@ public class TheoremEntry extends SymbolTableEntry {
             sb.append("\n");
         }
         return sb.toString();
+    }
+
+    /**
+     * <p>
+     * Returns whether or not this theorem entry was created from the antecedent of a VC. Since the field may not be
+     * filled during construction, we return an {@link Optional}.
+     * </p>
+     */
+    public Optional<Boolean> isAntecedent() {
+        return Optional.ofNullable(isAntecedent);
     }
 }
