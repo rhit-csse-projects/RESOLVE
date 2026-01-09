@@ -43,6 +43,7 @@ public class ElaborationRule {
         sb.append(myPrecursorClauses.toString());
         sb.append("\n Resultant Clause: ");
         sb.append(myResultantClause.toString());
+        sb.append("\n\n");
         return sb.toString();
     }
 }

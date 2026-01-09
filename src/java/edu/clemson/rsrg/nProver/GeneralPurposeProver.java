@@ -332,6 +332,8 @@ public class GeneralPurposeProver {
         // Loop through each of the VCs and attempt to prove them
         for (VerificationCondition vc : myVerificationConditions) {
 
+            System.out.println("=========================== VC ===========================");
+            System.out.println(vc);
             // Store the start time for generating proofs for this VC
             long startTime = System.nanoTime();
             // Obtain the sequent to be proved
@@ -369,12 +371,6 @@ public class GeneralPurposeProver {
             System.out.println("============ CongruenceClassRegistry ===============");
             // System.out.println(registry.toString());
 
-            System.out.println("============ Operators in VC ===============");
-            // trying to check the stored operators on the sequent VC's no need for
-            // extraction
-            for (String operators : expLabels.keySet()) {
-                System.out.println(operators);
-            }
             ElaborationRules rules = new ElaborationRules(relevantTheorems);
 
             System.out.println("===========================Relevant Theorems===========================");

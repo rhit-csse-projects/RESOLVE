@@ -44,8 +44,6 @@ public class ElaborationRules {
         // list of sub sub expressions for theorems with one clause
         List<Exp> myTheoremSubExpressions;
         // pick each relevant theorem one at a time
-        System.out.println(
-                "============================Is Deterministic (false means no rule is generated)===============================");
         for (TheoremEntry t : myRelevantTheorems) {
             // get the sub expressions out of t
             myTheoremExpressions = t.getAssertion().getSubExpressions();
@@ -62,7 +60,6 @@ public class ElaborationRules {
                     List<Exp> copyOfMyTheoremSubExpressions = myTheoremExpressions.get(0).getSubExpressions();
                     // x1*x2 = x2 * x1 will create two rules with each sub exp becoming the
                     // precursor
-                    System.out.println(isDeterministic(copyOfMyTheoremSubExpressions, exp));
                     if (isDeterministic(copyOfMyTheoremSubExpressions, exp)) {
                         // exp here has to be the whole theorem assertion and not only part of
                         // the expression
@@ -76,7 +73,6 @@ public class ElaborationRules {
                 // and the reset precursors
                 for (Exp te : myTheoremExpressions) {
                     List<Exp> copyOfTheoremExpressions = t.getAssertion().getSubExpressions();
-                    System.out.println(isDeterministic(copyOfTheoremExpressions, te));
                     // check if the rule will be deterministic, and for the moment, if not
                     // deterministic ignore it
                     if (isDeterministic(copyOfTheoremExpressions, te)) {
@@ -161,7 +157,11 @@ public class ElaborationRules {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Elaboration Rules: \n");
-        sb.append(myElaborationRules.toString());
+        for (int i = 0; i < myElaborationRules.size(); i++) {
+            sb.append(i + 1);
+            sb.append(": ");
+            sb.append(myElaborationRules.get(i).toString());
+        }
         return sb.toString();
     }
 }
