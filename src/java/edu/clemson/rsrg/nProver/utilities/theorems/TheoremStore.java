@@ -89,7 +89,7 @@ public final class TheoremStore implements TheoremManager {
      * {@inheritDoc}
      */
     @Override
-    public Set<TheoremEntry> getRelevantTheorems(List<Exp> expressions) {
+    public Set<TheoremEntry> getRelevantTheorems(List<Exp> expressions, boolean fromAntecedent) {
         // The following line is the only thing from TheoremSelector that did anything.
         // It seems to exist to filter out expressions by their operators, but we seem to be doing that anyways.
         // What's worse is that the unit tests show that this line just removes all the expressions
@@ -105,6 +105,7 @@ public final class TheoremStore implements TheoremManager {
                 if (ops != null) {
                     ops.removeIf((exp) -> !opStrings.contains(exp));
                     if (exprStrings.containsAll(ops)) {
+                        theorem.setAntecedent(fromAntecedent);
                         theorems.add(theorem);
                     }
                 }

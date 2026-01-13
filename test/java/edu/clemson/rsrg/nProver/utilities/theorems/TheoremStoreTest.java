@@ -87,7 +87,7 @@ public class TheoremStoreTest {
         List<Exp> expressions = Collections.singletonList(mockExp);
 
         // Act
-        Set<TheoremEntry> relevantTheorems = theoremStore.getRelevantTheorems(expressions);
+        Set<TheoremEntry> relevantTheorems = theoremStore.getRelevantTheorems(expressions, true);
 
         // Assert
         assertEquals(2, relevantTheorems.size());
@@ -107,7 +107,7 @@ public class TheoremStoreTest {
         List<Exp> expressions = Collections.singletonList(mockExp);
 
         // Act
-        Set<TheoremEntry> relevantTheorems = theoremStore.getRelevantTheorems(expressions);
+        Set<TheoremEntry> relevantTheorems = theoremStore.getRelevantTheorems(expressions, true);
 
         // Assert
         assertTrue(relevantTheorems.isEmpty());
@@ -121,7 +121,7 @@ public class TheoremStoreTest {
         List<Exp> expressions = Collections.singletonList(mockExp);
 
         // Act
-        Set<TheoremEntry> relevantTheorems = theoremStore.getRelevantTheorems(expressions);
+        Set<TheoremEntry> relevantTheorems = theoremStore.getRelevantTheorems(expressions, true);
 
         // Assert
         assertEquals(1, relevantTheorems.size());
@@ -135,7 +135,7 @@ public class TheoremStoreTest {
         List<Exp> expressions = Collections.emptyList();
 
         // Act
-        Set<TheoremEntry> relevantTheorems = theoremStore.getRelevantTheorems(expressions);
+        Set<TheoremEntry> relevantTheorems = theoremStore.getRelevantTheorems(expressions, true);
 
         // Assert
         assertTrue(relevantTheorems.isEmpty());
@@ -150,8 +150,8 @@ public class TheoremStoreTest {
         List<Exp> expressions = Collections.singletonList(mockExp);
 
         // Act
-        Set<TheoremEntry> result1 = theoremStore.getRelevantTheorems(expressions);
-        Set<TheoremEntry> result2 = theoremStore.getRelevantTheorems(expressions);
+        Set<TheoremEntry> result1 = theoremStore.getRelevantTheorems(expressions, true);
+        Set<TheoremEntry> result2 = theoremStore.getRelevantTheorems(expressions, true);
 
         // Assert
         assertEquals(result1, result2);

@@ -102,30 +102,6 @@ public class TheoremEntry extends SymbolTableEntry {
                 null, sourceModule);
     }
 
-    /**
-     * <p>
-     * This creates a symbol table entry for a mathematical theorem.
-     * </p>
-     *
-     * @param g
-     *            The current type graph.
-     * @param name
-     *            Name associated with this entry.
-     * @param definingElement
-     *            The element that created this entry.
-     * @param operators
-     *            The operators associated with this entry.
-     * @param sourceModule
-     *            The module where this entry was created from.
-     * @param isAntecedent
-     *            Whether or not this theorem entry was created from the antecedent of a VC.
-     */
-    public TheoremEntry(TypeGraph g, String name, MathAssertionDec definingElement, Set<Exp> operators,
-            ModuleIdentifier sourceModule, boolean isAntecedent) {
-        this(g, name, definingElement, operators, sourceModule);
-        this.isAntecedent = isAntecedent;
-    }
-
     // ===========================================================
     // Public Methods
     // ===========================================================
@@ -280,6 +256,13 @@ public class TheoremEntry extends SymbolTableEntry {
             sb.append(myTheoremSubtype.toString());
             sb.append("\n");
         }
+        if (isAntecedent().isPresent()) {
+            if (isAntecedent) {
+                sb.append("Comes from the antecendent\n");
+            } else {
+                sb.append("Comes from the consequent\n");
+            }
+        }
         return sb.toString();
     }
 
@@ -291,5 +274,14 @@ public class TheoremEntry extends SymbolTableEntry {
      */
     public Optional<Boolean> isAntecedent() {
         return Optional.ofNullable(isAntecedent);
+    }
+
+    /**
+     * <p>
+     * Sets whether or not this theorem entry was created from the antecedent of a VC.
+     * </p>
+     */
+    public void setAntecedent(boolean isAntecedent) {
+        this.isAntecedent = isAntecedent;
     }
 }
