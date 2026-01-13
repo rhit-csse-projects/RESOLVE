@@ -22,18 +22,18 @@ import java.util.Set;
 public interface TheoremManager {
     /**
      * <p>
-     * Given a list of expressions, this method returns a list of relevant theorems based on the operators found. If the
-     * theorems come from the antecedent of a VC, set the appropriate flag Requires: true
+     * Given a list of antecendents & consequents, this method returns a list of relevant theorems based on the
+     * operators found. The theorems should be flagged for whether they came from the antecedent or the consequent.
      * </p>
      * <p>
-     * Restores: expressions, operators, fromAntecedent
+     * Restores: antecedent, operators, consequent
      * </p>
      * <p>
      * Ensures: getRelevantTheorems = all theorems whose operators are a subset of the provide set (list).
      * </p>
      * {@param} expressions: The expressions to be analyzed for relevant theorems. {@return}A list of relevant theorems.
      */
-    Set<TheoremEntry> getRelevantTheorems(List<Exp> expressions, boolean fromAntecedent);
+    Set<TheoremEntry> getRelevantTheorems(List<Exp> antecedent, List<Exp> consequent);
 
     /**
      * <p>

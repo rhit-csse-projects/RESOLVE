@@ -256,12 +256,10 @@ public class TheoremEntry extends SymbolTableEntry {
             sb.append(myTheoremSubtype.toString());
             sb.append("\n");
         }
-        if (isAntecedent().isPresent()) {
-            if (isAntecedent) {
-                sb.append("Comes from the antecendent\n");
-            } else {
-                sb.append("Comes from the consequent\n");
-            }
+        if (isAntecedent) {
+            sb.append("Comes from the antecendent\n");
+        } else {
+            sb.append("Comes from the consequent\n");
         }
         return sb.toString();
     }
@@ -269,11 +267,12 @@ public class TheoremEntry extends SymbolTableEntry {
     /**
      * <p>
      * Returns whether or not this theorem entry was created from the antecedent of a VC. Since the field may not be
-     * filled during construction, we return an {@link Optional}.
+     * filled during construction, we return an {@link Optional}. This value could be null if it hasn't been set
+     * manually.
      * </p>
      */
-    public Optional<Boolean> isAntecedent() {
-        return Optional.ofNullable(isAntecedent);
+    public boolean isAntecedent() {
+        return isAntecedent;
     }
 
     /**

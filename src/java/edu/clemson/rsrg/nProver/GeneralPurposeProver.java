@@ -341,8 +341,8 @@ public class GeneralPurposeProver {
 
             // Create a registry and label map
             CongruenceClassRegistry registry = new CongruenceClassRegistry(1000, 1000, 1000, 1000);
-            Set<TheoremEntry> relevantTheorems = theoremStore.getRelevantTheorems(sequent.getAntecedents(), true);
-            relevantTheorems.addAll(theoremStore.getRelevantTheorems(sequent.getConcequents(), false));
+            Set<TheoremEntry> relevantTheorems = theoremStore.getRelevantTheorems(sequent.getAntecedents(),
+                    sequent.getConcequents());
 
             // Visit antecedents
             RegisterAntecedent regAntecedent = new RegisterAntecedent(registry, expLabels, 3);

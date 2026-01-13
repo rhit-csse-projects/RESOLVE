@@ -19,10 +19,12 @@ import java.util.List;
 public class ElaborationRule {
     private List<Exp> myPrecursorClauses;
     private Exp myResultantClause;
+    private boolean fromAntecendent;
 
-    public ElaborationRule(List<Exp> precursorClauses, Exp resultantClause) {
+    public ElaborationRule(List<Exp> precursorClauses, Exp resultantClause, boolean fromAntecendent) {
         myPrecursorClauses = precursorClauses;
         myResultantClause = resultantClause;
+        this.fromAntecendent = fromAntecendent;
     }
 
     public List<Exp> getPrecursorClauses() {
@@ -31,6 +33,14 @@ public class ElaborationRule {
 
     public Exp getResultantClause() {
         return myResultantClause;
+    }
+
+    /**
+     * @return true if this elaboration rule comes from the VC's antecdent, or false if it comes from the VC's
+     *         consequent
+     */
+    public boolean isAntecedent() {
+        return fromAntecendent;
     }
 
     /**
@@ -43,6 +53,8 @@ public class ElaborationRule {
         sb.append(myPrecursorClauses.toString());
         sb.append("\n Resultant Clause: ");
         sb.append(myResultantClause.toString());
+        sb.append("\n From Antecedent: ");
+        sb.append(fromAntecendent);
         sb.append("\n\n");
         return sb.toString();
     }

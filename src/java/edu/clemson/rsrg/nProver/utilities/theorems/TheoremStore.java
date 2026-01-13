@@ -89,7 +89,13 @@ public final class TheoremStore implements TheoremManager {
      * {@inheritDoc}
      */
     @Override
-    public Set<TheoremEntry> getRelevantTheorems(List<Exp> expressions, boolean fromAntecedent) {
+    public Set<TheoremEntry> getRelevantTheorems(List<Exp> antecedent, List<Exp> consequent) {
+        Set<TheoremEntry> theorems = getRelevantTheoremsHelper(antecedent, true);
+        theorems.addAll(getRelevantTheoremsHelper(consequent, false));
+        return theorems;
+    }
+
+    public Set<TheoremEntry> getRelevantTheoremsHelper(List<Exp> expressions, boolean fromAntecedent) {
         // The following line is the only thing from TheoremSelector that did anything.
         // It seems to exist to filter out expressions by their operators, but we seem to be doing that anyways.
         // What's worse is that the unit tests show that this line just removes all the expressions
