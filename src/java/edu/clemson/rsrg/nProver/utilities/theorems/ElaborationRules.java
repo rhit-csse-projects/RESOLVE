@@ -78,7 +78,8 @@ public class ElaborationRules {
                     // deterministic ignore it
                     if (isDeterministic(copyOfTheoremExpressions, te)) {
                         // System.out.println("It was determinant");
-                        ElaborationRule rule = new ElaborationRule(copyOfTheoremExpressions, te, t.isAntecedent());
+                        ElaborationRule rule = new ElaborationRule(copyOfTheoremExpressions, t.getAssertion(),
+                                t.isAntecedent());
                         elaborationRules.add(rule);
                     }
                 }
