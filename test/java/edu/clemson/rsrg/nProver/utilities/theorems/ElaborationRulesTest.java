@@ -115,7 +115,7 @@ public class ElaborationRulesTest {
         ElaborationRule rule = generatedRules.get(0);
 
         // Check resultant
-        assertEquals(y, rule.getResultantClause());
+        assertEquals(mockAssertion, rule.getResultantClause());
 
         // Check precursors
         List<Exp> precursors = rule.getPrecursorClauses();
