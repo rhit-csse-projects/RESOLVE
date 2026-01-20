@@ -725,10 +725,7 @@ public class CongruenceClassRegistry {
         while (clusterArray[dominantCluster].getDominantCluster() != currentClusterAccessor) {
             dominantCluster = clusterArray[dominantCluster].getDominantCluster();
         }
-        if (clusterArray[dominantCluster].getNextStandCluster() == 0) {
-            return true;
-        }
-        return false;
+        return clusterArray[dominantCluster].getNextStandCluster() == 0;
     }
 
     /**
@@ -744,11 +741,8 @@ public class CongruenceClassRegistry {
      * @return {@code true} iff the {@param cClassAccessor} is minimal, otherwise, return {@code false}
      */
     public boolean isMinimalVCCDesignator(Integer treeNodeLabel, int cClassAccessor) {
-        if (congruenceClassArray[cClassAccessor].getDominantCClass() == cClassAccessor
-                && varietyArray[treeNodeLabel] != null) {
-            return true;
-        }
-        return false;
+        return congruenceClassArray[cClassAccessor].getDominantCClass() == cClassAccessor
+                && varietyArray[treeNodeLabel] != null;
     }
 
     /**
