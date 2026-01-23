@@ -110,6 +110,12 @@ public final class TheoremStore implements TheoremManager {
                 // TODO show that this isn't masking a bug (yell at Carson if it is)
                 if (ops != null) {
                     ops.removeIf((exp) -> !opStrings.contains(exp));
+                    ops.remove("=");
+                    ops.remove("implies");
+                    ops.remove(">=");
+                    ops.remove("<=");
+                    ops.remove("or");
+                    ops.remove("and");
                     if (exprStrings.containsAll(ops)) {
                         theorem.setAntecedent(fromAntecedent);
                         theorems.add(theorem);
