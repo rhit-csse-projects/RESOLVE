@@ -804,6 +804,18 @@ public class CongruenceClassRegistry {
         clusterArgumentString.add(cClassDesignator);
     }
 
+    public int removeFromClusterArgList() {
+        try {
+            return clusterArgumentString.remove();
+        } catch (NoSuchElementException e) {
+            return -1;
+        }
+    }
+
+    public void displayClusterArgumentList() {
+        System.out.println("Cluster Argument List: " + clusterArgumentString);
+    }
+
     /**
      * <p>
      * This operation merges two congruence class designated by the accessor passed in the parameters.
@@ -2326,24 +2338,6 @@ public class CongruenceClassRegistry {
             if (argument.getPrevClusterArg() != 0)
                 sb.append(", ");
         }
-    }
-
-    public Set<Integer> getAllRoots() {
-        Set<Integer> roots = new HashSet<>();
-        for (int i = 1; isClassDesignator(i); i++) {
-            CongruenceCluster cluster = clusterArray[i];
-            if (cluster != null) {
-                Integer operator = cluster.getTreeNodeLabel();
-                ClusterArgument argument = clusterArgumentArray[cluster.getIndexToArgList()];
-
-                roots.add(operator);
-
-                while (argument.getPrevClusterArg() != 0) {
-                    argument = clusterArgumentArray[argument.getPrevClusterArg()];
-                }
-            }
-        }
-        return roots;
     }
 
     // public methods to help me visualize the arrays for testing: TO BE DELETED

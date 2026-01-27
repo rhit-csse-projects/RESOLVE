@@ -43,7 +43,10 @@ public class RegistryCI {
                 M - makeCongruent
                 P - checkIfProved
                 D - display
-                Q - quit""");
+                RA - remove last arg from clusterArgList
+                DA - display clusterArgList
+                Q - quit
+                """);
     }
 
     public void runCommandLoop() {
@@ -62,15 +65,19 @@ public class RegistryCI {
                     for (int i = 1; registry.isClassDesignator(i); i++)
                         registry.displayCongruence(mappingToSymbol, i);
                     break;
-                case "G":
-                    Set<Integer> tempSet = registry.getAllRoots();
-                    for (Integer i : tempSet) {
-                        System.out.println("Root: " + (i + 1) + " Symbol: " + mappingToSymbol.get(i));
-                    }
-                    break;
                 case "P":
                     String result = registry.checkIfProved() ? "Proved" : "Not Proved";
                     System.out.println(result);
+                    break;
+                case "RA":
+                    int rc = registry.removeFromClusterArgList();
+                    if (rc == -1)
+                        System.out.println("Cluster Argument List is Empty. Cannot Remove");
+                    else
+                        System.out.println("Removed " + rc + "from Cluster Argument List");
+                    break;
+                case "DA":
+                    registry.displayClusterArgumentList();
                     break;
                 default:
                     processCommand(input);
@@ -114,7 +121,7 @@ public class RegistryCI {
                     mapping = currentMapping;
                     currentMapping++;
                 }
-                int accessor;
+                int accessor = 0;
                 if (succedentLevel == 0) {
                     BitSet attb = new BitSet();
                     attb.set(1); // set the class succedent
@@ -126,18 +133,18 @@ public class RegistryCI {
                         if (!registry.checkIfProved()) {
                             registry.updateClassAttributes(accessor, attb);
                         }
-                        System.out.println("Designator: " + accessor);
+                        System.out.println("Designator: " + accessor + " (Succedent Equal Operator)");
 
                     } else if (Objects.equals(parsedCommand[1], "<=")) { // if it is succedent <=
                         registry.addOperatorToSuccedentReflexiveOperatorSet(mapping);
                         if (registry.checkIfRegistered(mapping)) {
                             registry.updateClassAttributes(registry.getAccessorFor(mapping), attb);
-                            System.out.println("Designator: " + registry.getAccessorFor(mapping));
+                            System.out.println("Designator: " + accessor);
 
                         } else {
                             accessor = registry.registerCluster(mapping);
                             registry.updateClassAttributes(accessor, attb);
-                            System.out.println("Designator: " + accessor);
+                            System.out.println("Designator: " + accessor + " (Succedent Less-Than-Equal Operator)");
 
                         }
                     } else {
@@ -149,7 +156,7 @@ public class RegistryCI {
 
                         }
                         registry.updateClassAttributes(accessor, attb);
-                        System.out.println("Designator: " + accessor);
+                        System.out.println("Designator: " + accessor + " (Succedent Operator)");
                     }
                 } else {
                     if (!registry.isRegistryLabel(mapping)) {
@@ -157,7 +164,7 @@ public class RegistryCI {
                     } else {
                         accessor = registry.getAccessorFor(mapping);
                     }
-                    System.out.println("Designator: " + accessor);
+                    System.out.println("Designator: " + accessor + " (Level " + succedentLevel + ")");
                 }
                 succedentLevel++;
                 break;
