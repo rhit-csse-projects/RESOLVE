@@ -13,7 +13,6 @@
 package edu.clemson.rsrg.nProver.utilities.theorems;
 
 import edu.clemson.rsrg.absyn.expressions.Exp;
-import edu.clemson.rsrg.typeandpopulate.entry.TheoremEntry;
 
 import java.util.List;
 
@@ -25,12 +24,12 @@ public class ElaborationRule {
     private String mySourceModuleName;
 
     public ElaborationRule(List<Exp> precursorClauses, Exp resultantClause, boolean fromAntecendent,
-            TheoremEntry sourceTheorem) {
+            String sourceTheoremName, String sourceModuleName) {
         myPrecursorClauses = precursorClauses;
         myResultantClause = resultantClause;
         this.fromAntecendent = fromAntecendent;
-        this.mySourceTheoremName = sourceTheorem.getName();
-        this.mySourceModuleName = sourceTheorem.getSourceModuleIdentifier().toString();
+        this.mySourceTheoremName = sourceTheoremName;
+        this.mySourceModuleName = sourceModuleName;
     }
 
     public List<Exp> getPrecursorClauses() {
@@ -55,11 +54,15 @@ public class ElaborationRule {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Source Theorem: ");
-        sb.append(mySourceTheoremName);
-        sb.append(" (from ");
-        sb.append(mySourceModuleName);
-        sb.append(")\n");
+        if (mySourceModuleName != null) {
+            sb.append("Source Theorem: ");
+            sb.append(mySourceTheoremName);
+            sb.append(" (from ");
+            sb.append(mySourceModuleName);
+            sb.append(")\n");
+        } else {
+            sb.append("No Source Theorem for this Rule \n");
+        }
         sb.append("Precursor Clauses: ");
         sb.append(myPrecursorClauses.toString());
         sb.append("\n Resultant Clause: ");
