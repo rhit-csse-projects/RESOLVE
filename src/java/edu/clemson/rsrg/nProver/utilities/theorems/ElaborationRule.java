@@ -48,6 +48,14 @@ public class ElaborationRule {
         return fromAntecendent;
     }
 
+    public String getSourceTheoremName() {
+        return mySourceTheoremName;
+    }
+
+    public String getSourceModuleName() {
+        return mySourceModuleName;
+    }
+
     /**
      * {@inheritDoc}
      */

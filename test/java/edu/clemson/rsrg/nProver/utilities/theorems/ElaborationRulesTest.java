@@ -18,6 +18,7 @@ import edu.clemson.rsrg.absyn.expressions.mathexpr.InfixExp;
 import edu.clemson.rsrg.absyn.expressions.mathexpr.VarExp;
 import edu.clemson.rsrg.parsing.data.PosSymbol;
 import edu.clemson.rsrg.typeandpopulate.entry.TheoremEntry;
+import edu.clemson.rsrg.typeandpopulate.utilities.ModuleIdentifier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -40,9 +41,18 @@ public class ElaborationRulesTest {
     @Mock
     private Exp mockAssertion;
 
+    @Mock
+    private ModuleIdentifier mockModuleIdentifier;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+        // Set up the mock module identifier to return a string
+        when(mockModuleIdentifier.toString()).thenReturn("TestModule");
+        // Set up the mock theorem to return the mock module identifier
+        when(mockTheorem.getSourceModuleIdentifier()).thenReturn(mockModuleIdentifier);
+        // Set up a default name for the theorem
+        when(mockTheorem.getName()).thenReturn("TestTheorem");
     }
 
     private VarExp createVarExp(String name) {
@@ -121,6 +131,10 @@ public class ElaborationRulesTest {
         List<Exp> precursors = rule.getPrecursorClauses();
         assertEquals(1, precursors.size());
         assertTrue(precursors.contains(f_x));
+
+        // Check source theorem info
+        assertEquals("TestTheorem", rule.getSourceTheoremName());
+        assertEquals("TestModule", rule.getSourceModuleName());
     }
 
     @Test
@@ -153,6 +167,10 @@ public class ElaborationRulesTest {
 
         for (ElaborationRule rule : generatedRules) {
             assertEquals(mockAssertion, rule.getResultantClause());
+
+            // Verify source theorem info
+            assertEquals("TestTheorem", rule.getSourceTheoremName());
+            assertEquals("TestModule", rule.getSourceModuleName());
 
             List<Exp> precursors = rule.getPrecursorClauses();
             assertEquals(1, precursors.size());
