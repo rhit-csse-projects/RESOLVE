@@ -45,6 +45,7 @@ public class RegistryCI {
                 D - display
                 RA - remove last arg from clusterArgList
                 DA - display clusterArgList
+                G - display all roots
                 Q - quit
                 """);
     }
@@ -78,6 +79,12 @@ public class RegistryCI {
                     break;
                 case "DA":
                     registry.displayClusterArgumentList();
+                    break;
+                case "G":
+                    Set<Integer> tempSet = registry.getAllRoots();
+                    for (Integer i : tempSet) {
+                        System.out.println("Root: " + (i + 1) + " Symbol: " + mappingToSymbol.get(i));
+                    }
                     break;
                 default:
                     processCommand(input);

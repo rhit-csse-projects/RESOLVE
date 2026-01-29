@@ -2340,6 +2340,24 @@ public class CongruenceClassRegistry {
         }
     }
 
+    public Set<Integer> getAllRoots() {
+        Set<Integer> roots = new HashSet<>();
+        for (int i = 1; isClassDesignator(i); i++) {
+            CongruenceCluster cluster = clusterArray[i];
+            if (cluster != null) {
+                Integer operator = cluster.getTreeNodeLabel();
+                ClusterArgument argument = clusterArgumentArray[cluster.getIndexToArgList()];
+
+                roots.add(operator);
+
+                while (argument.getPrevClusterArg() != 0) {
+                    argument = clusterArgumentArray[argument.getPrevClusterArg()];
+                }
+            }
+        }
+        return roots;
+    }
+
     // public methods to help me visualize the arrays for testing: TO BE DELETED
     public ClusterArgument[] getClusterArgArray() {
         return clusterArgumentArray;
