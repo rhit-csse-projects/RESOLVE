@@ -64,7 +64,7 @@ public class ElaborationRules {
                         // exp here has to be the whole theorem assertion and not only part of
                         // the expression
                         ElaborationRule rule = new ElaborationRule(copyOfMyTheoremSubExpressions, t.getAssertion(),
-                                t.isAntecedent());
+                                t.isAntecedent(), t);
                         elaborationRules.add(rule);
                     }
                 }
@@ -79,7 +79,7 @@ public class ElaborationRules {
                     if (isDeterministic(copyOfTheoremExpressions, te)) {
                         // System.out.println("It was determinant");
                         ElaborationRule rule = new ElaborationRule(copyOfTheoremExpressions, t.getAssertion(),
-                                t.isAntecedent());
+                                t.isAntecedent(), t);
                         elaborationRules.add(rule);
                     }
                 }

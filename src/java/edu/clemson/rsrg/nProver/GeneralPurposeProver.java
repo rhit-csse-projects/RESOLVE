@@ -376,7 +376,9 @@ public class GeneralPurposeProver {
 
             System.out.println("===========================Relevant Theorems===========================");
             for (TheoremEntry te : relevantTheorems) {
+                System.out.println("Theorem: " + te.getName() + " (from " + te.getSourceModuleIdentifier() + ")");
                 System.out.println(te.getAssertion());
+                System.out.println();
                 // System.out.println("==========sub-expressions=============");
                 // System.out.println(te.getAssertion().getSubExpressions());
                 /*
