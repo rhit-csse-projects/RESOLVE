@@ -23,11 +23,11 @@ public class ElaborationRule {
     private String mySourceTheoremName;
     private String mySourceModuleName;
 
-    public ElaborationRule(List<Exp> precursorClauses, Exp resultantClause, boolean fromAntecendent,
+    public ElaborationRule(List<Exp> precursorClauses, Exp resultantClause, boolean fromAntecedent,
             String sourceTheoremName, String sourceModuleName) {
         myPrecursorClauses = precursorClauses;
         myResultantClause = resultantClause;
-        this.fromAntecendent = fromAntecendent;
+        this.fromAntecendent = fromAntecedent;
         this.mySourceTheoremName = sourceTheoremName;
         this.mySourceModuleName = sourceModuleName;
     }
