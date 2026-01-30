@@ -369,34 +369,21 @@ public class GeneralPurposeProver {
             String result = registry.checkIfProved() ? "Proved" : "Not Proved";
             storeVCProofVerboseDetail(vc, result, registry, expLabels);
 
-            System.out.println("============ CongruenceClassRegistry ===============");
+            // System.out.println("============ CongruenceClassRegistry ===============");
             // System.out.println(registry.toString());
 
             ElaborationRules rules = new ElaborationRules(relevantTheorems);
 
             System.out.println("===========================Relevant Theorems===========================");
             for (TheoremEntry te : relevantTheorems) {
-                System.out.println("Theorem: " + te.getName() + " (from " + te.getSourceModuleIdentifier() + ")");
+                System.out.println("Theorem: " + "\u001B[33m" + te.getName() + "\u001B[0m" + " (from " + "\u001B[34m"
+                        + te.getSourceModuleIdentifier() + "\u001B[0m" + ")");
                 System.out.println(te.getAssertion());
                 System.out.println();
-                // System.out.println("==========sub-expressions=============");
-                // System.out.println(te.getAssertion().getSubExpressions());
-                /*
-                 * System.out.println("==========SubSubExpressions========"); for(Exp
-                 * e:te.getAssertion().getSubExpressions()){ System.out.println(e.getSubExpressions()); for(Exp
-                 * e2:e.getSubExpressions()){ System.out.println(e2.getClass().getSimpleName()); } }
-                 */
-
             }
 
             System.out.println("============ Elaboration Rules ===============");
-            System.out.println(rules.toString());
-
-            // System.out.println(rules.getMyElaborationRules().size());
-            /*
-             * for(ElaborationRule eR : rules.getMyElaborationRules()){ System.out.println("Precursors" +
-             * eR.getPrecursorClauses()); System.out.println("==>" + eR.getResultantClause()); }
-             */
+            System.out.println(rules);
         }
 
         // Compute the total elapsed time in generating proofs for the VCs in this

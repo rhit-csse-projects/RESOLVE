@@ -64,9 +64,13 @@ public class ElaborationRule {
         StringBuilder sb = new StringBuilder();
         if (mySourceModuleName != null) {
             sb.append("Source Theorem: ");
+            sb.append("\u001B[33m");
             sb.append(mySourceTheoremName);
+            sb.append("\u001B[0m");
             sb.append(" (from ");
+            sb.append("\u001B[34m");
             sb.append(mySourceModuleName);
+            sb.append("\u001B[0m");
             sb.append(")\n");
         } else {
             sb.append("No Source Theorem for this Rule \n");
@@ -76,7 +80,9 @@ public class ElaborationRule {
         sb.append("\n Resultant Clause: ");
         sb.append(myResultantClause.toString());
         sb.append("\n From Antecedent: ");
+        sb.append("\u001B[35m");
         sb.append(fromAntecendent);
+        sb.append("\u001B[0m");
         sb.append("\n\n");
         return sb.toString();
     }

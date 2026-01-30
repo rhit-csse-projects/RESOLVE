@@ -79,7 +79,6 @@ public final class TheoremStore implements TheoremManager {
             sb.append("Name: ");
             sb.append(theoremEntry.getName());
             sb.append("\n");
-            sb.append(theoremEntry.toString());
             sb.append("\n");
         }
         return sb.toString();
