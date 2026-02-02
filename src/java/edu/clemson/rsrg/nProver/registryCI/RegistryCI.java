@@ -256,7 +256,8 @@ public class RegistryCI {
         int rhs = registry.removeFromClusterArgList();
 
         if (lhs == -1 || rhs == -1) {
-            System.out.println("ERROR: Need exactly 2 arguments in arg list for antecedent equals (arg list is preserved)");
+            System.out.println(
+                    "ERROR: Need exactly 2 arguments in arg list for antecedent equals (arg list is preserved)");
             if (lhs != -1)
                 registry.appendToClusterArgList(lhs);
             return;
