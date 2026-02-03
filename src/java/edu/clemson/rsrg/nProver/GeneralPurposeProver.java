@@ -20,6 +20,7 @@ import edu.clemson.rsrg.init.flag.FlagDependencies;
 import edu.clemson.rsrg.init.output.OutputListener;
 import edu.clemson.rsrg.nProver.output.VCProverResult;
 import edu.clemson.rsrg.nProver.registry.CongruenceClassRegistry;
+import edu.clemson.rsrg.nProver.utilities.theorems.ElaborationRule;
 import edu.clemson.rsrg.nProver.utilities.theorems.ElaborationRules;
 import edu.clemson.rsrg.nProver.utilities.theorems.TheoremStore;
 import edu.clemson.rsrg.nProver.utilities.treewakers.RegisterAntecedent;
@@ -471,5 +472,21 @@ public class GeneralPurposeProver {
 
         // Add VC proof detail model to prover generation details
         myProofGenDetailsModel.add("vcProofDetails", vcProofDetailModel.render());
+    }
+    
+    /**
+     * <p>
+     * Elaborates on congruence classes using the provided elaboration rules.
+     * </p>
+     */
+    private void elaborate(CongruenceClassRegistry registry, List<ElaborationRule> rules) {
+	// TODO create a method in CongruenceClassRegistry that takes in a rule
+	int c = 0;
+	for (ElaborationRule elaborationRule : rules)
+	    for (Integer root : registry.getAllRoots()) {
+		int c = registry.advanceCClassAccessor(root, 0);
+		// TODO: we need to check if c is an antecedent
+		int p = 0;
+	    }
     }
 }
