@@ -395,6 +395,8 @@ public class GeneralPurposeProver {
              * for(ElaborationRule eR : rules.getMyElaborationRules()){ System.out.println("Precursors" +
              * eR.getPrecursorClauses()); System.out.println("==>" + eR.getResultantClause()); }
              */
+
+            
         }
 
         // Compute the total elapsed time in generating proofs for the VCs in this
