@@ -37,7 +37,9 @@ import edu.clemson.rsrg.vcgeneration.sequents.Sequent;
 import edu.clemson.rsrg.vcgeneration.utilities.VerificationCondition;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
@@ -473,20 +475,32 @@ public class GeneralPurposeProver {
         // Add VC proof detail model to prover generation details
         myProofGenDetailsModel.add("vcProofDetails", vcProofDetailModel.render());
     }
-    
+
     /**
      * <p>
      * Elaborates on congruence classes using the provided elaboration rules.
      * </p>
      */
-    private void elaborate(CongruenceClassRegistry registry, List<ElaborationRule> rules) {
-	// TODO create a method in CongruenceClassRegistry that takes in a rule
-	int c = 0;
-	for (ElaborationRule elaborationRule : rules)
-	    for (Integer root : registry.getAllRoots()) {
-		int c = registry.advanceCClassAccessor(root, 0);
-		// TODO: we need to check if c is an antecedent
-		int p = 0;
-	    }
+    private void elaborate(CongruenceClassRegistry registry, List<ElaborationRule> rules, Map<String, Integer> operators) {
+	// Many thanks to whoever made the map backwards.
+	Map<Integer, String> backwardsOperators = operators.entrySet()
+              .stream()
+              .collect(Collectors.toMap(Entry::getValue, Entry::getKey));
+	List<String> operatorList = new ArrayList<>();
+	for (int i = 0; i < backwardsOperators.size(); i++) {
+	    operatorList.add(backwardsOperators.get(i));
+	}
+        // TODO create a method in CongruenceClassRegistry that takes in a rule
+        int c = 0;
+        for (ElaborationRule elaborationRule : rules)
+            for (Integer root : registry.getAllRoots()) {
+                c = registry.advanceCClassAccessor(root, 0);
+		if (registry.getCongruenceClass(c).getAttribute().get(0)) { // this checks if we're getting an antecedent
+                    int p = 0;
+		    while (true) {
+			p = registry.advanceClusterAccessor(root, p); // This doesn't look like the dissertation & might be wrong.
+		    }
+		}
+            }
     }
 }

@@ -2356,6 +2356,10 @@ public class CongruenceClassRegistry {
     public CongruenceClass[] getCongruenceClassArray() {
         return congruenceClassArray;
     }
+    
+    public CongruenceClass getCongruenceClass(int accessor) {
+	return congruenceClassArray[accessor];
+    }
 
     public Set<Integer> getAllRoots() {
         Set<Integer> roots = new HashSet<>();
@@ -2374,7 +2378,7 @@ public class CongruenceClassRegistry {
         }
         return roots;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -2391,5 +2395,20 @@ public class CongruenceClassRegistry {
         sb.append(Arrays.toString(congruenceClassArray));
         sb.append("\n");
         return sb.toString();
+    }
+
+    public List<String> checkPrecursor(List<String> symbolMapping, CongruenceCluster cluster, StringBuilder sb) {
+        String operator = symbolMapping.get(cluster.getTreeNodeLabel());
+        ClusterArgument argument = clusterArgumentArray[cluster.getIndexToArgList()];
+
+        sb.append(operator + " ");
+
+        while (argument.getPrevClusterArg() != 0) {
+            sb.append("CC" + argument.getCcNumber());
+
+            argument = clusterArgumentArray[argument.getPrevClusterArg()];
+            if (argument.getPrevClusterArg() != 0)
+                sb.append(", ");
+        }
     }
 }
