@@ -331,6 +331,7 @@ public class GeneralPurposeProver {
         // Use the new TheoremStore to preload theorems for fast lookup.
         TheoremStore theoremStore = new TheoremStore(myCurrentModuleScope);
         Map<String, Integer> expLabels = theoremStore.getExpLabels();
+        List<String> operators = theoremStore.getLabelList();
 
         // Loop through each of the VCs and attempt to prove them
         for (VerificationCondition vc : myVerificationConditions) {
@@ -470,15 +471,7 @@ public class GeneralPurposeProver {
      * Elaborates on congruence classes using the provided elaboration rules.
      * </p>
      */
-    private void elaborate(CongruenceClassRegistry registry, List<ElaborationRule> rules,
-            Map<String, Integer> operators) {
-        // Many thanks to whoever made the map backwards.
-        Map<Integer, String> backwardsOperators = operators.entrySet().stream()
-                .collect(Collectors.toMap(Entry::getValue, Entry::getKey));
-        List<String> operatorList = new ArrayList<>();
-        for (int i = 0; i < backwardsOperators.size(); i++) {
-            operatorList.add(backwardsOperators.get(i));
-        }
+    private void elaborate(CongruenceClassRegistry registry, List<ElaborationRule> rules, List<String> operators) {
         // TODO create a method in CongruenceClassRegistry that takes in a rule
         int c = 0;
         for (ElaborationRule elaborationRule : rules)

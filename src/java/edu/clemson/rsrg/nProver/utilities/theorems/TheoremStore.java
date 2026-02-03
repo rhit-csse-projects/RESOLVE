@@ -150,7 +150,7 @@ public final class TheoremStore {
         // preload <=, = into the map
         List<String> expLabels = new LinkedList<>();
         expLabels.add(AbstractRegisterSequent.OP_LESS_THAN_OR_EQUALS, "<=");
-        expLabels.add( AbstractRegisterSequent.OP_EQUALS, "=");
+        expLabels.add(AbstractRegisterSequent.OP_EQUALS, "=");
         int i = 3;
         for (String opString : opStrings) {
             expLabels.add(i, opString);

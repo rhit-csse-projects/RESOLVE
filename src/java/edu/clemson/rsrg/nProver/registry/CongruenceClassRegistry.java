@@ -2340,24 +2340,6 @@ public class CongruenceClassRegistry {
         }
     }
 
-    public Set<Integer> getAllRoots() {
-        Set<Integer> roots = new HashSet<>();
-        for (int i = 1; isClassDesignator(i); i++) {
-            CongruenceCluster cluster = clusterArray[i];
-            if (cluster != null) {
-                Integer operator = cluster.getTreeNodeLabel();
-                ClusterArgument argument = clusterArgumentArray[cluster.getIndexToArgList()];
-
-                roots.add(operator);
-
-                while (argument.getPrevClusterArg() != 0) {
-                    argument = clusterArgumentArray[argument.getPrevClusterArg()];
-                }
-            }
-        }
-        return roots;
-    }
-
     // public methods to help me visualize the arrays for testing: TO BE DELETED
     public ClusterArgument[] getClusterArgArray() {
         return clusterArgumentArray;
@@ -2415,18 +2397,15 @@ public class CongruenceClassRegistry {
         return sb.toString();
     }
 
-    public List<String> checkPrecursor(List<String> symbolMapping, CongruenceCluster cluster, StringBuilder sb) {
+    public List<String> getArgumentsList(List<String> symbolMapping, CongruenceCluster cluster) {
+        List<String> arguments = new ArrayList<>();
         String operator = symbolMapping.get(cluster.getTreeNodeLabel());
         ClusterArgument argument = clusterArgumentArray[cluster.getIndexToArgList()];
 
-        sb.append(operator + " ");
-
         while (argument.getPrevClusterArg() != 0) {
-            sb.append("CC" + argument.getCcNumber());
-
             argument = clusterArgumentArray[argument.getPrevClusterArg()];
-            if (argument.getPrevClusterArg() != 0)
-                sb.append(", ");
+            arguments.add(symbolMapping.get(argument.getCcNumber()));
         }
+        return arguments;
     }
 }
