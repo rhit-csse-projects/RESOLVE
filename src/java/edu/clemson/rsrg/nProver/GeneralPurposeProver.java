@@ -337,7 +337,8 @@ public class GeneralPurposeProver {
         for (int i = 0; i < myVerificationConditions.size(); i++) {
             VerificationCondition vc = myVerificationConditions.get(i);
 
-            System.out.println("====================================== VC #" + i + " =====================================");
+            System.out.println(
+                    "====================================== VC #" + i + " =====================================");
             System.out.println(vc);
             // Store the start time for generating proofs for this VC
             long startTime = System.nanoTime();
@@ -381,11 +382,12 @@ public class GeneralPurposeProver {
 
             ElaborationRules rules = new ElaborationRules(relevantTheorems);
 
-            System.out.println("=========================== Relevant Theorems (VC #" + i + ") ===========================");
+            System.out.println(
+                    "=========================== Relevant Theorems (VC #" + i + ") ===========================");
             int j = 0;
             for (TheoremEntry te : relevantTheorems) {
-                System.out.println("Theorem " + i + "_" + j + ": " + "\u001B[33m" + te.getName() + "\u001B[0m" + " (from " + "\u001B[34m"
-                        + te.getSourceModuleIdentifier() + "\u001B[0m" + ")");
+                System.out.println("Theorem " + i + "_" + j + ": " + "\u001B[33m" + te.getName() + "\u001B[0m"
+                        + " (from " + "\u001B[34m" + te.getSourceModuleIdentifier() + "\u001B[0m" + ")");
                 System.out.println(te.getAssertion());
                 System.out.println();
                 j++;
