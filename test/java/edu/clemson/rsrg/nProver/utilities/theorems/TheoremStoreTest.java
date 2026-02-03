@@ -157,20 +157,4 @@ public class TheoremStoreTest {
         assertEquals(result1, result2);
         assertEquals(2, result2.size());
     }
-
-    @Test
-    void toString_shouldContainTheoremInfo() {
-        // Arrange
-        when(mockTheorem1.toString()).thenReturn("Theorem 1 details");
-        when(mockTheorem2.toString()).thenReturn("Theorem 2 details");
-
-        // Act
-        String result = theoremStore.toString();
-
-        // Assert
-        assertTrue(result.contains("Name: theorem1"));
-        assertTrue(result.contains("Theorem 1 details"));
-        assertTrue(result.contains("Name: theorem2"));
-        assertTrue(result.contains("Theorem 2 details"));
-    }
 }

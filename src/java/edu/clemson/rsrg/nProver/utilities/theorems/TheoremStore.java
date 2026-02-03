@@ -20,7 +20,7 @@ import edu.clemson.rsrg.typeandpopulate.symboltables.MathSymbolTable;
 import edu.clemson.rsrg.typeandpopulate.symboltables.ModuleScope;
 import java.util.*;
 
-public final class TheoremStore implements TheoremManager {
+public final class TheoremStore {
 
     private final Map<TheoremEntry, Set<String>> theoremToOps;
     private final Set<String> opStrings;
@@ -33,7 +33,7 @@ public final class TheoremStore implements TheoremManager {
                         MathSymbolTable.FacilityStrategy.FACILITY_INSTANTIATE));
 
         this.theoremToOps = new LinkedHashMap<>(programTheorems.size());
-        this.opStrings = new HashSet<>();
+        this.opStrings = new LinkedHashSet<>();
 
         // Build indices
         for (TheoremEntry te : programTheorems) {
@@ -72,14 +72,12 @@ public final class TheoremStore implements TheoremManager {
     /**
      * {@inheritDoc}
      */
-    @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
         for (TheoremEntry theoremEntry : theoremToOps.keySet()) {
             sb.append("Name: ");
             sb.append(theoremEntry.getName());
             sb.append("\n");
-            sb.append(theoremEntry.toString());
             sb.append("\n");
         }
         return sb.toString();
@@ -88,7 +86,6 @@ public final class TheoremStore implements TheoremManager {
     /**
      * {@inheritDoc}
      */
-    @Override
     public Set<TheoremEntry> getRelevantTheorems(List<Exp> antecedent, List<Exp> consequent) {
         Set<TheoremEntry> theorems = getRelevantTheoremsHelper(antecedent, true);
         theorems.addAll(getRelevantTheoremsHelper(consequent, false));
@@ -129,7 +126,6 @@ public final class TheoremStore implements TheoremManager {
     /**
      * {@inheritDoc}
      */
-    @Override
     public Map<String, Integer> getExpLabels() {
         // NM: 0, 1 are spared for <= (1), = (2), etc., the list can expand with more
         // reflexive operators
@@ -140,6 +136,24 @@ public final class TheoremStore implements TheoremManager {
         int i = 3;
         for (String opString : opStrings) {
             expLabels.put(opString, i);
+            i++;
+        }
+        return expLabels;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<String> getLabelList() {
+        // NM: 0, 1 are spared for <= (1), = (2), etc., the list can expand with more
+        // reflexive operators
+        // preload <=, = into the map
+        List<String> expLabels = new LinkedList<>();
+        expLabels.add(AbstractRegisterSequent.OP_LESS_THAN_OR_EQUALS, "<=");
+        expLabels.add( AbstractRegisterSequent.OP_EQUALS, "=");
+        int i = 3;
+        for (String opString : opStrings) {
+            expLabels.add(i, opString);
             i++;
         }
         return expLabels;
