@@ -804,6 +804,18 @@ public class CongruenceClassRegistry {
         clusterArgumentString.add(cClassDesignator);
     }
 
+    public int removeFromClusterArgList() {
+        try {
+            return clusterArgumentString.remove();
+        } catch (NoSuchElementException e) {
+            return -1;
+        }
+    }
+
+    public void displayClusterArgumentList() {
+        System.out.println("Cluster Argument List: " + clusterArgumentString);
+    }
+
     /**
      * <p>
      * This operation merges two congruence class designated by the accessor passed in the parameters.
