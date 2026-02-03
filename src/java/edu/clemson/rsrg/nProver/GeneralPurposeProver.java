@@ -334,9 +334,10 @@ public class GeneralPurposeProver {
         List<String> operators = theoremStore.getLabelList();
 
         // Loop through each of the VCs and attempt to prove them
-        for (VerificationCondition vc : myVerificationConditions) {
+        for (int i = 0; i < myVerificationConditions.size(); i++) {
+            VerificationCondition vc = myVerificationConditions.get(i);
 
-            System.out.println("=========================== VC ===========================");
+            System.out.println("====================================== VC #" + i + " =====================================");
             System.out.println(vc);
             // Store the start time for generating proofs for this VC
             long startTime = System.nanoTime();
@@ -373,20 +374,24 @@ public class GeneralPurposeProver {
             String result = registry.checkIfProved() ? "Proved" : "Not Proved";
             storeVCProofVerboseDetail(vc, result, registry, expLabels);
 
+            System.out.println("Status: " + result + "\n");
+
             // System.out.println("============ CongruenceClassRegistry ===============");
             // System.out.println(registry.toString());
 
             ElaborationRules rules = new ElaborationRules(relevantTheorems);
 
-            System.out.println("===========================Relevant Theorems===========================");
+            System.out.println("=========================== Relevant Theorems (VC #" + i + ") ===========================");
+            int j = 0;
             for (TheoremEntry te : relevantTheorems) {
-                System.out.println("Theorem: " + "\u001B[33m" + te.getName() + "\u001B[0m" + " (from " + "\u001B[34m"
+                System.out.println("Theorem " + i + "_" + j + ": " + "\u001B[33m" + te.getName() + "\u001B[0m" + " (from " + "\u001B[34m"
                         + te.getSourceModuleIdentifier() + "\u001B[0m" + ")");
                 System.out.println(te.getAssertion());
                 System.out.println();
+                j++;
             }
 
-            System.out.println("============ Elaboration Rules ===============");
+            System.out.println("============ Elaboration Rules (VC #" + i + ") ===============");
             System.out.println(rules);
         }
 
