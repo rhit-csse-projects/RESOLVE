@@ -2356,9 +2356,9 @@ public class CongruenceClassRegistry {
     public CongruenceClass[] getCongruenceClassArray() {
         return congruenceClassArray;
     }
-    
+
     public CongruenceClass getCongruenceClass(int accessor) {
-	return congruenceClassArray[accessor];
+        return congruenceClassArray[accessor];
     }
 
     public Set<Integer> getAllRoots() {
