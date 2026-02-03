@@ -149,6 +149,7 @@ public final class TheoremStore {
         // reflexive operators
         // preload <=, = into the map
         List<String> expLabels = new LinkedList<>();
+	expLabels.add("");
         expLabels.add(AbstractRegisterSequent.OP_LESS_THAN_OR_EQUALS, "<=");
         expLabels.add(AbstractRegisterSequent.OP_EQUALS, "=");
         int i = 3;
