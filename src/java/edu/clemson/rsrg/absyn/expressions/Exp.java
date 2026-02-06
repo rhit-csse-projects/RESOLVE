@@ -288,6 +288,15 @@ public abstract class Exp extends ResolveConceptualElement {
     }
 
     /**
+     * <p>
+     * {@return}
+     * </p>
+     */
+    public String getTopLevelOperator() {
+        return "";
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override

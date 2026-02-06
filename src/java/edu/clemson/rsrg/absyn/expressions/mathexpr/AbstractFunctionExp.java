@@ -241,6 +241,14 @@ public abstract class AbstractFunctionExp extends MathExp {
         return ops;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getTopLevelOperator() {
+        return getOperatorAsString();
+    }
+
     // ===========================================================
     // Private Methods
     // ===========================================================

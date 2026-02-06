@@ -331,10 +331,10 @@ public class GeneralPurposeProver {
         // Use the new TheoremStore to preload theorems for fast lookup.
         TheoremStore theoremStore = new TheoremStore(myCurrentModuleScope);
         Map<String, Integer> expLabels = theoremStore.getExpLabels();
-        List<String> operators = theoremStore.getLabelList();
 
         // Loop through each of the VCs and attempt to prove them
         for (int i = 0; i < myVerificationConditions.size(); i++) {
+            List<String> mappings = new ArrayList<>(theoremStore.getLabelList());
             VerificationCondition vc = myVerificationConditions.get(i);
 
             System.out.println(
@@ -351,14 +351,14 @@ public class GeneralPurposeProver {
                     sequent.getConcequents());
 
             // Visit antecedents
-            RegisterAntecedent regAntecedent = new RegisterAntecedent(registry, expLabels, 3);
+            RegisterAntecedent regAntecedent = new RegisterAntecedent(registry, expLabels, 3, mappings);
             for (Exp exp : sequent.getAntecedents()) {
                 TreeWalker.visit(regAntecedent, exp);
             }
 
             // Visit consequents
             RegisterSuccedent regConsequent = new RegisterSuccedent(regAntecedent.getRegistry(),
-                    regAntecedent.getExpLabels(), regAntecedent.getNextLabel());
+                    regAntecedent.getExpLabels(), regAntecedent.getNextLabel(), mappings);
             for (Exp exp : sequent.getConcequents()) {
                 TreeWalker.visit(regConsequent, exp);
             }
@@ -478,20 +478,44 @@ public class GeneralPurposeProver {
      * Elaborates on congruence classes using the provided elaboration rules.
      * </p>
      */
-    private void elaborate(CongruenceClassRegistry registry, List<ElaborationRule> rules, List<String> operators) {
-        // TODO create a method in CongruenceClassRegistry that takes in a rule
-        int c = 0;
+    private void elaborate(CongruenceClassRegistry registry, List<ElaborationRule> rules, List<String> mappings,
+            Map<String, Integer> expLabels) {
+        int currentCCAccessor = 0;
         for (ElaborationRule elaborationRule : rules)
-            for (Integer root : registry.getAllRoots()) {
-                c = registry.advanceCClassAccessor(root, 0);
-                if (registry.getCongruenceClass(c).getAttribute().get(0)) { // this checks if we're getting an
-                                                                            // antecedent
-                    int p = 0;
-                    while (true) {
-                        p = registry.advanceClusterAccessor(root, p); // This doesn't look like the dissertation & might
-                                                                      // be wrong.
+            for (Exp precursor : elaborationRule.getPrecursorClauses()) {
+                int operator = expLabels.get(precursor.getTopLevelOperator());
+                do {
+                    currentCCAccessor = registry.advanceCClassAccessor(operator, currentCCAccessor); // This is called c
+                                                                                                     // in Bill's email
+                    if (registry.getCongruenceClass(currentCCAccessor).getAttribute().get(0)) { // this checks if we're
+                                                                                                // getting an
+                        // antecedent
+                        int p = 0;
+			// The recursion starts here, according to Chris
+                        do {
+                            p = registry.advanceClusterAccessor(operator, p); // This doesn't look like the dissertation
+                            // & might
+                            // be wrong.
+                            List<String> arglist = registry.getArgumentsList(mappings,
+                                    registry.getCongruenceCluster(p));
+                            boolean isMatched = false;
+                            if (arglist.size() == precursor.getSubExpressions().size()) {
+                                for (String arg : arglist) {
+                                    // TODO Make sure we don't match the same element twice
+                                    for (Exp subExp : precursor.getSubExpressions()) {
+                                        if (arg.equals(subExp.getTopLevelOperator())) {
+                                            // TODO Move deeper into the trees. This will probably be a recursive call,
+                                            // & it will probably involve moving most of this method into a helper
+                                            // method
+                                        }
+                                        // TODO If this is not an operator, we need to put this in the resultant of the
+                                        // Elaboration Rule
+                                    }
+                                }
+                            }
+                        } while (registry.isStandMaximal(operator, p));
                     }
-                }
+                } while (registry.isVarietyMaximal(operator, currentCCAccessor));
             }
     }
 }

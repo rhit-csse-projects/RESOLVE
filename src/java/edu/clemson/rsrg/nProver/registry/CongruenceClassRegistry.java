@@ -2357,6 +2357,10 @@ public class CongruenceClassRegistry {
         return congruenceClassArray;
     }
 
+    public CongruenceCluster getCongruenceCluster(int accessor) {
+        return clusterArray[accessor];
+    }
+
     public CongruenceClass getCongruenceClass(int accessor) {
         return congruenceClassArray[accessor];
     }
@@ -2397,6 +2401,11 @@ public class CongruenceClassRegistry {
         return sb.toString();
     }
 
+    /**
+     * <p>
+     * Returns all the expressions as strings in the congruence class's arguments
+     * </p>
+     */
     public List<String> getArgumentsList(List<String> symbolMapping, CongruenceCluster cluster) {
         List<String> arguments = new ArrayList<>();
         String operator = symbolMapping.get(cluster.getTreeNodeLabel());
