@@ -486,13 +486,15 @@ public class GeneralPurposeProver {
             Map<String, Integer> expLabels) {
         for (ElaborationRule elaborationRule : rules) {
             for (Exp precursor : elaborationRule.getPrecursorClauses()) {
-                if (!(precursor instanceof FunctionExp || precursor instanceof InfixExp)) continue;
+                if (!(precursor instanceof FunctionExp || precursor instanceof InfixExp))
+                    continue;
                 int operator = expLabels.get(precursor.getTopLevelOperator());
                 int currentCCAccessor = 0;
                 do {
                     currentCCAccessor = registry.advanceCClassAccessor(operator, currentCCAccessor); // This is called c
                     // in Bill's email
-                    if (currentCCAccessor == -1) break;
+                    if (currentCCAccessor == -1)
+                        break;
                     if (registry.getCongruenceClass(currentCCAccessor).getAttribute().get(0)) { // this checks if we're
                         // getting an
                         // antecedent

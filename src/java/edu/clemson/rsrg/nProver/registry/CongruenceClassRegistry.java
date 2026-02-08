@@ -588,9 +588,8 @@ public class CongruenceClassRegistry {
             }
         }
         // this is just defensive, we will never get here as the operation is always called when we have next accessor
-        System.out.println( "ERROR: apparently we should never reach here but we are" +
-                "advanceCC: op=" + treeNodeLabel + " current=" + currentCCAccessor +
-                        " stand=" + currentStandForTreeNodeLabel);
+        System.out.println("ERROR: apparently we should never reach here but we are" + "advanceCC: op=" + treeNodeLabel
+                + " current=" + currentCCAccessor + " stand=" + currentStandForTreeNodeLabel);
         return -1;
     }
 
