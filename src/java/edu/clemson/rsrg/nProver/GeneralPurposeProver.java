@@ -14,6 +14,8 @@ package edu.clemson.rsrg.nProver;
 
 import edu.clemson.rsrg.absyn.declarations.moduledecl.*;
 import edu.clemson.rsrg.absyn.expressions.Exp;
+import edu.clemson.rsrg.absyn.expressions.mathexpr.FunctionExp;
+import edu.clemson.rsrg.absyn.expressions.mathexpr.InfixExp;
 import edu.clemson.rsrg.init.CompileEnvironment;
 import edu.clemson.rsrg.init.flag.Flag;
 import edu.clemson.rsrg.init.flag.FlagDependencies;
@@ -395,6 +397,8 @@ public class GeneralPurposeProver {
 
             System.out.println("============ Elaboration Rules (VC #" + i + ") ===============");
             System.out.println(rules);
+
+            elaborate(registry, rules.getMyElaborationRules(), mappings, expLabels);
         }
 
         // Compute the total elapsed time in generating proofs for the VCs in this
@@ -480,18 +484,20 @@ public class GeneralPurposeProver {
      */
     private void elaborate(CongruenceClassRegistry registry, List<ElaborationRule> rules, List<String> mappings,
             Map<String, Integer> expLabels) {
-        int currentCCAccessor = 0;
-        for (ElaborationRule elaborationRule : rules)
+        for (ElaborationRule elaborationRule : rules) {
             for (Exp precursor : elaborationRule.getPrecursorClauses()) {
+                if (!(precursor instanceof FunctionExp || precursor instanceof InfixExp)) continue;
                 int operator = expLabels.get(precursor.getTopLevelOperator());
+                int currentCCAccessor = 0;
                 do {
                     currentCCAccessor = registry.advanceCClassAccessor(operator, currentCCAccessor); // This is called c
-                                                                                                     // in Bill's email
+                    // in Bill's email
+                    if (currentCCAccessor == -1) break;
                     if (registry.getCongruenceClass(currentCCAccessor).getAttribute().get(0)) { // this checks if we're
-                                                                                                // getting an
+                        // getting an
                         // antecedent
                         int p = 0;
-			// The recursion starts here, according to Chris
+                        // The recursion starts here, according to Chris
                         do {
                             p = registry.advanceClusterAccessor(operator, p); // This doesn't look like the dissertation
                             // & might
@@ -517,5 +523,6 @@ public class GeneralPurposeProver {
                     }
                 } while (registry.isVarietyMaximal(operator, currentCCAccessor));
             }
+        }
     }
 }
