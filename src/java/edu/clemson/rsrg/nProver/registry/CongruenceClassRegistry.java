@@ -588,9 +588,30 @@ public class CongruenceClassRegistry {
             }
         }
         // this is just defensive, we will never get here as the operation is always called when we have next accessor
-        System.out.println("ERROR: apparently we should never reach here but we are" + "advanceCC: op=" + treeNodeLabel
-                + " current=" + currentCCAccessor + " stand=" + currentStandForTreeNodeLabel);
-        return -1;
+        System.out.println("ERROR: reached unreachable code in advanceCClassAccessor");
+        return 0;
+    }
+
+    public int firstCCAccessorForTreeNodeLabel(Integer treeNodeLabel) {
+        int stand = varietyArray[treeNodeLabel].getFirstStand();
+
+        if (stand == 0)
+            return -1;
+
+        int cluster = standArray[stand].getFirstStandCluster();
+
+        int cc = clusterArray[cluster].getIndexToCongruenceClass();
+
+        return congruenceClassArray[cc].getDominantCClass();
+    }
+
+    public int getFirstClusterAccessorForCC(Integer currentCCAccessor, int operator) {
+        int cc = congruenceClassArray[currentCCAccessor].getDominantCClass();
+        int stand = congruenceClassArray[cc].getFirstStand();
+        while (standArray[stand].getTreeNodeLabel() != operator) {
+            stand = standArray[stand].getNextCCStand();
+        }
+        return standArray[stand].getFirstStandCluster();
     }
 
     /**
@@ -2390,16 +2411,24 @@ public class CongruenceClassRegistry {
      */
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append("ClusterArguments: ");
-        sb.append(Arrays.toString(clusterArgumentArray));
-        sb.append("\nClusters: ");
-        sb.append(Arrays.toString(clusterArray));
-        sb.append("\nStands: ");
-        sb.append(Arrays.toString(standArray));
-        sb.append("\nCongruenceClasses: ");
-        sb.append(Arrays.toString(congruenceClassArray));
-        sb.append("\n");
+        StringBuilder sb = new StringBuilder();
+        sb.append("ClusterArguments:\n").append(arrayToString(clusterArgumentArray)).append("\n");
+        sb.append("Clusters:\n").append(arrayToString(clusterArray)).append("\n");
+        sb.append("Stands:\n").append(arrayToString(standArray)).append("\n");
+        sb.append("CongruenceClasses:\n").append(arrayToString(congruenceClassArray)).append("\n");
+
+        return sb.toString();
+    }
+
+    private String arrayToString(Object[] arr) {
+        if (arr == null)
+            return "null";
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] != null) {
+                sb.append("[").append(i).append("] = ").append(arr[i].toString()).append("\n");
+            }
+        }
         return sb.toString();
     }
 
@@ -2408,14 +2437,16 @@ public class CongruenceClassRegistry {
      * Returns all the expressions as strings in the congruence class's arguments
      * </p>
      */
-    public List<String> getArgumentsList(List<String> symbolMapping, CongruenceCluster cluster) {
+    public List<String> getArgumentsList(Map<Integer, String> symbolMapping, CongruenceCluster cluster) {
         List<String> arguments = new ArrayList<>();
-        String operator = symbolMapping.get(cluster.getTreeNodeLabel());
         ClusterArgument argument = clusterArgumentArray[cluster.getIndexToArgList()];
 
         while (argument.getPrevClusterArg() != 0) {
             argument = clusterArgumentArray[argument.getPrevClusterArg()];
-            arguments.add(symbolMapping.get(argument.getCcNumber()));
+            if (argument.getCcNumber() != 0)
+                arguments.add(symbolMapping.get(argument.getCcNumber()));
+            else
+                arguments.add("NULL");
         }
         return arguments;
     }
