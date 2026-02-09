@@ -344,4 +344,12 @@ public class VarExp extends MathExp {
         return new VarExp(cloneLocation(), newQualifier, newName, myQuantification, myIsPrecisDefinitionName);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getTopLevelOperator() {
+        return getName().getName();
+    }
+
 }

@@ -300,4 +300,11 @@ public class InfixExp extends AbstractFunctionExp {
                 myOperationName.clone(), substitute(myRightHandSide, substitutions));
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public String getTopLevelOperator() {
+        return getOperatorAsString();
+    }
+
 }

@@ -414,6 +414,10 @@ public class GeneralPurposeProver {
                 List<String> expLabelsToStringList = expLabelsToList(expLabels);
 
                 System.out.println("=== Congruence Classes ===");
+                System.out.println("Antecedent/Ultimate: " + "\u001B[35m" + "{0, 2}" + "\u001B[0m");
+                System.out.println("Succedent/Ultimate: " + "\u001B[35m" + "{1, 2}" + "\u001B[0m");
+                System.out.println("Non-Ultimate: " + "\u001B[35m" + "{}" + "\u001B[0m");
+                System.out.println();
                 for (int k = 1; registry.isClassDesignator(k); k++) {
                     registry.displayCongruence(expLabelsToStringList, k);
                 }
@@ -545,6 +549,8 @@ public class GeneralPurposeProver {
                                             // TODO Move deeper into the trees. This will probably be a recursive call,
                                             // & it will probably involve moving most of this method into a helper
                                             // method
+                                            System.out.println("Argument: " + arg + " - SubExp Operator: "
+                                                    + subExp.getTopLevelOperator() + "\n");
                                         }
                                         // TODO If this is not an operator, we need to put this in the resultant of the
                                         // Elaboration Rule
