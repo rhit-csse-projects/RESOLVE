@@ -2447,11 +2447,8 @@ public class CongruenceClassRegistry {
         ClusterArgument argument = clusterArgumentArray[cluster.getIndexToArgList()];
 
         while (argument.getCcNumber() != 0) {
+            arguments.add(symbolMapping.get(argument.getCcNumber()));
             argument = clusterArgumentArray[argument.getPrevClusterArg()];
-            if (argument.getCcNumber() != 0)
-                arguments.add(symbolMapping.get(argument.getCcNumber()));
-            else
-                arguments.add("NULL");
         }
         return arguments;
     }
