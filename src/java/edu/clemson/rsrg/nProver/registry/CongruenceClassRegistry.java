@@ -2323,7 +2323,7 @@ public class CongruenceClassRegistry {
         }
         Stand stand = standArray[congruenceClass.getFirstStand()];
 
-        sb.append("CC" + classIndex + " -> ");
+        sb.append("CC").append(classIndex).append(" -> ");
 
         while (stand.getStandTag() != 0) {
             CongruenceCluster congruenceCluster = clusterArray[stand.getFirstStandCluster()];
@@ -2344,6 +2344,8 @@ public class CongruenceClassRegistry {
             }
             stand = standArray[stand.getNextCCStand()];
         }
+
+        sb.append(" ").append("\u001B[35m").append(getCongruenceClass(classIndex).getAttribute()).append("\u001B[0m");
 
         System.out.println(sb);
     }

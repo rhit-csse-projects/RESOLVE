@@ -411,8 +411,12 @@ public class GeneralPurposeProver {
                 System.out.println("============ Elaboration & Matching (VC #" + i + ") ===============");
                 elaborate(registry, rules.getMyElaborationRules(), mappings, expLabels);
 
-                // System.out.println("============ Registry State (VC #" + i + ") ===============");
-                // System.out.println(registry);
+                List<String> expLabelsToStringList = expLabelsToList(expLabels);
+
+                System.out.println("=== Congruence Classes ===");
+                for (int k = 1; registry.isClassDesignator(k); k++) {
+                    registry.displayCongruence(expLabelsToStringList, k);
+                }
             }
         }
 
@@ -586,5 +590,16 @@ public class GeneralPurposeProver {
                 ids.add(expLabels.get(arg));
         }
         return ids;
+    }
+
+    private List<String> expLabelsToList(Map<String, Integer> expLabels) {
+        int maxIndex = expLabels.values().stream().max(Integer::compare).orElse(0);
+
+        List<String> list = new ArrayList<>(Collections.nCopies(maxIndex + 1, null));
+
+        for (Map.Entry<String, Integer> entry : expLabels.entrySet()) {
+            list.set(entry.getValue(), entry.getKey());
+        }
+        return list;
     }
 }
