@@ -600,6 +600,12 @@ public class GeneralPurposeProver {
         for (Map.Entry<String, Integer> entry : expLabels.entrySet()) {
             list.set(entry.getValue(), entry.getKey());
         }
+
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i) == null)
+                list.add("null");
+        }
+
         return list;
     }
 }

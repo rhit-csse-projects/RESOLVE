@@ -2356,11 +2356,14 @@ public class CongruenceClassRegistry {
 
         sb.append(operator + " ");
 
-        while (argument.getPrevClusterArg() != 0) {
-            sb.append("CC" + argument.getCcNumber());
+        while (argument.getCcNumber() != 0) {
+            if (argument.getCcNumber() != 0)
+                sb.append("CC" + argument.getCcNumber());
+            else
+                break;
 
             argument = clusterArgumentArray[argument.getPrevClusterArg()];
-            if (argument.getPrevClusterArg() != 0)
+            if (argument.getCcNumber() != 0)
                 sb.append(", ");
         }
     }
@@ -2443,7 +2446,7 @@ public class CongruenceClassRegistry {
         List<String> arguments = new ArrayList<>();
         ClusterArgument argument = clusterArgumentArray[cluster.getIndexToArgList()];
 
-        while (argument.getPrevClusterArg() != 0) {
+        while (argument.getCcNumber() != 0) {
             argument = clusterArgumentArray[argument.getPrevClusterArg()];
             if (argument.getCcNumber() != 0)
                 arguments.add(symbolMapping.get(argument.getCcNumber()));
