@@ -14,6 +14,8 @@ package edu.clemson.rsrg.nProver;
 
 import edu.clemson.rsrg.absyn.declarations.moduledecl.*;
 import edu.clemson.rsrg.absyn.expressions.Exp;
+import edu.clemson.rsrg.absyn.expressions.mathexpr.FunctionExp;
+import edu.clemson.rsrg.absyn.expressions.mathexpr.InfixExp;
 import edu.clemson.rsrg.init.CompileEnvironment;
 import edu.clemson.rsrg.init.flag.Flag;
 import edu.clemson.rsrg.init.flag.FlagDependencies;
@@ -23,6 +25,7 @@ import edu.clemson.rsrg.nProver.registry.CongruenceClassRegistry;
 import edu.clemson.rsrg.nProver.utilities.theorems.ElaborationRule;
 import edu.clemson.rsrg.nProver.utilities.theorems.ElaborationRules;
 import edu.clemson.rsrg.nProver.utilities.theorems.TheoremStore;
+import edu.clemson.rsrg.nProver.utilities.treewakers.AbstractRegisterSequent;
 import edu.clemson.rsrg.nProver.utilities.treewakers.RegisterAntecedent;
 import edu.clemson.rsrg.nProver.utilities.treewakers.RegisterSuccedent;
 import edu.clemson.rsrg.parsing.data.LocationDetailModel;
@@ -330,71 +333,96 @@ public class GeneralPurposeProver {
 
         // Use the new TheoremStore to preload theorems for fast lookup.
         TheoremStore theoremStore = new TheoremStore(myCurrentModuleScope);
-        Map<String, Integer> expLabels = theoremStore.getExpLabels();
+        // Map<String, Integer> expLabels = theoremStore.getExpLabels();
+
+        Map<String, Integer> expLabels = new LinkedHashMap<>();
+        // revert ExpLabels to before Senior Project Team things
+        // NM: 0, 1 are spared for <= (1), = (2), etc., the list can expand with more reflexive operators
+        // preload <=, = into the map
+        expLabels.put("<=", AbstractRegisterSequent.OP_LESS_THAN_OR_EQUALS);
+        expLabels.put("=", AbstractRegisterSequent.OP_EQUALS);
 
         // Loop through each of the VCs and attempt to prove them
         for (int i = 0; i < myVerificationConditions.size(); i++) {
-            List<String> mappings = new ArrayList<>(theoremStore.getLabelList());
-            VerificationCondition vc = myVerificationConditions.get(i);
+            if (i == 3) {
 
-            System.out.println(
-                    "====================================== VC #" + i + " =====================================");
-            System.out.println(vc);
-            // Store the start time for generating proofs for this VC
-            long startTime = System.nanoTime();
-            // Obtain the sequent to be proved
-            Sequent sequent = vc.getSequent();
+                List<String> mappings = new ArrayList<>(theoremStore.getLabelList());
+                VerificationCondition vc = myVerificationConditions.get(i);
 
-            // Create a registry and label map
-            CongruenceClassRegistry registry = new CongruenceClassRegistry(1000, 1000, 1000, 1000);
-            Set<TheoremEntry> relevantTheorems = theoremStore.getRelevantTheorems(sequent.getAntecedents(),
-                    sequent.getConcequents());
+                System.out.println(
+                        "====================================== VC #" + i + " =====================================");
+                System.out.println(vc);
+                // Store the start time for generating proofs for this VC
+                long startTime = System.nanoTime();
+                // Obtain the sequent to be proved
+                Sequent sequent = vc.getSequent();
 
-            // Visit antecedents
-            RegisterAntecedent regAntecedent = new RegisterAntecedent(registry, expLabels, 3, mappings);
-            for (Exp exp : sequent.getAntecedents()) {
-                TreeWalker.visit(regAntecedent, exp);
-            }
+                // Create a registry and label map
+                CongruenceClassRegistry registry = new CongruenceClassRegistry(1000, 1000, 1000, 1000);
+                Set<TheoremEntry> relevantTheorems = theoremStore.getRelevantTheorems(sequent.getAntecedents(),
+                        sequent.getConcequents());
 
-            // Visit consequents
-            RegisterSuccedent regConsequent = new RegisterSuccedent(regAntecedent.getRegistry(),
-                    regAntecedent.getExpLabels(), regAntecedent.getNextLabel(), mappings);
-            for (Exp exp : sequent.getConcequents()) {
-                TreeWalker.visit(regConsequent, exp);
-            }
+                // Visit antecedents
+                RegisterAntecedent regAntecedent = new RegisterAntecedent(registry, expLabels, 3, mappings);
+                for (Exp exp : sequent.getAntecedents()) {
+                    TreeWalker.visit(regAntecedent, exp);
+                }
 
-            // Store the end time for generating proofs for this VC
-            long endTime = System.nanoTime();
+                // Visit consequents
+                RegisterSuccedent regConsequent = new RegisterSuccedent(regAntecedent.getRegistry(),
+                        regAntecedent.getExpLabels(), regAntecedent.getNextLabel(), mappings);
+                for (Exp exp : sequent.getConcequents()) {
+                    TreeWalker.visit(regConsequent, exp);
+                }
 
-            // Store the prover results for this VC
-            myVCProverResults.add(
-                    new VCProverResult(vc, TimeUnit.MILLISECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS),
-                            registry.checkIfProved(), false, false));
+                // Store the end time for generating proofs for this VC
+                long endTime = System.nanoTime();
 
-            // Store the verbose proof detail for this VC
-            String result = registry.checkIfProved() ? "Proved" : "Not Proved";
-            storeVCProofVerboseDetail(vc, result, registry, expLabels);
+                // Store the prover results for this VC
+                myVCProverResults.add(
+                        new VCProverResult(vc, TimeUnit.MILLISECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS),
+                                registry.checkIfProved(), false, false));
 
-            System.out.println("Status: " + result + "\n");
+                // Store the verbose proof detail for this VC
+                String result = registry.checkIfProved() ? "Proved" : "Not Proved";
+                storeVCProofVerboseDetail(vc, result, registry, expLabels);
 
-            // System.out.println("============ CongruenceClassRegistry ===============");
-            // System.out.println(registry.toString());
+                System.out.println("Status: " + result + "\n");
 
-            ElaborationRules rules = new ElaborationRules(relevantTheorems);
+                // System.out.println("============ CongruenceClassRegistry ===============");
+                // System.out.println(registry.toString());
 
-            System.out.println(
-                    "=========================== Relevant Theorems (VC #" + i + ") ===========================");
-            int j = 0;
-            for (TheoremEntry te : relevantTheorems) {
-                System.out.println("Theorem " + i + "_" + j + ": " + "\u001B[33m" + te.getName() + "\u001B[0m"
-                        + " (from " + "\u001B[34m" + te.getSourceModuleIdentifier() + "\u001B[0m" + ")");
-                System.out.println(te.getAssertion());
+                ElaborationRules rules = new ElaborationRules(relevantTheorems);
+
+                System.out.println(
+                        "=========================== Relevant Theorems (VC #" + i + ") ===========================");
+                int j = 0;
+                for (TheoremEntry te : relevantTheorems) {
+                    System.out.println("Theorem " + i + "_" + j + ": " + "\u001B[33m" + te.getName() + "\u001B[0m"
+                            + " (from " + "\u001B[34m" + te.getSourceModuleIdentifier() + "\u001B[0m" + ")");
+                    System.out.println(te.getAssertion());
+                    System.out.println();
+                    j++;
+                }
+
+                System.out.println("============ Elaboration Rules (VC #" + i + ") ===============");
+                System.out.println(rules);
+
+                System.out.println("============ Elaboration & Matching (VC #" + i + ") ===============");
+
+                List<String> expLabelsToStringList = expLabelsToList(expLabels);
+                elaborate(registry, rules.getMyElaborationRules(), expLabelsToStringList, expLabels);
+
+                System.out.println("=== Congruence Classes ===");
+                System.out.println("Antecedent/Ultimate: " + "\u001B[35m" + "{0, 2}" + "\u001B[0m");
+                System.out.println("Succedent/Ultimate: " + "\u001B[35m" + "{1, 2}" + "\u001B[0m");
+                System.out.println("Non-Ultimate: " + "\u001B[35m" + "{}" + "\u001B[0m");
+                System.out.println("Proved: " + "\u001B[35m" + "{2}" + "\u001B[0m");
                 System.out.println();
-                j++;
+                for (int k = 1; registry.isClassDesignator(k); k++) {
+                    registry.displayCongruence(expLabelsToStringList, k);
+                }
             }
-
-            System.out.println("============ Elaboration Rules (VC #" + i + ") ===============");
-            System.out.println(rules);
         }
 
         // Compute the total elapsed time in generating proofs for the VCs in this
@@ -480,42 +508,100 @@ public class GeneralPurposeProver {
      */
     private void elaborate(CongruenceClassRegistry registry, List<ElaborationRule> rules, List<String> mappings,
             Map<String, Integer> expLabels) {
-        int currentCCAccessor = 0;
-        for (ElaborationRule elaborationRule : rules)
+
+        int elaborationRuleCounter = 0;
+
+        for (ElaborationRule elaborationRule : rules) {
+            elaborationRuleCounter++;
             for (Exp precursor : elaborationRule.getPrecursorClauses()) {
+                if (!(precursor instanceof FunctionExp || precursor instanceof InfixExp))
+                    continue;
+
                 int operator = expLabels.get(precursor.getTopLevelOperator());
+
+                int currentCCAccessor = 0;
+                currentCCAccessor = registry.firstCCAccessorForTreeNodeLabel(operator);
+
                 do {
-                    currentCCAccessor = registry.advanceCClassAccessor(operator, currentCCAccessor); // This is called c
-                                                                                                     // in Bill's email
-                    if (registry.getCongruenceClass(currentCCAccessor).getAttribute().get(0)) { // this checks if we're
-                                                                                                // getting an
-                        // antecedent
-                        int p = 0;
+                    if (!isUltimateAntecedent(registry, currentCCAccessor)) {
+                        // this checks if we're getting an antecedent
+                        int currentClusterAccessor = 0; // this is p
                         // The recursion starts here, according to Chris
+                        currentClusterAccessor = registry.getFirstClusterAccessorForCC(currentCCAccessor, operator);
                         do {
-                            p = registry.advanceClusterAccessor(operator, p); // This doesn't look like the dissertation
-                            // & might
-                            // be wrong.
-                            List<String> arglist = registry.getArgumentsList(mappings,
-                                    registry.getCongruenceCluster(p));
+                            List<String> arglist = new ArrayList<>();
+                            List<Integer> argListCCNums = registry
+                                    .getArgumentsList(registry.getCongruenceCluster(currentClusterAccessor));
+                            if (!argListCCNums.isEmpty()) {
+                                arglist = registry.reverseLabelMapping(argListCCNums, mappings);
+                                displayArgumentLists(elaborationRule, precursor, elaborationRuleCounter, arglist,
+                                        currentCCAccessor, currentClusterAccessor, argListCCNums);
+
+                            }
                             boolean isMatched = false;
                             if (arglist.size() == precursor.getSubExpressions().size()) {
                                 for (String arg : arglist) {
                                     // TODO Make sure we don't match the same element twice
                                     for (Exp subExp : precursor.getSubExpressions()) {
                                         if (arg.equals(subExp.getTopLevelOperator())) {
+                                            // TODO have this match on leaves if
+                                            // next precursor level is leaves.
+                                            // Need a way for matching to know what is viable to match
                                             // TODO Move deeper into the trees. This will probably be a recursive call,
                                             // & it will probably involve moving most of this method into a helper
                                             // method
+                                            System.out.println("Argument: " + arg + " - SubExp Operator: "
+                                                    + subExp.getTopLevelOperator() + "\n");
                                         }
                                         // TODO If this is not an operator, we need to put this in the resultant of the
                                         // Elaboration Rule
                                     }
                                 }
                             }
-                        } while (registry.isStandMaximal(operator, p));
+                            currentClusterAccessor = registry.advanceClusterAccessor(operator, currentClusterAccessor);
+                            // This doesn't look like the dissertation & might be wrong.
+                        } while (!registry.isStandMaximal(operator, currentClusterAccessor));
                     }
-                } while (registry.isVarietyMaximal(operator, currentCCAccessor));
+                    currentCCAccessor = registry.advanceCClassAccessor(operator, currentCCAccessor);
+                    // This is called c in Bill's email
+                } while (!registry.isVarietyMaximal(operator, currentCCAccessor));
             }
+        }
+    }
+
+    private static void displayArgumentLists(ElaborationRule elaborationRule, Exp precursor, int elaborationRuleCounter,
+            List<String> arglist, int currentCCAccessor, int currentClusterAccessor, List<Integer> argListCCNums) {
+
+        System.out.println("Elaboration Rule #" + elaborationRuleCounter);
+        System.out.println("Precursor: " + precursor);
+        System.out.println("Source Theorem: " + "\u001B[33m" + elaborationRule.getSourceTheoremName() + "\u001B[0m"
+                + " (from: " + "\u001B[34m" + elaborationRule.getSourceModuleName() + "\u001B[0m" + ")");
+        System.out.println("Argument List for operator " + "\u001B[33m" + precursor.getTopLevelOperator() + "\u001B[0m"
+                + ": " + "\u001B[35m" + arglist + "\u001B[0m");
+        System.out.println("Argument CC Accessors: " + "\u001B[35m" + argListCCNums + "\u001B[0m");
+        System.out.println("currentClassAccessor: " + "\u001B[35m" + currentCCAccessor + "\u001B[0m");
+        System.out.println("currentClusterAccessor: " + "\u001B[34m" + currentClusterAccessor + "\u001B[0m" + "\n");
+    }
+
+    private boolean isUltimateAntecedent(CongruenceClassRegistry registry, int ccAccessor) {
+        BitSet attr = registry.getCongruenceClass(ccAccessor).getAttribute();
+        return attr.get(2) && attr.get(0);
+    }
+
+    private List<String> expLabelsToList(Map<String, Integer> expLabels) {
+        int maxIndex = expLabels.values().stream().max(Integer::compare).orElse(0);
+
+        List<String> list = new ArrayList<>(Collections.nCopies(maxIndex + 1, null));
+
+        for (Map.Entry<String, Integer> entry : expLabels.entrySet()) {
+            list.set(entry.getValue(), entry.getKey());
+        }
+
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i) == null)
+                list.add("null");
+        }
+
+        return list;
     }
 }

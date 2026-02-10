@@ -588,7 +588,30 @@ public class CongruenceClassRegistry {
             }
         }
         // this is just defensive, we will never get here as the operation is always called when we have next accessor
+        System.out.println("ERROR: reached unreachable code in advanceCClassAccessor");
         return 0;
+    }
+
+    public int firstCCAccessorForTreeNodeLabel(Integer treeNodeLabel) {
+        int stand = varietyArray[treeNodeLabel].getFirstStand();
+
+        if (stand == 0)
+            return -1;
+
+        int cluster = standArray[stand].getFirstStandCluster();
+
+        int cc = clusterArray[cluster].getIndexToCongruenceClass();
+
+        return congruenceClassArray[cc].getDominantCClass();
+    }
+
+    public int getFirstClusterAccessorForCC(Integer currentCCAccessor, int operator) {
+        int cc = congruenceClassArray[currentCCAccessor].getDominantCClass();
+        int stand = congruenceClassArray[cc].getFirstStand();
+        while (standArray[stand].getTreeNodeLabel() != operator) {
+            stand = standArray[stand].getNextCCStand();
+        }
+        return standArray[stand].getFirstStandCluster();
     }
 
     /**
@@ -2300,7 +2323,7 @@ public class CongruenceClassRegistry {
         }
         Stand stand = standArray[congruenceClass.getFirstStand()];
 
-        sb.append("CC" + classIndex + " -> ");
+        sb.append("CC").append(classIndex).append(" -> ");
 
         while (stand.getStandTag() != 0) {
             CongruenceCluster congruenceCluster = clusterArray[stand.getFirstStandCluster()];
@@ -2322,6 +2345,8 @@ public class CongruenceClassRegistry {
             stand = standArray[stand.getNextCCStand()];
         }
 
+        sb.append(" ").append("\u001B[35m").append(getCongruenceClass(classIndex).getAttribute()).append("\u001B[0m");
+
         System.out.println(sb);
     }
 
@@ -2331,11 +2356,14 @@ public class CongruenceClassRegistry {
 
         sb.append(operator + " ");
 
-        while (argument.getPrevClusterArg() != 0) {
-            sb.append("CC" + argument.getCcNumber());
+        while (argument.getCcNumber() != 0) {
+            if (argument.getCcNumber() != 0)
+                sb.append("CC" + argument.getCcNumber());
+            else
+                break;
 
             argument = clusterArgumentArray[argument.getPrevClusterArg()];
-            if (argument.getPrevClusterArg() != 0)
+            if (argument.getCcNumber() != 0)
                 sb.append(", ");
         }
     }
@@ -2388,16 +2416,24 @@ public class CongruenceClassRegistry {
      */
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append("ClusterArguments: ");
-        sb.append(Arrays.toString(clusterArgumentArray));
-        sb.append("\nClusters: ");
-        sb.append(Arrays.toString(clusterArray));
-        sb.append("\nStands: ");
-        sb.append(Arrays.toString(standArray));
-        sb.append("\nCongruenceClasses: ");
-        sb.append(Arrays.toString(congruenceClassArray));
-        sb.append("\n");
+        StringBuilder sb = new StringBuilder();
+        sb.append("ClusterArguments:\n").append(arrayToString(clusterArgumentArray)).append("\n");
+        sb.append("Clusters:\n").append(arrayToString(clusterArray)).append("\n");
+        sb.append("Stands:\n").append(arrayToString(standArray)).append("\n");
+        sb.append("CongruenceClasses:\n").append(arrayToString(congruenceClassArray)).append("\n");
+
+        return sb.toString();
+    }
+
+    private String arrayToString(Object[] arr) {
+        if (arr == null)
+            return "null";
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] != null) {
+                sb.append("[").append(i).append("] = ").append(arr[i].toString()).append("\n");
+            }
+        }
         return sb.toString();
     }
 
@@ -2406,15 +2442,26 @@ public class CongruenceClassRegistry {
      * Returns all the expressions as strings in the congruence class's arguments
      * </p>
      */
-    public List<String> getArgumentsList(List<String> symbolMapping, CongruenceCluster cluster) {
-        List<String> arguments = new ArrayList<>();
-        String operator = symbolMapping.get(cluster.getTreeNodeLabel());
+    public List<Integer> getArgumentsList(CongruenceCluster cluster) {
+        List<Integer> arguments = new ArrayList<>();
         ClusterArgument argument = clusterArgumentArray[cluster.getIndexToArgList()];
 
-        while (argument.getPrevClusterArg() != 0) {
+        while (argument.getCcNumber() != 0) {
+            arguments.add(argument.getCcNumber());
             argument = clusterArgumentArray[argument.getPrevClusterArg()];
-            arguments.add(symbolMapping.get(argument.getCcNumber()));
         }
         return arguments;
+    }
+
+    public List<String> reverseLabelMapping(List<Integer> arglist, List<String> mappings) {
+        List<String> ids = new ArrayList<>();
+        for (Integer arg : arglist) {
+            CongruenceCluster cluster = getCongruenceCluster(arg);
+            if (arg == 0)
+                ids.add("NULL");
+            else
+                ids.add(mappings.get(cluster.getTreeNodeLabel()));
+        }
+        return ids;
     }
 }
