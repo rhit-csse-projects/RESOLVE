@@ -491,7 +491,7 @@ public class GeneralPurposeProver {
                                                                                                 // getting an
                         // antecedent
                         int p = 0;
-			// The recursion starts here, according to Chris
+                        // The recursion starts here, according to Chris
                         do {
                             p = registry.advanceClusterAccessor(operator, p); // This doesn't look like the dissertation
                             // & might
