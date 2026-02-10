@@ -529,8 +529,8 @@ public class GeneralPurposeProver {
                         currentClusterAccessor = registry.getFirstClusterAccessorForCC(currentCCAccessor, operator);
                         do {
                             List<String> arglist = new ArrayList<>();
-                            List<Integer> argListCCNums = registry.getArgumentsList(
-                                    registry.getCongruenceCluster(currentClusterAccessor));
+                            List<Integer> argListCCNums = registry
+                                    .getArgumentsList(registry.getCongruenceCluster(currentClusterAccessor));
                             if (!argListCCNums.isEmpty()) {
                                 arglist = registry.reverseLabelMapping(argListCCNums, mappings);
                                 displayArgumentLists(elaborationRule, precursor, elaborationRuleCounter, arglist,

@@ -2453,7 +2453,7 @@ public class CongruenceClassRegistry {
         return arguments;
     }
 
-    public List<String> reverseLabelMapping(List<Integer> arglist, List<String>mappings) {
+    public List<String> reverseLabelMapping(List<Integer> arglist, List<String> mappings) {
         List<String> ids = new ArrayList<>();
         for (Integer arg : arglist) {
             CongruenceCluster cluster = getCongruenceCluster(arg);
