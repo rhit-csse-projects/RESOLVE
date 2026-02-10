@@ -409,9 +409,9 @@ public class GeneralPurposeProver {
                 System.out.println(rules);
 
                 System.out.println("============ Elaboration & Matching (VC #" + i + ") ===============");
-                elaborate(registry, rules.getMyElaborationRules(), mappings, expLabels);
 
                 List<String> expLabelsToStringList = expLabelsToList(expLabels);
+                elaborate(registry, rules.getMyElaborationRules(), expLabelsToStringList, expLabels);
 
                 System.out.println("=== Congruence Classes ===");
                 System.out.println("Antecedent/Ultimate: " + "\u001B[35m" + "{0, 2}" + "\u001B[0m");
@@ -508,10 +508,6 @@ public class GeneralPurposeProver {
     private void elaborate(CongruenceClassRegistry registry, List<ElaborationRule> rules, List<String> mappings,
             Map<String, Integer> expLabels) {
 
-        Map<Integer, String> idMappings = new HashMap<>();
-        for (Entry<String, Integer> entry : expLabels.entrySet()) {
-            idMappings.put(entry.getValue(), entry.getKey());
-        }
         int elaborationRuleCounter = 0;
 
         for (ElaborationRule elaborationRule : rules) {
@@ -532,10 +528,11 @@ public class GeneralPurposeProver {
                         // The recursion starts here, according to Chris
                         currentClusterAccessor = registry.getFirstClusterAccessorForCC(currentCCAccessor, operator);
                         do {
-                            List<String> arglist = registry.getArgumentsList(idMappings,
+                            List<String> arglist = new ArrayList<>();
+                            List<Integer> argListCCNums = registry.getArgumentsList(
                                     registry.getCongruenceCluster(currentClusterAccessor));
-                            if (!arglist.isEmpty()) {
-                                List<Integer> argListCCNums = reverseLabelMapping(arglist, expLabels);
+                            if (!argListCCNums.isEmpty()) {
+                                arglist = registry.reverseLabelMapping(argListCCNums, mappings);
                                 displayArgumentLists(elaborationRule, precursor, elaborationRuleCounter, arglist,
                                         currentCCAccessor, currentClusterAccessor, argListCCNums);
 
@@ -585,17 +582,6 @@ public class GeneralPurposeProver {
     private boolean isUltimateAntecedent(CongruenceClassRegistry registry, int ccAccessor) {
         BitSet attr = registry.getCongruenceClass(ccAccessor).getAttribute();
         return attr.get(2) && attr.get(0);
-    }
-
-    private List<Integer> reverseLabelMapping(List<String> arglist, Map<String, Integer> expLabels) {
-        List<Integer> ids = new ArrayList<>();
-        for (String arg : arglist) {
-            if (Objects.equals(arg, "NULL"))
-                ids.add(0);
-            else
-                ids.add(expLabels.get(arg));
-        }
-        return ids;
     }
 
     private List<String> expLabelsToList(Map<String, Integer> expLabels) {

@@ -2442,18 +2442,26 @@ public class CongruenceClassRegistry {
      * Returns all the expressions as strings in the congruence class's arguments
      * </p>
      */
-    public List<String> getArgumentsList(Map<Integer, String> symbolMapping, CongruenceCluster cluster) {
-        List<String> arguments = new ArrayList<>();
+    public List<Integer> getArgumentsList(CongruenceCluster cluster) {
+        List<Integer> arguments = new ArrayList<>();
         ClusterArgument argument = clusterArgumentArray[cluster.getIndexToArgList()];
 
         while (argument.getCcNumber() != 0) {
-            if (symbolMapping.get(argument.getCcNumber()) != null) {
-                arguments.add(symbolMapping.get(argument.getCcNumber()));
-            } else {
-                arguments.add("NULL");
-            }
+            arguments.add(argument.getCcNumber());
             argument = clusterArgumentArray[argument.getPrevClusterArg()];
         }
         return arguments;
+    }
+
+    public List<String> reverseLabelMapping(List<Integer> arglist, List<String>mappings) {
+        List<String> ids = new ArrayList<>();
+        for (Integer arg : arglist) {
+            CongruenceCluster cluster = getCongruenceCluster(arg);
+            if (arg == 0)
+                ids.add("NULL");
+            else
+                ids.add(mappings.get(cluster.getTreeNodeLabel()));
+        }
+        return ids;
     }
 }
