@@ -409,7 +409,7 @@ public class GeneralPurposeProver {
             System.out.println("============ Elaboration & Matching (VC #" + i + ") ===============");
 
             List<String> expLabelsToStringList = expLabelsToList(expLabels);
-            elaborate(registry, rules.getMyElaborationRules(), expLabelsToStringList, expLabels);
+            elaborate(registry, rules.getMyElaborationRules(), expLabels);
 
             System.out.println("=== Congruence Classes ===");
             System.out.println("Antecedent/Ultimate: " + "\u001B[35m" + "{0, 2}" + "\u001B[0m");
@@ -504,7 +504,7 @@ public class GeneralPurposeProver {
      * Elaborates on congruence classes using the provided elaboration rules.
      * </p>
      */
-    private void elaborate(CongruenceClassRegistry registry, List<ElaborationRule> rules, List<String> mappings,
+    private void elaborate(CongruenceClassRegistry registry, List<ElaborationRule> rules,
             Map<String, Integer> expLabels) {
 
         int elaborationRuleCounter = 0;
@@ -542,12 +542,8 @@ public class GeneralPurposeProver {
     }
 
     private boolean ccMatchesExpression(CongruenceClassRegistry registry, Exp needToMatch,
-            Map<String, Integer> expLabels, int currentCCAccessor, int operator) { // Determines if one of the
-                                                                                   // congruence classes matches the
-        if (!(needToMatch instanceof AbstractFunctionExp)) { // We're at a leaf node. This is our base case, and
-                                                             // recursion can stop.
-            return true;
-        }
+            Map<String, Integer> expLabels, int currentCCAccessor, int operator) { // Determines if anything in the
+                                                                                   // Congruence Class matches the Exp
 
         // A cluster's argument is a single CC, so no need to loop through those or use a variety at this point
         int currentClusterAccessor = registry.getFirstClusterAccessorForCC(currentCCAccessor, operator); // This is p
@@ -564,13 +560,24 @@ public class GeneralPurposeProver {
 
             boolean matchedAllArgs = true;
             for (Exp subExp : subExpressions) { // We need to recursively check the arguments of this cluster
-                boolean matchedThisSubExp = false;
+                if (!(subExp instanceof AbstractFunctionExp)) { // Base Case: At a leaf node
+                    // TODO: Make this work for theories other than String theory
+                    String expString = subExp.toString();
+                    if (subExp.toString().equals("Empty_String")) { // Constants require exact match
+                        if (registry.getCongruenceCluster(currentClusterAccessor).getTreeNodeLabel()
+                                .equals(expLabels.get(expString))) {
+                            continue;
+                        } else {
+                            matchedAllArgs = false;
+                            break;
+                        }
+                    } else { // All variables are an automatic match
+                        continue;
+                    }
 
-                if (!(subExp instanceof AbstractFunctionExp)) { // Variable always match
-                    matchedThisSubExp = true;
-                    continue;
                 }
 
+                boolean matchedThisSubExp = false;
                 int subExpOperator = expLabels.get(subExp.getTopLevelOperator());
 
                 for (int arg : clusterArgs) {

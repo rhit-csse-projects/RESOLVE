@@ -75,7 +75,7 @@ public class ElaborationRule {
         } else {
             sb.append("No Source Theorem for this Rule \n");
         }
-        sb.append("Precursor Clauses: ");
+        sb.append("\n\n Precursor Clauses: ");
         sb.append(myPrecursorClauses.toString());
         sb.append("\n Resultant Clause: ");
         sb.append(myResultantClause.toString());
