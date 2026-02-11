@@ -172,7 +172,7 @@ public class ElaborationRules {
         StringBuilder sb = new StringBuilder();
         sb.append("Elaboration Rules: \n");
         for (int i = 0; i < myElaborationRules.size(); i++) {
-            sb.append(i + 1);
+            sb.append("Rule #").append(i + 1);
             sb.append(": ");
             sb.append(myElaborationRules.get(i).toString());
         }

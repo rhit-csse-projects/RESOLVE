@@ -2344,8 +2344,10 @@ public class CongruenceClassRegistry {
             }
             stand = standArray[stand.getNextCCStand()];
         }
-
-        sb.append(" ").append("\u001B[35m").append(getCongruenceClass(classIndex).getAttribute()).append("\u001B[0m");
+        sb.append(" ");
+        boolean isSuccedent = getCongruenceClass(classIndex).getAttribute().get(1);
+        if (isSuccedent)
+            sb.append("\u001B[35m").append("(succedent)").append("\u001B[0m");
 
         System.out.println(sb);
     }
