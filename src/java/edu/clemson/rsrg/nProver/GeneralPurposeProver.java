@@ -406,17 +406,15 @@ public class GeneralPurposeProver {
             System.out.println("============ Elaboration Rules (VC #" + i + ") ===============");
             System.out.println(rules);
 
+            System.out.println("============ VC #" + i + " (Printed again for reference) " + " ===============");
+            System.out.println(vc);
+
             System.out.println("============ Elaboration & Matching (VC #" + i + ") ===============");
 
             List<String> expLabelsToStringList = expLabelsToList(expLabels);
             elaborate(registry, rules.getMyElaborationRules(), expLabels);
 
             System.out.println("=== Congruence Classes ===");
-            System.out.println("Antecedent/Ultimate: " + "\u001B[35m" + "{0, 2}" + "\u001B[0m");
-            System.out.println("Succedent/Ultimate: " + "\u001B[35m" + "{1, 2}" + "\u001B[0m");
-            System.out.println("Non-Ultimate: " + "\u001B[35m" + "{}" + "\u001B[0m");
-            System.out.println("Proved: " + "\u001B[35m" + "{2}" + "\u001B[0m");
-            System.out.println();
             for (int k = 1; registry.isClassDesignator(k); k++) {
                 registry.displayCongruence(expLabelsToStringList, k);
             }
@@ -520,7 +518,7 @@ public class GeneralPurposeProver {
                 int currentCCAccessor = registry.firstCCAccessorForTreeNodeLabel(operator);
 
                 boolean foundMatch = false;
-                do { // Loop through the current variety
+                do { // Loop through the congruence classes
                     if (!isUltimateAntecedent(registry, currentCCAccessor)) {
                         foundMatch = ccMatchesExpression(registry, precursor, expLabels, currentCCAccessor, operator);
                         if (foundMatch) {
@@ -548,7 +546,7 @@ public class GeneralPurposeProver {
         // A cluster's argument is a single CC, so no need to loop through those or use a variety at this point
         int currentClusterAccessor = registry.getFirstClusterAccessorForCC(currentCCAccessor, operator); // This is p
 
-        do { // Loop through the stands
+        do { // Loop through the clusters in the stand
              // If we've made it this far, then we have at least one cluster with the correct root node
 
             List<Integer> clusterArgs = registry
