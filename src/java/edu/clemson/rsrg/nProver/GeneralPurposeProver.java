@@ -14,6 +14,7 @@ package edu.clemson.rsrg.nProver;
 
 import edu.clemson.rsrg.absyn.declarations.moduledecl.*;
 import edu.clemson.rsrg.absyn.expressions.Exp;
+import edu.clemson.rsrg.absyn.expressions.mathexpr.AbstractFunctionExp;
 import edu.clemson.rsrg.absyn.expressions.mathexpr.FunctionExp;
 import edu.clemson.rsrg.absyn.expressions.mathexpr.InfixExp;
 import edu.clemson.rsrg.init.CompileEnvironment;
@@ -344,6 +345,7 @@ public class GeneralPurposeProver {
 
         // Loop through each of the VCs and attempt to prove them
         for (int i = 0; i < myVerificationConditions.size(); i++) {
+            //TODO: Create new threads for each VC, and kill them if they run for too long
             if (i == 3) {
 
                 List<String> mappings = new ArrayList<>(theoremStore.getLabelList());
@@ -514,21 +516,19 @@ public class GeneralPurposeProver {
         for (ElaborationRule elaborationRule : rules) {
             elaborationRuleCounter++;
             for (Exp precursor : elaborationRule.getPrecursorClauses()) {
-                if (!(precursor instanceof FunctionExp || precursor instanceof InfixExp))
+                if (!(precursor instanceof AbstractFunctionExp))
                     continue;
 
                 int operator = expLabels.get(precursor.getTopLevelOperator());
 
-                int currentCCAccessor = 0;
-                currentCCAccessor = registry.firstCCAccessorForTreeNodeLabel(operator);
+                int currentCCAccessor = registry.firstCCAccessorForTreeNodeLabel(operator);
 
-                do {
+                do { //Loop through the current variety
                     if (!isUltimateAntecedent(registry, currentCCAccessor)) {
                         // this checks if we're getting an antecedent
-                        int currentClusterAccessor = 0; // this is p
-                        // The recursion starts here, according to Chris
-                        currentClusterAccessor = registry.getFirstClusterAccessorForCC(currentCCAccessor, operator);
-                        do {
+                        // TODO: The recursion starts here, according to Chris
+                        int currentClusterAccessor = registry.getFirstClusterAccessorForCC(currentCCAccessor, operator); // This is p
+                        do { //Loop though the current stand
                             List<String> arglist = new ArrayList<>();
                             List<Integer> argListCCNums = registry
                                     .getArgumentsList(registry.getCongruenceCluster(currentClusterAccessor));
@@ -540,23 +540,7 @@ public class GeneralPurposeProver {
                             }
                             boolean isMatched = false;
                             if (arglist.size() == precursor.getSubExpressions().size()) {
-                                for (String arg : arglist) {
-                                    // TODO Make sure we don't match the same element twice
-                                    for (Exp subExp : precursor.getSubExpressions()) {
-                                        if (arg.equals(subExp.getTopLevelOperator())) {
-                                            // TODO have this match on leaves if
-                                            // next precursor level is leaves.
-                                            // Need a way for matching to know what is viable to match
-                                            // TODO Move deeper into the trees. This will probably be a recursive call,
-                                            // & it will probably involve moving most of this method into a helper
-                                            // method
-                                            System.out.println("Argument: " + arg + " - SubExp Operator: "
-                                                    + subExp.getTopLevelOperator() + "\n");
-                                        }
-                                        // TODO If this is not an operator, we need to put this in the resultant of the
-                                        // Elaboration Rule
-                                    }
-                                }
+                                matchArguments(registry, currentCCAccessor, precursor, expLabels);
                             }
                             currentClusterAccessor = registry.advanceClusterAccessor(operator, currentClusterAccessor);
                             // This doesn't look like the dissertation & might be wrong.
@@ -566,6 +550,29 @@ public class GeneralPurposeProver {
                     // This is called c in Bill's email
                 } while (!registry.isVarietyMaximal(operator, currentCCAccessor));
             }
+        }
+    }
+    
+    private void matchArguments(CongruenceClassRegistry registry, int currentCCAccessor, Exp precursor, Map<String, Integer> expLabels){
+        for (Exp subExp : precursor.getSubExpressions()) {
+                // TODO Make sure we don't match the same element twice
+                if(subExp instanceof AbstractFunctionExp) { //Need to recurse through this subexpression
+                    String op = subExp.getTopLevelOperator();
+                    int opCluster = registry.getFirstClusterAccessorForCC(currentCCAccessor, expLabels.get(op)); //
+                    // TODO have this match on leaves if
+                    // next precursor level is leaves.
+                    // Need a way for matching to know what is viable to match
+                    // TODO Move deeper into the trees. This will probably be a recursive call,
+                    // & it will probably involve moving most of this method into a helper
+                    // method
+                    //System.out.println("Argument: " + arg + " - SubExp Operator: + subExp.getTopLevelOperator() + "\n");
+                } else { //This is a leaf
+                    //Match the arguments
+                    //subExp.containsVar(arg, false);
+                    // TODO If this is not an operator, we need to put this in the resultant of the
+                    // Elaboration Rule
+                }
+
         }
     }
 
