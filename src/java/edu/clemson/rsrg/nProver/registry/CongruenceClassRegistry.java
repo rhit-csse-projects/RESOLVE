@@ -608,8 +608,11 @@ public class CongruenceClassRegistry {
     public int getFirstClusterAccessorForCC(Integer currentCCAccessor, int operator) {
         int cc = congruenceClassArray[currentCCAccessor].getDominantCClass();
         int stand = congruenceClassArray[cc].getFirstStand();
-        while (standArray[stand].getTreeNodeLabel() != operator) {
+        while (standArray[stand].getTreeNodeLabel() != operator && stand != 0) {
             stand = standArray[stand].getNextCCStand();
+        }
+        if(stand == 0) {
+            return -1;
         }
         return standArray[stand].getFirstStandCluster();
     }
