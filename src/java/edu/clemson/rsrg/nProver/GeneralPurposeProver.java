@@ -510,6 +510,9 @@ public class GeneralPurposeProver {
         for (ElaborationRule elaborationRule : rules) {
             elaborationRuleCounter++;
             for (Exp precursor : elaborationRule.getPrecursorClauses()) {
+		if (precursor.toString().matches("[0-9]+")) {
+		    System.out.println("Number or integer: " + precursor.toString());
+		}
                 if (!(precursor instanceof AbstractFunctionExp))
                     continue;
 
@@ -569,6 +572,10 @@ public class GeneralPurposeProver {
                             matchedAllArgs = false;
                             break;
                         }
+                    } else if (subExp.toString().matches("[0-9]+")) {
+                        // then we are either a natural number or an integer whose z was omitted
+                        System.out.println("Natural number or integer: " + subExp.toString() + subExp.getMathType());
+                        continue;
                     } else { // All variables are an automatic match
                         continue;
                     }
