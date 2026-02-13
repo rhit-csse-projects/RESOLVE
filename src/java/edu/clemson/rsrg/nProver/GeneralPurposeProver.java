@@ -510,27 +510,31 @@ public class GeneralPurposeProver {
         for (ElaborationRule elaborationRule : rules) {
             elaborationRuleCounter++;
             for (Exp precursor : elaborationRule.getPrecursorClauses()) {
-                if (precursor.toString().matches("[0-9]+")) {
-                    System.out.println("Number or integer: " + precursor.toString());
-                }
-                if (!(precursor instanceof AbstractFunctionExp))
-                    continue;
-
-                int operator = expLabels.get(precursor.getTopLevelOperator());
-
-                int currentCCAccessor = registry.firstCCAccessorForTreeNodeLabel(operator);
-
                 boolean foundMatch = false;
-                do { // Loop through the congruence classes
-                    // if (!isUltimateAntecedent(registry, currentCCAccessor)) {
-                    foundMatch = ccMatchesExpression(registry, precursor, expLabels, currentCCAccessor, operator);
-                    if (foundMatch) {
-                        break;
-                    }
-                    // }
-                    currentCCAccessor = registry.advanceCClassAccessor(operator, currentCCAccessor);
-                    // This is called c in Bill's email
-                } while (!registry.isVarietyMaximal(operator, currentCCAccessor));
+                if (precursor.toString().matches("[0-9]+")) {
+                    foundMatch = true;
+                    // TODO We need to see if these numbers are actually in the registry
+                }
+                if (!foundMatch) {
+                    if (!(precursor instanceof AbstractFunctionExp))
+                        continue;
+
+                    int operator = expLabels.get(precursor.getTopLevelOperator());
+
+                    int currentCCAccessor = registry.firstCCAccessorForTreeNodeLabel(operator);
+
+                    do { // Loop through the congruence classes
+                        // if (!isUltimateAntecedent(registry, currentCCAccessor)) {
+                        foundMatch = ccMatchesExpression(registry, precursor, expLabels, currentCCAccessor, operator);
+                        if (foundMatch) {
+                            break;
+                        }
+                        // }
+                        currentCCAccessor = registry.advanceCClassAccessor(operator, currentCCAccessor);
+                        // This is called c in Bill's email
+                    } while (!registry.isVarietyMaximal(operator, currentCCAccessor));
+
+                }
                 if (foundMatch) {
                     System.out.println("[Rule #" + elaborationRuleCounter + "] \u001B[42m Matched! \u001B[49m :"
                             + precursor.toString());
