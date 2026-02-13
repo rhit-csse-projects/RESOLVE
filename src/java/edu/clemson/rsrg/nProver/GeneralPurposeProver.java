@@ -561,14 +561,27 @@ public class GeneralPurposeProver {
                 if (!(subExp instanceof AbstractFunctionExp)) { // Base Case: At a leaf node
                     // TODO: Make this work for theories other than String theory
                     String expString = subExp.toString();
-                    if (subExp.toString().equals("Empty_String")) { // Constants require exact match
-                        if (registry.getCongruenceCluster(currentClusterAccessor).getTreeNodeLabel()
-                                .equals(expLabels.get(expString))) {
-                            continue;
-                        } else {
+                    System.out.println(expString);
+                    if (expString.equals("Empty_String") || expString.matches("[0-9]+")) { // Constants require exact match
+                        int expInt = expLabels.getOrDefault(expString, -1);
+                        if(expInt == -1) {
                             matchedAllArgs = false;
                             break;
                         }
+                        boolean matchedExactArg = false;
+                        for (int arg : clusterArgs) {
+                            int argClusterAccessor = registry.getFirstClusterAccessorForCC(arg, expInt); // This is p
+                            if (argClusterAccessor == -1) {
+                                continue;
+                            }
+                            do {
+                                int argLabel = registry.getCongruenceCluster(argClusterAccessor).getTreeNodeLabel();
+                                matchedExactArg = argLabel == expInt;
+                                argClusterAccessor = registry.advanceClusterAccessor(expLabels.get(expString), argClusterAccessor);
+                            } while (!registry.isStandMaximal(expLabels.get(expString), argClusterAccessor) && !matchedExactArg);
+                            if(matchedExactArg) break;
+                        }
+                        if(matchedExactArg) continue;
                     } else { // All variables are an automatic match
                         continue;
                     }
