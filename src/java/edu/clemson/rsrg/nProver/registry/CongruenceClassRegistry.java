@@ -611,7 +611,7 @@ public class CongruenceClassRegistry {
         while (standArray[stand].getTreeNodeLabel() != operator && stand != 0) {
             stand = standArray[stand].getNextCCStand();
         }
-        if(stand == 0) {
+        if (stand == 0) {
             return -1;
         }
         return standArray[stand].getFirstStandCluster();

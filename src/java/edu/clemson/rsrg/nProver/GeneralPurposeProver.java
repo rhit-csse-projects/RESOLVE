@@ -511,11 +511,10 @@ public class GeneralPurposeProver {
             elaborationRuleCounter++;
             for (Exp precursor : elaborationRule.getPrecursorClauses()) {
                 boolean foundMatch = false;
-                if (precursor.toString().matches("[0-9]+")) {
-                    foundMatch = true;
-                    // TODO We need to see if these numbers are actually in the registry
-                }
-                if (!foundMatch) {
+                if (precursor.toString().matches("[0-9]+") || precursor.toString().matches("Empty_String")) {
+                    int label = expLabels.getOrDefault(precursor.toString(), -1);
+                    foundMatch = label != -1;
+                } else {
                     if (!(precursor instanceof AbstractFunctionExp))
                         continue;
 
@@ -524,7 +523,7 @@ public class GeneralPurposeProver {
                     int currentCCAccessor = registry.firstCCAccessorForTreeNodeLabel(operator);
 
                     do { // Loop through the congruence classes
-                        // if (!isUltimateAntecedent(registry, currentCCAccessor)) {
+                         // if (!isUltimateAntecedent(registry, currentCCAccessor)) {
                         foundMatch = ccMatchesExpression(registry, precursor, expLabels, currentCCAccessor, operator);
                         if (foundMatch) {
                             break;
@@ -569,16 +568,13 @@ public class GeneralPurposeProver {
                     // TODO: Make this work for theories other than String theory
                     String expString = subExp.toString();
                     System.out.println(expString);
-                    if (expString.equals("Empty_String") || expString.matches("[0-9]+")) { // Constants require exact match
+                    if (expString.equals("Empty_String") || expString.matches("[0-9]+")) { // Constants require exact
+                                                                                           // match
                         int expInt = expLabels.getOrDefault(expString, -1);
-                        if(expInt == -1) {
+                        if (expInt == -1) {
                             matchedAllArgs = false;
                             break;
                         }
-                    } else if (subExp.toString().matches("[0-9]+")) {
-                        // then we are either a natural number or an integer whose z was omitted
-                        System.out.println("Natural number or integer: " + subExp.toString() + subExp.getMathType());
-                        continue;
                         boolean matchedExactArg = false;
                         for (int arg : clusterArgs) {
                             int argClusterAccessor = registry.getFirstClusterAccessorForCC(arg, expInt); // This is p
@@ -588,12 +584,15 @@ public class GeneralPurposeProver {
                             do {
                                 int argLabel = registry.getCongruenceCluster(argClusterAccessor).getTreeNodeLabel();
                                 matchedExactArg = argLabel == expInt;
-                                argClusterAccessor = registry.advanceClusterAccessor(expLabels.get(expString), argClusterAccessor);
-                            } while (!registry.isStandMaximal(expLabels.get(expString), argClusterAccessor) && !matchedExactArg);
-                            if(matchedExactArg) break;
+                                argClusterAccessor = registry.advanceClusterAccessor(expLabels.get(expString),
+                                        argClusterAccessor);
+                            } while (!registry.isStandMaximal(expLabels.get(expString), argClusterAccessor)
+                                    && !matchedExactArg);
+                            if (matchedExactArg)
+                                break;
                         }
-                        if(matchedExactArg) continue;
->>>>>>> b4b6324a2323cd8906b018d01730796656b5b1d6
+                        if (matchedExactArg)
+                            continue;
                     } else { // All variables are an automatic match
                         continue;
                     }
