@@ -510,9 +510,9 @@ public class GeneralPurposeProver {
         for (ElaborationRule elaborationRule : rules) {
             elaborationRuleCounter++;
             for (Exp precursor : elaborationRule.getPrecursorClauses()) {
-		if (precursor.toString().matches("[0-9]+")) {
-		    System.out.println("Number or integer: " + precursor.toString());
-		}
+                if (precursor.toString().matches("[0-9]+")) {
+                    System.out.println("Number or integer: " + precursor.toString());
+                }
                 if (!(precursor instanceof AbstractFunctionExp))
                     continue;
 
