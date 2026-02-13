@@ -522,12 +522,12 @@ public class GeneralPurposeProver {
 
                 boolean foundMatch = false;
                 do { // Loop through the congruence classes
-                    if (!isUltimateAntecedent(registry, currentCCAccessor)) {
-                        foundMatch = ccMatchesExpression(registry, precursor, expLabels, currentCCAccessor, operator);
-                        if (foundMatch) {
-                            break;
-                        }
+                    // if (!isUltimateAntecedent(registry, currentCCAccessor)) {
+                    foundMatch = ccMatchesExpression(registry, precursor, expLabels, currentCCAccessor, operator);
+                    if (foundMatch) {
+                        break;
                     }
+                    // }
                     currentCCAccessor = registry.advanceCClassAccessor(operator, currentCCAccessor);
                     // This is called c in Bill's email
                 } while (!registry.isVarietyMaximal(operator, currentCCAccessor));
