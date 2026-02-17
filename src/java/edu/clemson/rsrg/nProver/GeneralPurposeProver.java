@@ -15,6 +15,8 @@ package edu.clemson.rsrg.nProver;
 import edu.clemson.rsrg.absyn.declarations.moduledecl.*;
 import edu.clemson.rsrg.absyn.expressions.Exp;
 import edu.clemson.rsrg.absyn.expressions.mathexpr.AbstractFunctionExp;
+import edu.clemson.rsrg.absyn.expressions.mathexpr.IntegerExp;
+import edu.clemson.rsrg.absyn.expressions.mathexpr.VarExp;
 import edu.clemson.rsrg.init.CompileEnvironment;
 import edu.clemson.rsrg.init.flag.Flag;
 import edu.clemson.rsrg.init.flag.FlagDependencies;
@@ -332,18 +334,16 @@ public class GeneralPurposeProver {
         TheoremStore theoremStore = new TheoremStore(myCurrentModuleScope);
         // Map<String, Integer> expLabels = theoremStore.getExpLabels();
 
-        Map<String, Integer> expLabels = new LinkedHashMap<>();
-        // revert ExpLabels to before Senior Project Team things
-        // NM: 0, 1 are spared for <= (1), = (2), etc., the list can expand with more reflexive operators
-        // preload <=, = into the map
-        expLabels.put("<=", AbstractRegisterSequent.OP_LESS_THAN_OR_EQUALS);
-        expLabels.put("=", AbstractRegisterSequent.OP_EQUALS);
-
         // Loop through each of the VCs and attempt to prove them
         for (int i = 0; i < myVerificationConditions.size(); i++) {
-            // TODO: Create new threads for each VC, and kill them if they run for too long
-            // if (i == 3) {
+            Map<String, Integer> expLabels = new LinkedHashMap<>();
+            // revert ExpLabels to before Senior Project Team things
+            // NM: 0, 1 are spared for <= (1), = (2), etc., the list can expand with more reflexive operators
+            // preload <=, = into the map
+            expLabels.put("<=", AbstractRegisterSequent.OP_LESS_THAN_OR_EQUALS);
+            expLabels.put("=", AbstractRegisterSequent.OP_EQUALS);
 
+            // TODO: Create new threads for each VC, and kill them if they run for too long
             List<String> mappings = new ArrayList<>(theoremStore.getLabelList());
             VerificationCondition vc = myVerificationConditions.get(i);
 
@@ -412,7 +412,8 @@ public class GeneralPurposeProver {
             System.out.println("============ Elaboration & Matching (VC #" + i + ") ===============");
 
             List<String> expLabelsToStringList = expLabelsToList(expLabels);
-            elaborate(registry, rules.getMyElaborationRules(), expLabels);
+            Map<Exp, Integer> variableBindings = elaborate(registry, rules.getMyElaborationRules(), expLabels);
+            System.out.println(variableBindings);
 
             System.out.println("=== Congruence Classes ===");
             for (int k = 1; registry.isClassDesignator(k); k++) {
@@ -502,10 +503,12 @@ public class GeneralPurposeProver {
      * Elaborates on congruence classes using the provided elaboration rules.
      * </p>
      */
-    private void elaborate(CongruenceClassRegistry registry, List<ElaborationRule> rules,
+    private Map<Exp, Integer> elaborate(CongruenceClassRegistry registry, List<ElaborationRule> rules,
             Map<String, Integer> expLabels) {
 
         int elaborationRuleCounter = 0;
+
+        Map<Exp, Integer> variableBindings = new HashMap<>();
 
         for (ElaborationRule elaborationRule : rules) {
             elaborationRuleCounter++;
@@ -524,7 +527,7 @@ public class GeneralPurposeProver {
 
                     do { // Loop through the congruence classes
                          // if (!isUltimateAntecedent(registry, currentCCAccessor)) {
-                        foundMatch = ccMatchesExpression(registry, precursor, expLabels, currentCCAccessor, operator);
+                        foundMatch = ccMatchesExpression(registry, precursor, expLabels, currentCCAccessor, operator, variableBindings);
                         if (foundMatch) {
                             break;
                         }
@@ -543,10 +546,12 @@ public class GeneralPurposeProver {
                 }
             }
         }
+
+        return variableBindings;
     }
 
     private boolean ccMatchesExpression(CongruenceClassRegistry registry, Exp needToMatch,
-            Map<String, Integer> expLabels, int currentCCAccessor, int operator) { // Determines if anything in the
+            Map<String, Integer> expLabels, int currentCCAccessor, int operator, Map<Exp, Integer> variableBindings) { // Determines if anything in the
                                                                                    // Congruence Class matches the Exp
 
         // A cluster's argument is a single CC, so no need to loop through those or use a variety at this point
@@ -563,60 +568,35 @@ public class GeneralPurposeProver {
                 continue; // If the # of args don't match, then this is not the cluster we're looking for
 
             boolean matchedAllArgs = true;
-            for (Exp subExp : subExpressions) { // We need to recursively check the arguments of this cluster
+            for (int i = 0; i < subExpressions.size(); i++) {
+                Exp subExp = subExpressions.get(i);
                 if (!(subExp instanceof AbstractFunctionExp)) { // Base Case: At a leaf node
-                    // TODO: Make this work for theories other than String theory
-                    String expString = subExp.toString();
-                    System.out.println(expString);
-                    if (expString.equals("Empty_String") || expString.matches("[0-9]+")) { // Constants require exact
-                                                                                           // match
-                        int expInt = expLabels.getOrDefault(expString, -1);
-                        if (expInt == -1) {
-                            matchedAllArgs = false;
-                            break;
-                        }
-                        boolean matchedExactArg = false;
-                        for (int arg : clusterArgs) {
-                            int argClusterAccessor = registry.getFirstClusterAccessorForCC(arg, expInt); // This is p
-                            if (argClusterAccessor == -1) {
-                                continue;
-                            }
-                            do {
-                                int argLabel = registry.getCongruenceCluster(argClusterAccessor).getTreeNodeLabel();
-                                matchedExactArg = argLabel == expInt;
-                                argClusterAccessor = registry.advanceClusterAccessor(expLabels.get(expString),
-                                        argClusterAccessor);
-                            } while (!registry.isStandMaximal(expLabels.get(expString), argClusterAccessor)
-                                    && !matchedExactArg);
-                            if (matchedExactArg)
-                                break;
-                        }
-                        if (matchedExactArg)
-                            continue;
-                    } else { // All variables are an automatic match
-                        continue;
+                    int arg = clusterArgs.get(subExpressions.size() - i - 1);
+                    if(!matchLeafNodes(subExp, expLabels, arg, registry)) {
+                        variableBindings.put(subExp, arg);
+                        matchedAllArgs = false;
+                        break;
+                    }
+                } else {
+                    boolean matchedThisSubExp = false;
+                    int subExpOperator = expLabels.get(subExp.getTopLevelOperator());
+
+                    for (int arg : clusterArgs) {
+                        int clusterArgumentOperator = registry.getCongruenceCluster(arg).getTreeNodeLabel();
+
+                        if (subExpOperator != clusterArgumentOperator)
+                            continue; // If the args don't match, no point in checking deeper.
+
+                        matchedThisSubExp = ccMatchesExpression(registry, subExp, expLabels, arg, subExpOperator, variableBindings);
+                        if (matchedThisSubExp)
+                            break; // We found a match! No need to check the rest of the clusters
                     }
 
-                }
-
-                boolean matchedThisSubExp = false;
-                int subExpOperator = expLabels.get(subExp.getTopLevelOperator());
-
-                for (int arg : clusterArgs) {
-                    int clusterArgumentOperator = registry.getCongruenceCluster(arg).getTreeNodeLabel();
-
-                    if (subExpOperator != clusterArgumentOperator)
-                        continue; // If the args don't match, no point in checking deeper.
-
-                    matchedThisSubExp = ccMatchesExpression(registry, subExp, expLabels, arg, subExpOperator);
-                    if (matchedThisSubExp)
-                        break; // We found a match! No need to check the rest of the clusters
-                }
-
-                matchedAllArgs = matchedThisSubExp;
-                if (!matchedThisSubExp) { // None of this cluster's arguments matched subExp. Therefore this is not the
-                                          // cluster we're looking for.
-                    break;
+                    matchedAllArgs = matchedThisSubExp;
+                    if (!matchedThisSubExp) { // None of this cluster's arguments matched subExp. Therefore this is not the
+                        // cluster we're looking for.
+                        break;
+                    }
                 }
             }
 
@@ -631,6 +611,28 @@ public class GeneralPurposeProver {
 
         // If we've reached this point, we looped through the entire stand without matching a cluster.
         return false;
+    }
+
+    private boolean matchLeafNodes(Exp subExp, Map<String, Integer> expLabels, int arg, CongruenceClassRegistry registry) {
+        String expString = subExp.toString();
+        int expInt = expLabels.getOrDefault(expString, -1);
+        boolean isInt;
+        try { //Horrible code because RegEx hates us
+            Integer.parseInt(expString);
+            isInt = true;
+        } catch (Exception e) {
+            isInt = false;
+        }
+        if (expString.equals("Empty_String") || isInt) { // Constants require an exact match
+            if (expInt == -1) {
+                return false;
+            }
+            int argClusterAccessor = registry.getFirstClusterAccessorForCC(arg, expInt); // This is p
+            if (argClusterAccessor == -1) {
+                return false;
+            }
+        }
+        return true; //Variables always match
     }
 
     private static void displayArgumentLists(ElaborationRule elaborationRule, Exp precursor, int elaborationRuleCounter,
