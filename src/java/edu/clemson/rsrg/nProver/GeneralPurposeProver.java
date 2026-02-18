@@ -390,6 +390,10 @@ public class GeneralPurposeProver {
             // System.out.println("============ CongruenceClassRegistry ===============");
             // System.out.println(registry.toString());
 
+            if(registry.checkIfProved()) {
+                continue;
+            }
+
             ElaborationRules rules = new ElaborationRules(relevantTheorems);
 
             System.out.println(
@@ -573,9 +577,10 @@ public class GeneralPurposeProver {
                 if (!(subExp instanceof AbstractFunctionExp)) { // Base Case: At a leaf node
                     int arg = clusterArgs.get(subExpressions.size() - i - 1);
                     if(!matchLeafNodes(subExp, expLabels, arg, registry)) {
-                        variableBindings.put(subExp, arg);
                         matchedAllArgs = false;
                         break;
+                    } else {
+                        variableBindings.put(subExp, arg);
                     }
                 } else {
                     boolean matchedThisSubExp = false;
