@@ -1,27 +1,43 @@
+/*
+ * RuleInstance.java
+ * ---------------------------------
+ * Copyright (c) 2024
+ * RESOLVE Software Research Group
+ * School of Computing
+ * Clemson University
+ * All rights reserved.
+ * ---------------------------------
+ * This file is subject to the terms and conditions defined in
+ * file 'LICENSE.txt', which is part of this source code package.
+ */
 package edu.clemson.rsrg.nProver.utilities.theorems;
 
 import edu.clemson.rsrg.absyn.expressions.Exp;
+import edu.clemson.rsrg.absyn.expressions.mathexpr.ClusterExp;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class RuleInstance {
-    private Map<Exp, Integer> argBindings;
-    private ElaborationRule rule;
-
+    private Exp resultantClause;
+    private boolean fromAntecedent;
     private int precursorAccessor;
 
     public RuleInstance(Map<Exp, Integer> argBindings, ElaborationRule rule, int precursorAccessor) {
-        this.argBindings = argBindings;
-        this.rule = rule;
         this.precursorAccessor = precursorAccessor;
+        Map<Exp, Exp> argReplacements = new HashMap<>();
+        for (Exp replacee : argReplacements.keySet())
+            argReplacements.put(replacee, new ClusterExp(argBindings.get(replacee)));
+        this.resultantClause = rule.getResultantClause().substitute(argReplacements);
+        this.fromAntecedent = rule.isAntecedent();
     }
 
-    public Map<Exp, Integer> getArgBindings() {
-        return argBindings;
+    public boolean isFromAntecedent() {
+        return fromAntecedent;
     }
 
-    public ElaborationRule getRule() {
-        return rule;
+    public Exp getResultantClause() {
+        return resultantClause;
     }
 
     public int getPrecursorAccessor() {

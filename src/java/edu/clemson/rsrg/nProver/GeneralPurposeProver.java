@@ -391,7 +391,7 @@ public class GeneralPurposeProver {
             // System.out.println("============ CongruenceClassRegistry ===============");
             // System.out.println(registry.toString());
 
-            if(registry.checkIfProved()) {
+            if (registry.checkIfProved()) {
                 continue;
             }
 
@@ -416,7 +416,7 @@ public class GeneralPurposeProver {
 
             System.out.println("============ Elaboration & Matching (VC #" + i + ") ===============");
 
-            //TODO: Do this multiple times so one rule can match the output of another.
+            // TODO: Do this multiple times so one rule can match the output of another.
             List<String> expLabelsToStringList = expLabelsToList(expLabels);
             List<RuleInstance> ruleInstances = elaborate(registry, rules.getMyElaborationRules(), expLabels);
             applyRules(registry, ruleInstances, expLabels);
@@ -434,16 +434,17 @@ public class GeneralPurposeProver {
 
     }
 
-    private void applyRules(CongruenceClassRegistry registry, List<RuleInstance> ruleInstances, Map<String, Integer> expLabels) {
-        for(RuleInstance rule : ruleInstances) {
-            Exp resultant = rule.getRule().getResultantClause();
-            if(resultant.getTopLevelOperator().equals("=")){
-                int resultantAccessor = addToRegistry(registry, resultant, expLabels, rule.getArgBindings());
+    private void applyRules(CongruenceClassRegistry registry, List<RuleInstance> ruleInstances,
+            Map<String, Integer> expLabels) {
+        for (RuleInstance rule : ruleInstances) {
+            Exp resultant = rule.getResultantClause();
+            if (resultant.getTopLevelOperator().equals("=")) {
+                int resultantAccessor = addToRegistry(registry, resultant, expLabels);
             }
         }
     }
 
-    private int addToRegistry(CongruenceClassRegistry registry, Exp resultant, Map<String, Integer> expLabels, Map<Exp, Integer> argBindings) {
+    private int addToRegistry(CongruenceClassRegistry registry, Exp resultant, Map<String, Integer> expLabels) {
         return 0;
     }
 
@@ -523,7 +524,7 @@ public class GeneralPurposeProver {
      * </p>
      */
     private ArrayList<RuleInstance> elaborate(CongruenceClassRegistry registry, List<ElaborationRule> rules,
-                                              Map<String, Integer> expLabels) {
+            Map<String, Integer> expLabels) {
 
         int elaborationRuleCounter = 0;
 
@@ -547,7 +548,8 @@ public class GeneralPurposeProver {
 
                     do { // Loop through the congruence classes
                          // if (!isUltimateAntecedent(registry, currentCCAccessor)) {
-                        matchedCluster = ccMatchesExpression(registry, precursor, expLabels, currentCCAccessor, operator, variableBindings);
+                        matchedCluster = ccMatchesExpression(registry, precursor, expLabels, currentCCAccessor,
+                                operator, variableBindings);
                         if (matchedCluster != -1) {
                             break;
                         }
@@ -571,9 +573,9 @@ public class GeneralPurposeProver {
         return result;
     }
 
-    private int ccMatchesExpression(CongruenceClassRegistry registry, Exp needToMatch,
-            Map<String, Integer> expLabels, int currentCCAccessor, int operator, Map<Exp, Integer> variableBindings) { // Determines if anything in the
-                                                                                   // Congruence Class matches the Exp
+    private int ccMatchesExpression(CongruenceClassRegistry registry, Exp needToMatch, Map<String, Integer> expLabels,
+            int currentCCAccessor, int operator, Map<Exp, Integer> variableBindings) { // Determines if anything in the
+        // Congruence Class matches the Exp
 
         // A cluster's argument is a single CC, so no need to loop through those or use a variety at this point
         int currentClusterAccessor = registry.getFirstClusterAccessorForCC(currentCCAccessor, operator); // This is p
@@ -595,7 +597,7 @@ public class GeneralPurposeProver {
                 Exp subExp = subExpressions.get(i);
                 if (!(subExp instanceof AbstractFunctionExp)) { // Base Case: At a leaf node
                     int arg = clusterArgs.get(subExpressions.size() - i - 1);
-                    if(!matchLeafNodes(subExp, expLabels, arg, registry)) {
+                    if (!matchLeafNodes(subExp, expLabels, arg, registry)) {
                         matchedAllArgs = false;
                         break;
                     } else {
@@ -611,13 +613,15 @@ public class GeneralPurposeProver {
                         if (subExpOperator != clusterArgumentOperator)
                             continue; // If the args don't match, no point in checking deeper.
 
-                        matchedThisSubExp = ccMatchesExpression(registry, subExp, expLabels, arg, subExpOperator, variableBindings) != -1;
+                        matchedThisSubExp = ccMatchesExpression(registry, subExp, expLabels, arg, subExpOperator,
+                                variableBindings) != -1;
                         if (matchedThisSubExp)
                             break; // We found a match! No need to check the rest of the clusters
                     }
 
                     matchedAllArgs = matchedThisSubExp;
-                    if (!matchedThisSubExp) { // None of this cluster's arguments matched subExp. Therefore this is not the
+                    if (!matchedThisSubExp) { // None of this cluster's arguments matched subExp. Therefore this is not
+                                              // the
                         // cluster we're looking for.
                         break;
                     }
@@ -638,11 +642,12 @@ public class GeneralPurposeProver {
         return -1;
     }
 
-    private boolean matchLeafNodes(Exp subExp, Map<String, Integer> expLabels, int arg, CongruenceClassRegistry registry) {
+    private boolean matchLeafNodes(Exp subExp, Map<String, Integer> expLabels, int arg,
+            CongruenceClassRegistry registry) {
         String expString = subExp.toString();
         int expInt = expLabels.getOrDefault(expString, -1);
         boolean isInt;
-        try { //Horrible code because RegEx hates us
+        try { // Horrible code because RegEx hates us
             Integer.parseInt(expString);
             isInt = true;
         } catch (Exception e) {
@@ -657,7 +662,7 @@ public class GeneralPurposeProver {
                 return false;
             }
         }
-        return true; //Variables always match
+        return true; // Variables always match
     }
 
     private static void displayArgumentLists(ElaborationRule elaborationRule, Exp precursor, int elaborationRuleCounter,
