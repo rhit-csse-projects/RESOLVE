@@ -25,6 +25,7 @@ import edu.clemson.rsrg.nProver.output.VCProverResult;
 import edu.clemson.rsrg.nProver.registry.CongruenceClassRegistry;
 import edu.clemson.rsrg.nProver.utilities.theorems.ElaborationRule;
 import edu.clemson.rsrg.nProver.utilities.theorems.ElaborationRules;
+import edu.clemson.rsrg.nProver.utilities.theorems.RuleInstance;
 import edu.clemson.rsrg.nProver.utilities.theorems.TheoremStore;
 import edu.clemson.rsrg.nProver.utilities.treewakers.AbstractRegisterSequent;
 import edu.clemson.rsrg.nProver.utilities.treewakers.RegisterAntecedent;
@@ -415,9 +416,10 @@ public class GeneralPurposeProver {
 
             System.out.println("============ Elaboration & Matching (VC #" + i + ") ===============");
 
+            //TODO: Do this multiple times so one rule can match the output of another.
             List<String> expLabelsToStringList = expLabelsToList(expLabels);
-            Map<Exp, Integer> variableBindings = elaborate(registry, rules.getMyElaborationRules(), expLabels);
-            System.out.println(variableBindings);
+            List<RuleInstance> ruleInstances = elaborate(registry, rules.getMyElaborationRules(), expLabels);
+            applyRules(registry, ruleInstances, expLabels);
 
             System.out.println("=== Congruence Classes ===");
             for (int k = 1; registry.isClassDesignator(k); k++) {
@@ -430,6 +432,19 @@ public class GeneralPurposeProver {
         // module
         myTotalElapsedTime = System.currentTimeMillis() - myTotalElapsedTime;
 
+    }
+
+    private void applyRules(CongruenceClassRegistry registry, List<RuleInstance> ruleInstances, Map<String, Integer> expLabels) {
+        for(RuleInstance rule : ruleInstances) {
+            Exp resultant = rule.getRule().getResultantClause();
+            if(resultant.getTopLevelOperator().equals("=")){
+                int resultantAccessor = addToRegistry(registry, resultant, expLabels, rule.getArgBindings());
+            }
+        }
+    }
+
+    private int addToRegistry(CongruenceClassRegistry registry, Exp resultant, Map<String, Integer> expLabels, Map<Exp, Integer> argBindings) {
+        return 0;
     }
 
     // ===========================================================
@@ -507,20 +522,21 @@ public class GeneralPurposeProver {
      * Elaborates on congruence classes using the provided elaboration rules.
      * </p>
      */
-    private Map<Exp, Integer> elaborate(CongruenceClassRegistry registry, List<ElaborationRule> rules,
-            Map<String, Integer> expLabels) {
+    private ArrayList<RuleInstance> elaborate(CongruenceClassRegistry registry, List<ElaborationRule> rules,
+                                              Map<String, Integer> expLabels) {
 
         int elaborationRuleCounter = 0;
 
-        Map<Exp, Integer> variableBindings = new HashMap<>();
+        ArrayList<RuleInstance> result = new ArrayList<>();
 
         for (ElaborationRule elaborationRule : rules) {
+            Map<Exp, Integer> variableBindings = new HashMap<>();
+
             elaborationRuleCounter++;
             for (Exp precursor : elaborationRule.getPrecursorClauses()) {
-                boolean foundMatch = false;
+                int matchedCluster = -1;
                 if (precursor.toString().matches("[0-9]+") || precursor.toString().matches("Empty_String")) {
-                    int label = expLabels.getOrDefault(precursor.toString(), -1);
-                    foundMatch = label != -1;
+                    matchedCluster = expLabels.getOrDefault(precursor.toString(), -1);
                 } else {
                     if (!(precursor instanceof AbstractFunctionExp))
                         continue;
@@ -531,8 +547,8 @@ public class GeneralPurposeProver {
 
                     do { // Loop through the congruence classes
                          // if (!isUltimateAntecedent(registry, currentCCAccessor)) {
-                        foundMatch = ccMatchesExpression(registry, precursor, expLabels, currentCCAccessor, operator, variableBindings);
-                        if (foundMatch) {
+                        matchedCluster = ccMatchesExpression(registry, precursor, expLabels, currentCCAccessor, operator, variableBindings);
+                        if (matchedCluster != -1) {
                             break;
                         }
                         // }
@@ -541,9 +557,10 @@ public class GeneralPurposeProver {
                     } while (!registry.isVarietyMaximal(operator, currentCCAccessor));
 
                 }
-                if (foundMatch) {
+                if (matchedCluster != -1) {
                     System.out.println("[Rule #" + elaborationRuleCounter + "] \u001B[42m Matched! \u001B[49m :"
                             + precursor.toString());
+                    result.add(new RuleInstance(variableBindings, elaborationRule, matchedCluster));
                 } else {
                     System.out.println("[Rule #" + elaborationRuleCounter + "] \u001B[41m Not Matched \u001B[49m :"
                             + precursor.toString());
@@ -551,10 +568,10 @@ public class GeneralPurposeProver {
             }
         }
 
-        return variableBindings;
+        return result;
     }
 
-    private boolean ccMatchesExpression(CongruenceClassRegistry registry, Exp needToMatch,
+    private int ccMatchesExpression(CongruenceClassRegistry registry, Exp needToMatch,
             Map<String, Integer> expLabels, int currentCCAccessor, int operator, Map<Exp, Integer> variableBindings) { // Determines if anything in the
                                                                                    // Congruence Class matches the Exp
 
@@ -563,6 +580,8 @@ public class GeneralPurposeProver {
 
         do { // Loop through the clusters in the stand
              // If we've made it this far, then we have at least one cluster with the correct root node
+
+            Map<Exp, Integer> tempBindings = new HashMap<>();
 
             List<Integer> clusterArgs = registry
                     .getArgumentsList(registry.getCongruenceCluster(currentClusterAccessor));
@@ -580,7 +599,7 @@ public class GeneralPurposeProver {
                         matchedAllArgs = false;
                         break;
                     } else {
-                        variableBindings.put(subExp, arg);
+                        tempBindings.put(subExp, arg);
                     }
                 } else {
                     boolean matchedThisSubExp = false;
@@ -592,7 +611,7 @@ public class GeneralPurposeProver {
                         if (subExpOperator != clusterArgumentOperator)
                             continue; // If the args don't match, no point in checking deeper.
 
-                        matchedThisSubExp = ccMatchesExpression(registry, subExp, expLabels, arg, subExpOperator, variableBindings);
+                        matchedThisSubExp = ccMatchesExpression(registry, subExp, expLabels, arg, subExpOperator, variableBindings) != -1;
                         if (matchedThisSubExp)
                             break; // We found a match! No need to check the rest of the clusters
                     }
@@ -607,7 +626,8 @@ public class GeneralPurposeProver {
 
             if (matchedAllArgs) { // All of the arguments in this cluster matched all of the arguments in our
                                   // expression!
-                return true;
+                variableBindings.putAll(tempBindings);
+                return currentClusterAccessor;
             }
 
             currentClusterAccessor = registry.advanceClusterAccessor(operator, currentClusterAccessor);
@@ -615,7 +635,7 @@ public class GeneralPurposeProver {
         } while (!registry.isStandMaximal(operator, currentClusterAccessor));
 
         // If we've reached this point, we looped through the entire stand without matching a cluster.
-        return false;
+        return -1;
     }
 
     private boolean matchLeafNodes(Exp subExp, Map<String, Integer> expLabels, int arg, CongruenceClassRegistry registry) {
