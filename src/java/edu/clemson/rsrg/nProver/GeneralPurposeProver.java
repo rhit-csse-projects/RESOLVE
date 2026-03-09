@@ -335,6 +335,7 @@ public class GeneralPurposeProver {
 
         // Loop through each of the VCs and attempt to prove them
         for (int i = 0; i < myVerificationConditions.size(); i++) {
+
             Map<String, Integer> expLabels = new LinkedHashMap<>();
             // revert ExpLabels to before Senior Project Team things
             // NM: 0, 1 are spared for <= (1), = (2), etc., the list can expand with more reflexive operators
@@ -419,7 +420,7 @@ public class GeneralPurposeProver {
             List<RuleInstance> ruleInstances = elaborate(registry, rules.getMyElaborationRules(), expLabels);
             applyRules(registry, ruleInstances, expLabels, mappings);
 
-            System.out.println("=== Congruence Classes ===");
+            System.out.println("=== Congruence Class Registry ===");
             for (int k = 1; registry.isClassDesignator(k); k++) {
                 registry.displayCongruence(expLabelsToStringList, k);
             }
@@ -544,19 +545,20 @@ public class GeneralPurposeProver {
 
                     int operator = expLabels.get(precursor.getTopLevelOperator());
 
-                    int currentCCAccessor = registry.firstCCAccessorForTreeNodeLabel(operator);
+                    int currentCCAccessor = 0; // This is called c in Bill's email
 
-                    do { // Loop through the congruence classes
-                         // if (!isUltimateAntecedent(registry, currentCCAccessor)) {
+                    boolean firstLoop = true;
+                    while (firstLoop || !registry.isVarietyMaximal(operator, currentCCAccessor)) { // Loop through the
+                                                                                                   // congruence classes
+                        currentCCAccessor = firstLoop ? registry.firstCCAccessorForTreeNodeLabel(operator)
+                                : registry.advanceCClassAccessor(operator, currentCCAccessor);
+                        firstLoop = false;
                         matchedCluster = ccMatchesExpression(registry, precursor, expLabels, currentCCAccessor,
                                 operator, variableBindings);
                         if (matchedCluster != -1) {
                             break;
                         }
-                        // }
-                        currentCCAccessor = registry.advanceCClassAccessor(operator, currentCCAccessor);
-                        // This is called c in Bill's email
-                    } while (!registry.isVarietyMaximal(operator, currentCCAccessor));
+                    }
 
                 }
                 if (matchedCluster != -1) {

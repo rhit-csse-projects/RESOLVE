@@ -2329,16 +2329,21 @@ public class CongruenceClassRegistry {
         sb.append("CC").append(classIndex).append(" -> ");
 
         while (stand.getStandTag() != 0) {
-            CongruenceCluster congruenceCluster = clusterArray[stand.getFirstStandCluster()];
+            int crAccr = stand.getFirstStandCluster();
+            CongruenceCluster congruenceCluster = clusterArray[crAccr];
 
             do {
+                sb.append("(CR" + crAccr + ": ");
                 displayCluster(symbolMapping, congruenceCluster, sb);
                 if (congruenceCluster.getNextStandCluster() != 0
                         && congruenceCluster.getIndexToTag() != congruenceCluster.getNextStandCluster()) {
-                    sb.append(" | ");
+                    sb.append("), ");
+                } else {
+                    sb.append(")");
                 }
 
-                congruenceCluster = clusterArray[congruenceCluster.getNextStandCluster()];
+                crAccr = congruenceCluster.getNextStandCluster();
+                congruenceCluster = clusterArray[crAccr];
             } while (congruenceCluster.getIndexToTag() != 0
                     && congruenceCluster.getIndexToTag() != congruenceCluster.getNextStandCluster());
 
