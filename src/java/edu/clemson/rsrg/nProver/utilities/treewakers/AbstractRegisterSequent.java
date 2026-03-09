@@ -45,13 +45,6 @@ public abstract class AbstractRegisterSequent extends TreeWalkerStackVisitor {
 
     /**
      * <p>
-     * The inverse of myExpLabels. Turns an int into a string.
-     * </p>
-     */
-    protected final List<String> myMappings;
-
-    /**
-     * <p>
      * This map contains the mapping between the argument expressions for the most immediate operator to be registered.
      * </p>
      */
@@ -120,10 +113,8 @@ public abstract class AbstractRegisterSequent extends TreeWalkerStackVisitor {
      * @param nextLabel
      *            The number to be assigned initially as a label.
      */
-    protected AbstractRegisterSequent(CongruenceClassRegistry registry, Map<String, Integer> expLabels, int nextLabel,
-            List<String> mappings) {
+    protected AbstractRegisterSequent(CongruenceClassRegistry registry, Map<String, Integer> expLabels, int nextLabel) {
         myArgumentsCache = new LinkedHashMap<>();
-        myMappings = mappings;
         myRegistry = registry;
         myExpLabels = expLabels;
         myLiteralCounter = 0;
@@ -151,7 +142,6 @@ public abstract class AbstractRegisterSequent extends TreeWalkerStackVisitor {
         // If this is not an infix operator we have seen, then add it to our map
         if (!myExpLabels.containsKey(exp.getOperatorAsString())) {
             myExpLabels.put(exp.getOperatorAsString(), myNextLabel);
-            myMappings.add(myNextLabel, exp.getOperatorAsString());
             myNextLabel++;
         }
     }
@@ -211,7 +201,6 @@ public abstract class AbstractRegisterSequent extends TreeWalkerStackVisitor {
         // If this is not a function name we have seen, then add it to our map
         if (!myExpLabels.containsKey(exp.getOperatorAsString())) {
             myExpLabels.put(exp.getOperatorAsString(), myNextLabel);
-            myMappings.add(myNextLabel, exp.getOperatorAsString());
             myNextLabel++;
         }
     }
@@ -289,7 +278,6 @@ public abstract class AbstractRegisterSequent extends TreeWalkerStackVisitor {
         // If this is not an outfix operator we have seen, then add it to our map
         if (!myExpLabels.containsKey(exp.getOperatorAsString())) {
             myExpLabels.put(exp.getOperatorAsString(), myNextLabel);
-            myMappings.add(myNextLabel, exp.getOperatorAsString());
             myNextLabel++;
         }
     }
@@ -307,7 +295,6 @@ public abstract class AbstractRegisterSequent extends TreeWalkerStackVisitor {
         // If this is not a prefix operator we have seen, then add it to our map
         if (!myExpLabels.containsKey(exp.getOperatorAsString())) {
             myExpLabels.put(exp.getOperatorAsString(), myNextLabel);
-            myMappings.add(myNextLabel, exp.getOperatorAsString());
             myNextLabel++;
         }
     }
@@ -325,7 +312,6 @@ public abstract class AbstractRegisterSequent extends TreeWalkerStackVisitor {
         // If this is not a prefix operator we have seen, then add it to our map
         if (!myExpLabels.containsKey("{_}")) {
             myExpLabels.put("{_}", myNextLabel);
-            myMappings.add(myNextLabel, "{_}");
             myNextLabel++;
         }
     }
@@ -374,7 +360,6 @@ public abstract class AbstractRegisterSequent extends TreeWalkerStackVisitor {
         // If this is not a prefix operator we have seen, then add it to our map
         if (!myExpLabels.containsKey("(_)")) {
             myExpLabels.put("(_)", myNextLabel);
-            myMappings.add(myNextLabel, "(_)");
             myNextLabel++;
         }
     }
@@ -492,6 +477,10 @@ public abstract class AbstractRegisterSequent extends TreeWalkerStackVisitor {
         return myRegistry;
     }
 
+    public void postClusterExp(ClusterExp exp) {
+        storeInArgumentCache(exp);
+    }
+
     // ===========================================================
     // Private Methods
     // ===========================================================
@@ -508,7 +497,6 @@ public abstract class AbstractRegisterSequent extends TreeWalkerStackVisitor {
     private void storeInArgumentCache(Exp exp) {
         if (!myExpLabels.containsKey(exp.toString())) {
             myExpLabels.put(exp.toString(), myNextLabel);
-            myMappings.add(myNextLabel, exp.toString());
             myNextLabel++;
         }
 

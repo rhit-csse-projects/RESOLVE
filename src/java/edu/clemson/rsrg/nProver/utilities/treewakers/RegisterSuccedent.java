@@ -17,7 +17,6 @@ import edu.clemson.rsrg.absyn.expressions.mathexpr.*;
 import edu.clemson.rsrg.nProver.registry.CongruenceClassRegistry;
 import edu.clemson.rsrg.treewalk.TreeWalkerStackVisitor;
 import java.util.BitSet;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -49,9 +48,8 @@ public class RegisterSuccedent extends AbstractRegisterSequent {
      * @param nextLabel
      *            The number to be assigned initially as a label.
      */
-    public RegisterSuccedent(CongruenceClassRegistry registry, Map<String, Integer> expLabels, int nextLabel,
-            List<String> mappings) {
-        super(registry, expLabels, nextLabel, mappings);
+    public RegisterSuccedent(CongruenceClassRegistry registry, Map<String, Integer> expLabels, int nextLabel) {
+        super(registry, expLabels, nextLabel);
     }
 
     // ===========================================================

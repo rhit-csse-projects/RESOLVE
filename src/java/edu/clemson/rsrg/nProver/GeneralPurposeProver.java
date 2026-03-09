@@ -15,8 +15,6 @@ package edu.clemson.rsrg.nProver;
 import edu.clemson.rsrg.absyn.declarations.moduledecl.*;
 import edu.clemson.rsrg.absyn.expressions.Exp;
 import edu.clemson.rsrg.absyn.expressions.mathexpr.AbstractFunctionExp;
-import edu.clemson.rsrg.absyn.expressions.mathexpr.IntegerExp;
-import edu.clemson.rsrg.absyn.expressions.mathexpr.VarExp;
 import edu.clemson.rsrg.init.CompileEnvironment;
 import edu.clemson.rsrg.init.flag.Flag;
 import edu.clemson.rsrg.init.flag.FlagDependencies;
@@ -362,14 +360,14 @@ public class GeneralPurposeProver {
                     sequent.getConcequents());
 
             // Visit antecedents
-            RegisterAntecedent regAntecedent = new RegisterAntecedent(registry, expLabels, 3, mappings);
+            RegisterAntecedent regAntecedent = new RegisterAntecedent(registry, expLabels, 3);
             for (Exp exp : sequent.getAntecedents()) {
                 TreeWalker.visit(regAntecedent, exp);
             }
 
             // Visit consequents
             RegisterSuccedent regConsequent = new RegisterSuccedent(regAntecedent.getRegistry(),
-                    regAntecedent.getExpLabels(), regAntecedent.getNextLabel(), mappings);
+                    regAntecedent.getExpLabels(), regAntecedent.getNextLabel());
             for (Exp exp : sequent.getConcequents()) {
                 TreeWalker.visit(regConsequent, exp);
             }
@@ -419,7 +417,7 @@ public class GeneralPurposeProver {
             // TODO: Do this multiple times so one rule can match the output of another.
             List<String> expLabelsToStringList = expLabelsToList(expLabels);
             List<RuleInstance> ruleInstances = elaborate(registry, rules.getMyElaborationRules(), expLabels);
-            applyRules(registry, ruleInstances, expLabels);
+            applyRules(registry, ruleInstances, expLabels, mappings);
 
             System.out.println("=== Congruence Classes ===");
             for (int k = 1; registry.isClassDesignator(k); k++) {
@@ -435,16 +433,18 @@ public class GeneralPurposeProver {
     }
 
     private void applyRules(CongruenceClassRegistry registry, List<RuleInstance> ruleInstances,
-            Map<String, Integer> expLabels) {
+            Map<String, Integer> expLabels, List<String> mappings) {
         for (RuleInstance rule : ruleInstances) {
             Exp resultant = rule.getResultantClause();
             if (resultant.getTopLevelOperator().equals("=")) {
-                int resultantAccessor = addToRegistry(registry, resultant, expLabels);
+                int resultantAccessor = addToRegistry(registry, resultant, expLabels, mappings);
             }
         }
     }
 
-    private int addToRegistry(CongruenceClassRegistry registry, Exp resultant, Map<String, Integer> expLabels) {
+    private int addToRegistry(CongruenceClassRegistry registry, Exp resultant, Map<String, Integer> expLabels,
+            List<String> mappings) {
+        TreeWalker.visit(new RegisterAntecedent(registry, expLabels, expLabels.size()), resultant);
         return 0;
     }
 

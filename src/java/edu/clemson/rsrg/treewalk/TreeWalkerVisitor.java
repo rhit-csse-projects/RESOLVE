@@ -2673,4 +2673,7 @@ public abstract class TreeWalkerVisitor {
 
     public void postEnhancementRealizModuleDecMyUsesItems(EnhancementRealizModuleDec e) {
     }
+
+    public void postClusterExp(ClusterExp e) {
+    }
 }
