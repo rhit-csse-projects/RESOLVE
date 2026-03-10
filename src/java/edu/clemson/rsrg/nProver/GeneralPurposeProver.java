@@ -418,7 +418,7 @@ public class GeneralPurposeProver {
             // TODO: Do this multiple times so one rule can match the output of another.
             List<String> expLabelsToStringList = expLabelsToList(expLabels);
             List<RuleInstance> ruleInstances = elaborate(registry, rules.getMyElaborationRules(), expLabels);
-            applyRules(registry, ruleInstances, expLabels, mappings);
+            applyRules(registry, ruleInstances, expLabels);
 
             System.out.println("=== Congruence Class Registry ===");
             for (int k = 1; registry.isClassDesignator(k); k++) {
@@ -434,17 +434,16 @@ public class GeneralPurposeProver {
     }
 
     private void applyRules(CongruenceClassRegistry registry, List<RuleInstance> ruleInstances,
-            Map<String, Integer> expLabels, List<String> mappings) {
+            Map<String, Integer> expLabels) {
         for (RuleInstance rule : ruleInstances) {
             Exp resultant = rule.getResultantClause();
             if (resultant.getTopLevelOperator().equals("=")) {
-                int resultantAccessor = addToRegistry(registry, resultant, expLabels, mappings);
+                int resultantAccessor = addToRegistry(registry, resultant, expLabels);
             }
         }
     }
 
-    private int addToRegistry(CongruenceClassRegistry registry, Exp resultant, Map<String, Integer> expLabels,
-            List<String> mappings) {
+    private int addToRegistry(CongruenceClassRegistry registry, Exp resultant, Map<String, Integer> expLabels) {
         TreeWalker.visit(new RegisterAntecedent(registry, expLabels, expLabels.size()), resultant);
         return 0;
     }
