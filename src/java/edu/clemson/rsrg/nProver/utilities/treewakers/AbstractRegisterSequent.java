@@ -59,6 +59,13 @@ public abstract class AbstractRegisterSequent extends TreeWalkerStackVisitor {
 
     /**
      * <p>
+     * The inverse of myExpLabels
+     * </p>
+     */
+    protected final List<String> myMappings;
+
+    /**
+     * <p>
      * A counter to enumerate the number of literals we have encountered. This is used to allow duplicates literal
      * expressions in our map.
      * </p>
@@ -113,12 +120,14 @@ public abstract class AbstractRegisterSequent extends TreeWalkerStackVisitor {
      * @param nextLabel
      *            The number to be assigned initially as a label.
      */
-    protected AbstractRegisterSequent(CongruenceClassRegistry registry, Map<String, Integer> expLabels, int nextLabel) {
+    protected AbstractRegisterSequent(CongruenceClassRegistry registry, Map<String, Integer> expLabels, int nextLabel,
+            List<String> mappings) {
         myArgumentsCache = new LinkedHashMap<>();
         myRegistry = registry;
         myExpLabels = expLabels;
         myLiteralCounter = 0;
         myNextLabel = nextLabel;
+        myMappings = mappings;
     }
 
     // ===========================================================
@@ -142,6 +151,7 @@ public abstract class AbstractRegisterSequent extends TreeWalkerStackVisitor {
         // If this is not an infix operator we have seen, then add it to our map
         if (!myExpLabels.containsKey(exp.getOperatorAsString())) {
             myExpLabels.put(exp.getOperatorAsString(), myNextLabel);
+            myMappings.add(exp.getOperatorAsString());
             myNextLabel++;
         }
     }
@@ -201,6 +211,7 @@ public abstract class AbstractRegisterSequent extends TreeWalkerStackVisitor {
         // If this is not a function name we have seen, then add it to our map
         if (!myExpLabels.containsKey(exp.getOperatorAsString())) {
             myExpLabels.put(exp.getOperatorAsString(), myNextLabel);
+            myMappings.add(exp.getOperatorAsString());
             myNextLabel++;
         }
     }
@@ -278,6 +289,7 @@ public abstract class AbstractRegisterSequent extends TreeWalkerStackVisitor {
         // If this is not an outfix operator we have seen, then add it to our map
         if (!myExpLabels.containsKey(exp.getOperatorAsString())) {
             myExpLabels.put(exp.getOperatorAsString(), myNextLabel);
+            myMappings.add(exp.getOperatorAsString());
             myNextLabel++;
         }
     }
@@ -295,6 +307,7 @@ public abstract class AbstractRegisterSequent extends TreeWalkerStackVisitor {
         // If this is not a prefix operator we have seen, then add it to our map
         if (!myExpLabels.containsKey(exp.getOperatorAsString())) {
             myExpLabels.put(exp.getOperatorAsString(), myNextLabel);
+            myMappings.add(exp.getOperatorAsString());
             myNextLabel++;
         }
     }
@@ -312,6 +325,7 @@ public abstract class AbstractRegisterSequent extends TreeWalkerStackVisitor {
         // If this is not a prefix operator we have seen, then add it to our map
         if (!myExpLabels.containsKey("{_}")) {
             myExpLabels.put("{_}", myNextLabel);
+            myMappings.add("{_}");
             myNextLabel++;
         }
     }
@@ -360,6 +374,7 @@ public abstract class AbstractRegisterSequent extends TreeWalkerStackVisitor {
         // If this is not a prefix operator we have seen, then add it to our map
         if (!myExpLabels.containsKey("(_)")) {
             myExpLabels.put("(_)", myNextLabel);
+            myMappings.add("(_)");
             myNextLabel++;
         }
     }
@@ -497,6 +512,7 @@ public abstract class AbstractRegisterSequent extends TreeWalkerStackVisitor {
     private void storeInArgumentCache(Exp exp) {
         if (!myExpLabels.containsKey(exp.toString())) {
             myExpLabels.put(exp.toString(), myNextLabel);
+            myMappings.add(exp.toString());
             myNextLabel++;
         }
 

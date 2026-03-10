@@ -332,7 +332,6 @@ public class GeneralPurposeProver {
 
         // Use the new TheoremStore to preload theorems for fast lookup.
         TheoremStore theoremStore = new TheoremStore(myCurrentModuleScope);
-        // Map<String, Integer> expLabels = theoremStore.getExpLabels();
 
         // Loop through each of the VCs and attempt to prove them
         for (int i = 0; i < myVerificationConditions.size(); i++) {
@@ -345,7 +344,10 @@ public class GeneralPurposeProver {
             expLabels.put("=", AbstractRegisterSequent.OP_EQUALS);
 
             // TODO: Create new threads for each VC, and kill them if they run for too long
-            List<String> mappings = new ArrayList<>(theoremStore.getLabelList());
+            List<String> mappings = new ArrayList<>();
+            mappings.add("");
+            mappings.add("<=");
+            mappings.add("=");
             VerificationCondition vc = myVerificationConditions.get(i);
 
             System.out.println(
@@ -362,14 +364,14 @@ public class GeneralPurposeProver {
                     sequent.getConcequents());
 
             // Visit antecedents
-            RegisterAntecedent regAntecedent = new RegisterAntecedent(registry, expLabels, 3);
+            RegisterAntecedent regAntecedent = new RegisterAntecedent(registry, expLabels, 3, mappings);
             for (Exp exp : sequent.getAntecedents()) {
                 TreeWalker.visit(regAntecedent, exp);
             }
 
             // Visit consequents
             RegisterSuccedent regConsequent = new RegisterSuccedent(regAntecedent.getRegistry(),
-                    regAntecedent.getExpLabels(), regAntecedent.getNextLabel());
+                    regAntecedent.getExpLabels(), regAntecedent.getNextLabel(), mappings);
             for (Exp exp : sequent.getConcequents()) {
                 TreeWalker.visit(regConsequent, exp);
             }
@@ -420,12 +422,12 @@ public class GeneralPurposeProver {
             for (int l = 0; l < 10; l++) {
                 List<String> expLabelsToStringList = expLabelsToList(expLabels);
                 List<RuleInstance> ruleInstances = elaborate(registry, rules.getMyElaborationRules(), expLabels);
-                applyRules(registry, ruleInstances, expLabels);
+                applyRules(registry, ruleInstances, expLabels, mappings);
 
                 System.out.println("=== Congruence Class Registry ===");
-                // for (int k = 1; registry.isClassDesignator(k); k++) {
-                // registry.displayCongruence(expLabelsToStringList, k);
-                // }
+                for (int k = 1; registry.isClassDesignator(k); k++) {
+                    registry.displayCongruence(mappings, k);
+                }
                 System.out.println("Proved: " + registry.checkIfProved());
             }
         }
@@ -437,20 +439,21 @@ public class GeneralPurposeProver {
     }
 
     private void applyRules(CongruenceClassRegistry registry, List<RuleInstance> ruleInstances,
-            Map<String, Integer> expLabels) {
+            Map<String, Integer> expLabels, List<String> mappings) {
         for (RuleInstance rule : ruleInstances) {
             Exp resultant = rule.getResultantClause();
             if (resultant instanceof QuantExp) {
-                resultant = ((QuantExp) resultant).getBody();
+		resultant = ((QuantExp) resultant).getBody();
             }
             if (resultant.getTopLevelOperator().equals("=") || resultant.getTopLevelOperator().equals("<=")) {
-                int resultantAccessor = addToRegistry(registry, resultant, expLabels);
+                int resultantAccessor = addToRegistry(registry, resultant, expLabels, mappings);
             }
         }
     }
 
-    private int addToRegistry(CongruenceClassRegistry registry, Exp resultant, Map<String, Integer> expLabels) {
-        TreeWalker.visit(new RegisterAntecedent(registry, expLabels, expLabels.size()), resultant);
+    private int addToRegistry(CongruenceClassRegistry registry, Exp resultant, Map<String, Integer> expLabels,
+            List<String> mappings) {
+        TreeWalker.visit(new RegisterAntecedent(registry, expLabels, expLabels.size(), mappings), resultant);
         return 0;
     }
 

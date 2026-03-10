@@ -13,7 +13,6 @@
 package edu.clemson.rsrg.nProver.utilities.theorems;
 
 import edu.clemson.rsrg.absyn.expressions.Exp;
-import edu.clemson.rsrg.nProver.utilities.treewakers.AbstractRegisterSequent;
 import edu.clemson.rsrg.typeandpopulate.entry.TheoremEntry;
 import edu.clemson.rsrg.typeandpopulate.query.EntryTypeQuery;
 import edu.clemson.rsrg.typeandpopulate.symboltables.MathSymbolTable;
@@ -121,42 +120,5 @@ public final class TheoremStore {
             }
         }
         return theorems;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Map<String, Integer> getExpLabels() {
-        // NM: 0, 1 are spared for <= (1), = (2), etc., the list can expand with more
-        // reflexive operators
-        // preload <=, = into the map
-        Map<String, Integer> expLabels = new LinkedHashMap<>();
-        expLabels.put("<=", AbstractRegisterSequent.OP_LESS_THAN_OR_EQUALS);
-        expLabels.put("=", AbstractRegisterSequent.OP_EQUALS);
-        int i = 3;
-        for (String opString : opStrings) {
-            expLabels.put(opString, i);
-            i++;
-        }
-        return expLabels;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<String> getLabelList() {
-        // NM: 0, 1 are spared for <= (1), = (2), etc., the list can expand with more
-        // reflexive operators
-        // preload <=, = into the map
-        List<String> expLabels = new LinkedList<>();
-        expLabels.add("");
-        expLabels.add(AbstractRegisterSequent.OP_LESS_THAN_OR_EQUALS, "<=");
-        expLabels.add(AbstractRegisterSequent.OP_EQUALS, "=");
-        int i = 3;
-        for (String opString : opStrings) {
-            expLabels.add(i, opString);
-            i++;
-        }
-        return expLabels;
     }
 }
