@@ -437,7 +437,7 @@ public class GeneralPurposeProver {
             Map<String, Integer> expLabels) {
         for (RuleInstance rule : ruleInstances) {
             Exp resultant = rule.getResultantClause();
-            if (resultant.getTopLevelOperator().equals("=")) {
+            if (resultant.getTopLevelOperator().equals("=") || resultant.getTopLevelOperator().equals("<=")) {
                 int resultantAccessor = addToRegistry(registry, resultant, expLabels);
             }
         }
