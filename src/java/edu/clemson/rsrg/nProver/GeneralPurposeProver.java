@@ -15,6 +15,7 @@ package edu.clemson.rsrg.nProver;
 import edu.clemson.rsrg.absyn.declarations.moduledecl.*;
 import edu.clemson.rsrg.absyn.expressions.Exp;
 import edu.clemson.rsrg.absyn.expressions.mathexpr.AbstractFunctionExp;
+import edu.clemson.rsrg.absyn.expressions.mathexpr.QuantExp;
 import edu.clemson.rsrg.init.CompileEnvironment;
 import edu.clemson.rsrg.init.flag.Flag;
 import edu.clemson.rsrg.init.flag.FlagDependencies;
@@ -416,15 +417,17 @@ public class GeneralPurposeProver {
             System.out.println("============ Elaboration & Matching (VC #" + i + ") ===============");
 
             // TODO: Do this multiple times so one rule can match the output of another.
-            List<String> expLabelsToStringList = expLabelsToList(expLabels);
-            List<RuleInstance> ruleInstances = elaborate(registry, rules.getMyElaborationRules(), expLabels);
-            applyRules(registry, ruleInstances, expLabels);
+            for (int l = 0; l < 10; l++) {
+                List<String> expLabelsToStringList = expLabelsToList(expLabels);
+                List<RuleInstance> ruleInstances = elaborate(registry, rules.getMyElaborationRules(), expLabels);
+                applyRules(registry, ruleInstances, expLabels);
 
-            System.out.println("=== Congruence Class Registry ===");
-            for (int k = 1; registry.isClassDesignator(k); k++) {
-                registry.displayCongruence(expLabelsToStringList, k);
+                System.out.println("=== Congruence Class Registry ===");
+                // for (int k = 1; registry.isClassDesignator(k); k++) {
+                // registry.displayCongruence(expLabelsToStringList, k);
+                // }
+                System.out.println("Proved: " + registry.checkIfProved());
             }
-            // }
         }
 
         // Compute the total elapsed time in generating proofs for the VCs in this
@@ -437,6 +440,9 @@ public class GeneralPurposeProver {
             Map<String, Integer> expLabels) {
         for (RuleInstance rule : ruleInstances) {
             Exp resultant = rule.getResultantClause();
+            if (resultant instanceof QuantExp) {
+                resultant = ((QuantExp) resultant).getBody();
+            }
             if (resultant.getTopLevelOperator().equals("=") || resultant.getTopLevelOperator().equals("<=")) {
                 int resultantAccessor = addToRegistry(registry, resultant, expLabels);
             }
