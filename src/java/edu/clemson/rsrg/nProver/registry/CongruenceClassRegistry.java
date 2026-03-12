@@ -2335,6 +2335,8 @@ public class CongruenceClassRegistry {
             do {
                 sb.append("(CR" + crAccr + ": ");
                 displayCluster(symbolMapping, congruenceCluster, sb);
+
+                sb.append(" [NEXT: CR" + congruenceCluster.getNextStandCluster() + "]");
                 if (congruenceCluster.getNextStandCluster() != 0
                         && congruenceCluster.getIndexToTag() != congruenceCluster.getNextStandCluster()) {
                     sb.append("), ");
@@ -2352,6 +2354,7 @@ public class CongruenceClassRegistry {
             }
             stand = standArray[stand.getNextCCStand()];
         }
+
         sb.append(" ");
         boolean isSuccedent = getCongruenceClass(classIndex).getAttribute().get(1);
         if (isSuccedent)

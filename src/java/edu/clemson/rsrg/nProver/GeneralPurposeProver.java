@@ -419,7 +419,13 @@ public class GeneralPurposeProver {
             System.out.println("============ Elaboration & Matching (VC #" + i + ") ===============");
 
             // TODO: Do this multiple times so one rule can match the output of another.
-            for (int l = 0; l < 10; l++) {
+            for (int l = 0; l < 5; l++) {
+
+                System.out.println("=== Congruence Class Registry ===");
+                for (int k = 1; registry.isClassDesignator(k); k++) {
+                    registry.displayCongruence(mappings, k);
+                }
+
                 List<String> expLabelsToStringList = expLabelsToList(expLabels);
                 List<RuleInstance> ruleInstances = elaborate(registry, rules.getMyElaborationRules(), expLabels);
                 applyRules(registry, ruleInstances, expLabels, mappings);
@@ -556,11 +562,25 @@ public class GeneralPurposeProver {
                     int currentCCAccessor = 0; // This is called c in Bill's email
 
                     boolean firstLoop = true;
+
+                    HashSet<Integer> visited = new HashSet<>();
                     while (firstLoop || !registry.isVarietyMaximal(operator, currentCCAccessor)) { // Loop through the
                                                                                                    // congruence classes
+                        System.out.print(currentCCAccessor);
                         currentCCAccessor = firstLoop ? registry.firstCCAccessorForTreeNodeLabel(operator)
                                 : registry.advanceCClassAccessor(operator, currentCCAccessor);
                         firstLoop = false;
+
+                        if(visited.contains(currentCCAccessor)) { //Infinite loop protection
+                            break;
+                        } else {
+                            visited.add(currentCCAccessor);
+                        }
+
+                        if(!registry.isMinimalVCCDesignator(operator, currentCCAccessor)) {
+                            continue;
+                        }
+
                         matchedCluster = ccMatchesExpression(registry, precursor, expLabels, currentCCAccessor,
                                 operator, variableBindings);
                         if (matchedCluster != -1) {
@@ -585,11 +605,13 @@ public class GeneralPurposeProver {
 
     private int ccMatchesExpression(CongruenceClassRegistry registry, Exp needToMatch, Map<String, Integer> expLabels,
             int currentCCAccessor, int operator, Map<Exp, Integer> variableBindings) { // Determines if anything in the
+        System.out.println("Recursion!");
         // Congruence Class matches the Exp
 
         // A cluster's argument is a single CC, so no need to loop through those or use a variety at this point
         int currentClusterAccessor = registry.getFirstClusterAccessorForCC(currentCCAccessor, operator); // This is p
 
+        HashSet<Integer> visited = new HashSet<>();
         do { // Loop through the clusters in the stand
              // If we've made it this far, then we have at least one cluster with the correct root node
 
@@ -645,6 +667,13 @@ public class GeneralPurposeProver {
             }
 
             currentClusterAccessor = registry.advanceClusterAccessor(operator, currentClusterAccessor);
+            System.out.println(currentClusterAccessor);
+
+            if(visited.contains(currentClusterAccessor)) { //Infinite loop protection
+                break;
+            } else {
+                visited.add(currentClusterAccessor);
+            }
             // This doesn't look like the dissertation & might be wrong.
         } while (!registry.isStandMaximal(operator, currentClusterAccessor));
 
