@@ -443,7 +443,7 @@ public class GeneralPurposeProver {
         for (RuleInstance rule : ruleInstances) {
             Exp resultant = rule.getResultantClause();
             if (resultant instanceof QuantExp) {
-		resultant = ((QuantExp) resultant).getBody();
+                resultant = ((QuantExp) resultant).getBody();
             }
             if (resultant.getTopLevelOperator().equals("=") || resultant.getTopLevelOperator().equals("<=")) {
                 int resultantAccessor = addToRegistry(registry, resultant, expLabels, mappings);

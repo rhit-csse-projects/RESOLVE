@@ -2431,8 +2431,13 @@ public class CongruenceClassRegistry {
         sb.append("Clusters:\n").append(arrayToString(clusterArray)).append("\n");
         sb.append("Stands:\n").append(arrayToString(standArray)).append("\n");
         sb.append("CongruenceClasses:\n").append(arrayToString(congruenceClassArray)).append("\n");
-
-        return sb.toString();
+        sb.append("Varieties\n");
+        for (int i = 0; i < varietyArray.length; i++) {
+            if (varietyArray[i] != null) {
+                sb.append(varietyArray[i].stringFormat(i));
+            }
+        }
+        return sb.append("\n").toString();
     }
 
     private String arrayToString(Object[] arr) {

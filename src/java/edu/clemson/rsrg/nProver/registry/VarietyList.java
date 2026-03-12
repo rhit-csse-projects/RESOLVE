@@ -43,4 +43,11 @@ public class VarietyList {
     public void setFirstStand(int newFirstStand) {
         firstStand = newFirstStand;
     }
+
+    public String stringFormat(int num) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[").append(num).append("] = ").append("|firstStand=").append(firstStand).append("|")
+                .append("|varietyTagIndex=").append(varietyTagIndex).append("|").append("\n");
+        return sb.toString();
+    }
 }
