@@ -2336,7 +2336,9 @@ public class CongruenceClassRegistry {
                 sb.append("(CR" + crAccr + ": ");
                 displayCluster(symbolMapping, congruenceCluster, sb);
 
-                sb.append(" [NEXT: CR" + congruenceCluster.getNextStandCluster() + "]");
+                if(congruenceCluster.getNextStandCluster() != 0) {
+                    sb.append(" [NEXT: CR" + congruenceCluster.getNextStandCluster() + "]");
+                }
                 if (congruenceCluster.getNextStandCluster() != 0
                         && congruenceCluster.getIndexToTag() != congruenceCluster.getNextStandCluster()) {
                     sb.append("), ");

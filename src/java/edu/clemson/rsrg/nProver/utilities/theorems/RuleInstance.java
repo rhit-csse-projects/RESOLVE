@@ -26,7 +26,7 @@ public class RuleInstance {
     public RuleInstance(Map<Exp, Integer> argBindings, ElaborationRule rule, int precursorAccessor) {
         this.precursorAccessor = precursorAccessor;
         Map<Exp, Exp> argReplacements = new HashMap<>();
-        for (Exp replacee : argReplacements.keySet())
+        for (Exp replacee : argBindings.keySet())
             argReplacements.put(replacee, new ClusterExp(argBindings.get(replacee)));
         this.resultantClause = rule.getResultantClause().substitute(argReplacements);
         this.fromAntecedent = rule.isAntecedent();

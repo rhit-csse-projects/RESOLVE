@@ -257,6 +257,11 @@ public abstract class AbstractRegisterSequent extends TreeWalkerStackVisitor {
         return true;
     }
 
+    @Override
+    public final boolean walkClusterExp(ClusterExp exp){
+        return true;
+    }
+
     /**
      * <p>
      * Code that gets executed after visiting a {@link LiteralExp}.

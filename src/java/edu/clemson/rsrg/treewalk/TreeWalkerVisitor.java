@@ -1995,6 +1995,8 @@ public abstract class TreeWalkerVisitor {
     public void postFunctionExpMyArguments(FunctionExp e) {
     }
 
+    public boolean walkClusterExp(ClusterExp e) { return false; }
+
     public boolean walkPerformanceSpecInitFinalItem(PerformanceSpecInitFinalItem e) {
         return false;
     }

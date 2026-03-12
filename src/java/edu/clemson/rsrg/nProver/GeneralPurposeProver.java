@@ -418,19 +418,18 @@ public class GeneralPurposeProver {
 
             System.out.println("============ Elaboration & Matching (VC #" + i + ") ===============");
 
+            System.out.println("=== Initial Registry ===");
+            for (int k = 1; registry.isClassDesignator(k); k++) {
+                registry.displayCongruence(mappings, k);
+            }
+
             // TODO: Do this multiple times so one rule can match the output of another.
             for (int l = 0; l < 5; l++) {
-
-                System.out.println("=== Congruence Class Registry ===");
-                for (int k = 1; registry.isClassDesignator(k); k++) {
-                    registry.displayCongruence(mappings, k);
-                }
-
                 List<String> expLabelsToStringList = expLabelsToList(expLabels);
                 List<RuleInstance> ruleInstances = elaborate(registry, rules.getMyElaborationRules(), expLabels);
                 applyRules(registry, ruleInstances, expLabels, mappings);
 
-                System.out.println("=== Congruence Class Registry ===");
+                System.out.println("=== Registry after Elaboration Attempt ===");
                 for (int k = 1; registry.isClassDesignator(k); k++) {
                     registry.displayCongruence(mappings, k);
                 }
@@ -447,6 +446,7 @@ public class GeneralPurposeProver {
     private void applyRules(CongruenceClassRegistry registry, List<RuleInstance> ruleInstances,
             Map<String, Integer> expLabels, List<String> mappings) {
         for (RuleInstance rule : ruleInstances) {
+
             Exp resultant = rule.getResultantClause();
             if (resultant instanceof QuantExp) {
                 resultant = ((QuantExp) resultant).getBody();
@@ -566,7 +566,6 @@ public class GeneralPurposeProver {
                     HashSet<Integer> visited = new HashSet<>();
                     while (firstLoop || !registry.isVarietyMaximal(operator, currentCCAccessor)) { // Loop through the
                                                                                                    // congruence classes
-                        System.out.print(currentCCAccessor);
                         currentCCAccessor = firstLoop ? registry.firstCCAccessorForTreeNodeLabel(operator)
                                 : registry.advanceCClassAccessor(operator, currentCCAccessor);
                         firstLoop = false;
@@ -605,7 +604,6 @@ public class GeneralPurposeProver {
 
     private int ccMatchesExpression(CongruenceClassRegistry registry, Exp needToMatch, Map<String, Integer> expLabels,
             int currentCCAccessor, int operator, Map<Exp, Integer> variableBindings) { // Determines if anything in the
-        System.out.println("Recursion!");
         // Congruence Class matches the Exp
 
         // A cluster's argument is a single CC, so no need to loop through those or use a variety at this point
@@ -614,6 +612,11 @@ public class GeneralPurposeProver {
         HashSet<Integer> visited = new HashSet<>();
         do { // Loop through the clusters in the stand
              // If we've made it this far, then we have at least one cluster with the correct root node
+            if(visited.contains(currentClusterAccessor)) { //Infinite loop protection
+                break;
+            } else {
+                visited.add(currentClusterAccessor);
+            }
 
             Map<Exp, Integer> tempBindings = new HashMap<>();
 
@@ -667,13 +670,6 @@ public class GeneralPurposeProver {
             }
 
             currentClusterAccessor = registry.advanceClusterAccessor(operator, currentClusterAccessor);
-            System.out.println(currentClusterAccessor);
-
-            if(visited.contains(currentClusterAccessor)) { //Infinite loop protection
-                break;
-            } else {
-                visited.add(currentClusterAccessor);
-            }
             // This doesn't look like the dissertation & might be wrong.
         } while (!registry.isStandMaximal(operator, currentClusterAccessor));
 
