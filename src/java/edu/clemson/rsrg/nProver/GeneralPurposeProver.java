@@ -113,6 +113,9 @@ public class GeneralPurposeProver {
      */
     private final TypeGraph myTypeGraph;
 
+
+    private boolean debug;
+
     /**
      * <p>
      * The module's final list of verification conditions.
@@ -220,6 +223,7 @@ public class GeneralPurposeProver {
         myVCProverResults = new ArrayList<>(vcs.size());
         myVerificationConditions = vcs;
         myProofGenDetailsModel = mySTGroup.getInstanceOf("outputProofGenDetails");
+        debug = compileEnvironment.flags.isFlagSet("debug");
 
         // Timeout
         if (myCompileEnvironment.flags.isFlagSet(FLAG_TIMEOUT)) {
@@ -320,12 +324,20 @@ public class GeneralPurposeProver {
         return myProofGenDetailsModel.render();
     }
 
+    public final void debugLog(Object log) {
+        if(debug){
+            System.out.println(log);
+        }
+    }
+
     /**
      * <p>
      * This method runs the general purpose prover on all the VCs.
      * </p>
      */
     public void proveVCs() {
+        debugLog("Logging Level: Debug");
+
         // Keep track to total elapsed time and number of unproved/timed out VCs
         myTotalElapsedTime = System.currentTimeMillis();
         int numUnproved = 0;
@@ -350,9 +362,9 @@ public class GeneralPurposeProver {
             mappings.add("=");
             VerificationCondition vc = myVerificationConditions.get(i);
 
-            System.out.println(
+            debugLog(
                     "====================================== VC #" + i + " =====================================");
-            System.out.println(vc);
+            debugLog(vc);
             // Store the start time for generating proofs for this VC
             long startTime = System.nanoTime();
             // Obtain the sequent to be proved
@@ -384,56 +396,59 @@ public class GeneralPurposeProver {
                     new VCProverResult(vc, TimeUnit.MILLISECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS),
                             registry.checkIfProved(), false, false));
 
+            if (!registry.checkIfProved()) {
+
+                ElaborationRules rules = new ElaborationRules(relevantTheorems);
+
+                debugLog(
+                        "=========================== Relevant Theorems (VC #" + i + ") ===========================");
+                int j = 0;
+                for (TheoremEntry te : relevantTheorems) {
+                    debugLog("Theorem " + i + "_" + j + ": " + "\u001B[33m" + te.getName() + "\u001B[0m"
+                            + " (from " + "\u001B[34m" + te.getSourceModuleIdentifier() + "\u001B[0m" + ")");
+                    debugLog(te.getAssertion());
+                    debugLog("\n");
+                    j++;
+                }
+
+                debugLog("============ Elaboration Rules (VC #" + i + ") ===============");
+                debugLog(rules);
+
+                debugLog("============ VC #" + i + " (Printed again for reference) " + " ===============");
+                debugLog(vc);
+
+                debugLog("============ Elaboration & Matching (VC #" + i + ") ===============");
+
+                debugLog("=== Initial Registry ===");
+                if (debug) {
+                    for (int k = 1; registry.isClassDesignator(k); k++) {
+                        registry.displayCongruence(mappings, k);
+                    }
+                }
+
+                // TODO: Do this multiple times so one rule can match the output of another.
+                for (int l = 0; l < 5; l++) {
+                    List<String> expLabelsToStringList = expLabelsToList(expLabels);
+                    List<RuleInstance> ruleInstances = elaborate(registry, rules.getMyElaborationRules(), expLabels);
+                    applyRules(registry, ruleInstances, expLabels, mappings);
+
+                    if (debug) {
+                        System.out.println("=== Registry after Elaboration Attempt ===");
+                        for (int k = 1; registry.isClassDesignator(k); k++) {
+                            registry.displayCongruence(mappings, k);
+                        }
+                        System.out.println("Proved: " + registry.checkIfProved());
+                    }
+                }
+            }
+
             // Store the verbose proof detail for this VC
             String result = registry.checkIfProved() ? "Proved" : "Not Proved";
             storeVCProofVerboseDetail(vc, result, registry, expLabels);
-
-            System.out.println("Status: " + result + "\n");
-
-            // System.out.println("============ CongruenceClassRegistry ===============");
-            // System.out.println(registry.toString());
-
-            if (registry.checkIfProved()) {
-                continue;
-            }
-
-            ElaborationRules rules = new ElaborationRules(relevantTheorems);
-
-            System.out.println(
-                    "=========================== Relevant Theorems (VC #" + i + ") ===========================");
-            int j = 0;
-            for (TheoremEntry te : relevantTheorems) {
-                System.out.println("Theorem " + i + "_" + j + ": " + "\u001B[33m" + te.getName() + "\u001B[0m"
-                        + " (from " + "\u001B[34m" + te.getSourceModuleIdentifier() + "\u001B[0m" + ")");
-                System.out.println(te.getAssertion());
-                System.out.println();
-                j++;
-            }
-
-            System.out.println("============ Elaboration Rules (VC #" + i + ") ===============");
-            System.out.println(rules);
-
-            System.out.println("============ VC #" + i + " (Printed again for reference) " + " ===============");
-            System.out.println(vc);
-
-            System.out.println("============ Elaboration & Matching (VC #" + i + ") ===============");
-
-            System.out.println("=== Initial Registry ===");
-            for (int k = 1; registry.isClassDesignator(k); k++) {
-                registry.displayCongruence(mappings, k);
-            }
-
-            // TODO: Do this multiple times so one rule can match the output of another.
-            for (int l = 0; l < 5; l++) {
-                List<String> expLabelsToStringList = expLabelsToList(expLabels);
-                List<RuleInstance> ruleInstances = elaborate(registry, rules.getMyElaborationRules(), expLabels);
-                applyRules(registry, ruleInstances, expLabels, mappings);
-
-                System.out.println("=== Registry after Elaboration Attempt ===");
-                for (int k = 1; registry.isClassDesignator(k); k++) {
-                    registry.displayCongruence(mappings, k);
-                }
-                System.out.println("Proved: " + registry.checkIfProved());
+            if(registry.checkIfProved()) {
+                System.out.print("\u001B[42m   Proved   \u001B[49m " + vc);
+            } else {
+                System.out.print("\u001B[41m Not Proved \u001B[49m " + vc);
             }
         }
 
@@ -589,11 +604,11 @@ public class GeneralPurposeProver {
 
                 }
                 if (matchedCluster != -1) {
-                    System.out.println("[Rule #" + elaborationRuleCounter + "] \u001B[42m Matched! \u001B[49m :"
+                    debugLog("[Rule #" + elaborationRuleCounter + "] \u001B[42m Matched! \u001B[49m :"
                             + precursor.toString());
                     result.add(new RuleInstance(variableBindings, elaborationRule, matchedCluster));
                 } else {
-                    System.out.println("[Rule #" + elaborationRuleCounter + "] \u001B[41m Not Matched \u001B[49m :"
+                    debugLog("[Rule #" + elaborationRuleCounter + "] \u001B[41m Not Matched \u001B[49m :"
                             + precursor.toString());
                 }
             }
