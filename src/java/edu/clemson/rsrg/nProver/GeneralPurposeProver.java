@@ -570,13 +570,13 @@ public class GeneralPurposeProver {
                                 : registry.advanceCClassAccessor(operator, currentCCAccessor);
                         firstLoop = false;
 
-                        if(visited.contains(currentCCAccessor)) { //Infinite loop protection
+                        if (visited.contains(currentCCAccessor)) { // Infinite loop protection
                             break;
                         } else {
                             visited.add(currentCCAccessor);
                         }
 
-                        if(!registry.isMinimalVCCDesignator(operator, currentCCAccessor)) {
+                        if (!registry.isMinimalVCCDesignator(operator, currentCCAccessor)) {
                             continue;
                         }
 
@@ -612,7 +612,7 @@ public class GeneralPurposeProver {
         HashSet<Integer> visited = new HashSet<>();
         do { // Loop through the clusters in the stand
              // If we've made it this far, then we have at least one cluster with the correct root node
-            if(visited.contains(currentClusterAccessor)) { //Infinite loop protection
+            if (visited.contains(currentClusterAccessor)) { // Infinite loop protection
                 break;
             } else {
                 visited.add(currentClusterAccessor);

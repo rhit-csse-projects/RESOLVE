@@ -74,8 +74,8 @@ public class RegisterAntecedent extends AbstractRegisterSequent {
     public final void postInfixExp(InfixExp exp) {
         super.postInfixExp(exp);
         int operatorNumber = myExpLabels.get(exp.getOperatorAsString());
-        int lhsArgument = myArgumentsCache.remove(exp.getLeft());
-        int rhsArgument = myArgumentsCache.remove(exp.getRight());
+        int lhsArgument = resolveArg(exp.getLeft());
+        int rhsArgument = resolveArg(exp.getRight());
 
         // Logic for handling infix expressions in the antecedent
         if (operatorNumber == OP_EQUALS) { // if it is antecedent equal
@@ -105,7 +105,8 @@ public class RegisterAntecedent extends AbstractRegisterSequent {
 
         // Logic for handling function expressions in the antecedent
         for (Exp argument : exp.getArguments()) {
-            myRegistry.appendToClusterArgList(myArgumentsCache.remove(argument));
+            int accessor = resolveArg(argument);
+            myRegistry.appendToClusterArgList(accessor);
         }
         registerFunction(exp, myExpLabels.get(exp.getOperatorAsString()));
     }
@@ -124,7 +125,8 @@ public class RegisterAntecedent extends AbstractRegisterSequent {
 
         // Logic for handling outfix expressions in the antecedent
         // has only one argument, should run once
-        myRegistry.appendToClusterArgList(myArgumentsCache.remove(exp.getArgument()));
+        int accessor = resolveArg(exp.getArgument());
+        myRegistry.appendToClusterArgList(accessor);
         registerFunction(exp, myExpLabels.get(exp.getOperatorAsString()));
     }
 
@@ -142,7 +144,8 @@ public class RegisterAntecedent extends AbstractRegisterSequent {
 
         // Logic for handling prefix expressions in the antecedent
         // has only one argument, should run once
-        myRegistry.appendToClusterArgList(myArgumentsCache.remove(exp.getArgument()));
+        int accessor = resolveArg(exp.getArgument());
+        myRegistry.appendToClusterArgList(accessor);
         registerFunction(exp, myExpLabels.get(exp.getOperatorAsString()));
     }
 
@@ -160,7 +163,8 @@ public class RegisterAntecedent extends AbstractRegisterSequent {
 
         // Logic for handling set collection expressions in the antecedent
         for (Exp argument : exp.getVars()) {
-            myRegistry.appendToClusterArgList(myArgumentsCache.remove(argument));
+            int accessor = resolveArg(argument);
+            myRegistry.appendToClusterArgList(accessor);
         }
         registerFunction(exp, myExpLabels.get("{_}"));
     }
@@ -179,7 +183,8 @@ public class RegisterAntecedent extends AbstractRegisterSequent {
 
         // Logic for handling tuple expressions in the antecedent
         for (Exp field : exp.getFields()) {
-            myRegistry.appendToClusterArgList(myArgumentsCache.remove(field));
+            int accessor = resolveArg(field);
+            myRegistry.appendToClusterArgList(accessor);
         }
         registerFunction(exp, myExpLabels.get("(_)"));
     }
@@ -243,6 +248,13 @@ public class RegisterAntecedent extends AbstractRegisterSequent {
                 myArgumentsCache.put(exp, accessor);
             }
         }
+    }
+
+    private int resolveArg(Exp arg) {
+        if (arg instanceof ClusterExp) {
+            return ((ClusterExp) arg).getClusterId();
+        }
+        return myArgumentsCache.remove(arg);
     }
 
 }

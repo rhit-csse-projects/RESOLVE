@@ -214,7 +214,6 @@ public class TreeWalker {
             if (!c.equals(VirtualListNode.class)) {
                 String walkMethodName = "walk" + c.getSimpleName();
                 try {
-                    System.out.println(walkMethodName);
                     Method walkMethod = visitor.getClass().getMethod(walkMethodName, c);
                     foundOverride = ((Boolean) walkMethod.invoke(visitor, e));
                 } catch (NoSuchMethodException nsme) {

@@ -258,7 +258,7 @@ public abstract class AbstractRegisterSequent extends TreeWalkerStackVisitor {
     }
 
     @Override
-    public final boolean walkClusterExp(ClusterExp exp){
+    public final boolean walkClusterExp(ClusterExp exp) {
         return true;
     }
 
