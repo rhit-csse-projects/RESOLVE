@@ -388,14 +388,6 @@ public class GeneralPurposeProver {
                 TreeWalker.visit(regConsequent, exp);
             }
 
-            // Store the end time for generating proofs for this VC
-            long endTime = System.nanoTime();
-
-            // Store the prover results for this VC
-            myVCProverResults.add(
-                    new VCProverResult(vc, TimeUnit.MILLISECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS),
-                            registry.checkIfProved(), false, false));
-
             if (!registry.checkIfProved()) {
 
                 ElaborationRules rules = new ElaborationRules(relevantTheorems);
@@ -420,31 +412,30 @@ public class GeneralPurposeProver {
                 debugLog("============ Elaboration & Matching (VC #" + i + ") ===============");
 
                 debugLog("=== Initial Registry ===");
-                if (debug) {
-                    for (int k = 1; registry.isClassDesignator(k); k++) {
-                        registry.displayCongruence(mappings, k);
-                    }
-                }
+                debugLog(registry.toPrettyString(mappings));
 
                 // TODO: Do this multiple times so one rule can match the output of another.
                 for (int l = 0; l < 5; l++) {
-                    List<String> expLabelsToStringList = expLabelsToList(expLabels);
                     List<RuleInstance> ruleInstances = elaborate(registry, rules.getMyElaborationRules(), expLabels);
                     applyRules(registry, ruleInstances, expLabels, mappings);
 
-                    if (debug) {
-                        System.out.println("=== Registry after Elaboration Attempt ===");
-                        for (int k = 1; registry.isClassDesignator(k); k++) {
-                            registry.displayCongruence(mappings, k);
-                        }
-                        System.out.println("Proved: " + registry.checkIfProved());
-                    }
+                    debugLog("=== Registry after Elaboration Attempt ===");
+                    debugLog(registry.toPrettyString(mappings));
+                    debugLog("Proved: " + registry.checkIfProved());
                 }
             }
 
+            // Store the end time for generating proofs for this VC
+            long endTime = System.nanoTime();
+
+            // Store the prover results for this VC
+            myVCProverResults.add(
+                    new VCProverResult(vc, TimeUnit.MILLISECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS),
+                            registry.checkIfProved(), false, false));
+
             // Store the verbose proof detail for this VC
             String result = registry.checkIfProved() ? "Proved" : "Not Proved";
-            storeVCProofVerboseDetail(vc, result, registry, expLabels);
+            storeVCProofVerboseDetail(vc, result, registry, expLabels, mappings);
             if(registry.checkIfProved()) {
                 System.out.print("\u001B[42m   Proved   \u001B[49m " + vc);
             } else {
@@ -467,14 +458,18 @@ public class GeneralPurposeProver {
                 resultant = ((QuantExp) resultant).getBody();
             }
             if (resultant.getTopLevelOperator().equals("=") || resultant.getTopLevelOperator().equals("<=")) {
-                int resultantAccessor = addToRegistry(registry, resultant, expLabels, mappings);
+                int resultantAccessor = addToRegistry(registry, resultant, expLabels, mappings, rule.isFromAntecedent());
             }
         }
     }
 
     private int addToRegistry(CongruenceClassRegistry registry, Exp resultant, Map<String, Integer> expLabels,
-            List<String> mappings) {
-        TreeWalker.visit(new RegisterAntecedent(registry, expLabels, expLabels.size(), mappings), resultant);
+            List<String> mappings, boolean isFromAntencedent) {
+        //if(isFromAntencedent) {
+            TreeWalker.visit(new RegisterAntecedent(registry, expLabels, expLabels.size(), mappings), resultant);
+        //} else {
+        //    TreeWalker.visit(new RegisterSuccedent(registry, expLabels, expLabels.size(), mappings), resultant);
+        //}
         return 0;
     }
 
@@ -487,17 +482,14 @@ public class GeneralPurposeProver {
      * An helper method that stores verbose detail about proving this {@code VC}.
      * </p>
      *
-     * @param vc
-     *            The {@link VerificationCondition} we have attempted to prove.
-     * @param result
-     *            The prover results.
-     * @param registry
-     *            The congruence class registry used on this {@code VC}.
-     * @param expLabels
-     *            The expression labels assigned to the expressions in this {@code VC}.
+     * @param vc        The {@link VerificationCondition} we have attempted to prove.
+     * @param result    The prover results.
+     * @param registry  The congruence class registry used on this {@code VC}.
+     * @param expLabels The expression labels assigned to the expressions in this {@code VC}.
+     * @param mappings
      */
     private void storeVCProofVerboseDetail(VerificationCondition vc, String result, CongruenceClassRegistry registry,
-            Map<String, Integer> expLabels) {
+                                           Map<String, Integer> expLabels, List<String> mappings) {
         // Create a model for adding all the details associated with this VC.
         LocationDetailModel detailModel = vc.getLocationDetailModel();
         ST vcModel = mySTGroup.getInstanceOf("outputVC");
@@ -529,12 +521,12 @@ public class GeneralPurposeProver {
         // Add this sequent to our vc model
         vcModel.add("sequent", sequentModel.render());
 
-        // Store the congruence class registry array information
+        /*// Store the congruence class registry array information
         ST ccRegistryArraysModel = mySTGroup.getInstanceOf("outputCCRegistryArrays");
         ccRegistryArraysModel.add("clusterArguments", registry.getClusterArgArray());
         ccRegistryArraysModel.add("clusters", registry.getClusterArray());
         ccRegistryArraysModel.add("plantations", registry.getStandArray()); // plantations are now stands
-        ccRegistryArraysModel.add("classes", registry.getCongruenceClassArray());
+        ccRegistryArraysModel.add("classes", registry.getCongruenceClassArray());*/
 
         // Add the VC to the VC proof detail model
         ST vcProofDetailModel = mySTGroup.getInstanceOf("outputVCProofDetails");
@@ -542,7 +534,7 @@ public class GeneralPurposeProver {
         vcProofDetailModel.add("vc", vcModel.render());
         vcProofDetailModel.add("result", result);
         vcProofDetailModel.add("expLabels", expLabels);
-        vcProofDetailModel.add("registryArrays", ccRegistryArraysModel.render());
+        vcProofDetailModel.add("registryArrays", registry.toPrettyString(mappings));//ccRegistryArraysModel.render());
 
         // Add VC proof detail model to prover generation details
         myProofGenDetailsModel.add("vcProofDetails", vcProofDetailModel.render());

@@ -434,9 +434,7 @@ public class RegistryCI {
 
     private void displayAllClasses() {
         System.out.println("=== Congruence Classes ===");
-        for (int i = 1; registry.isClassDesignator(i); i++) {
-            registry.displayCongruence(mappingToSymbol, i);
-        }
+        registry.toPrettyString(mappingToSymbol);
     }
 
     private void displayAllRoots() {

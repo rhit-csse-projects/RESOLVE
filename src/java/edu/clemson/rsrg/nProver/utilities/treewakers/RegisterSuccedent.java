@@ -78,8 +78,8 @@ public class RegisterSuccedent extends AbstractRegisterSequent {
 
         // Logic for handling infix expressions in the succedent
         // append arguments usable in registering the infix operator
-        myRegistry.appendToClusterArgList(myArgumentsCache.remove(exp.getLeft()));
-        myRegistry.appendToClusterArgList(myArgumentsCache.remove(exp.getRight()));
+        myRegistry.appendToClusterArgList(resolveArg(exp.getLeft()));
+        myRegistry.appendToClusterArgList(resolveArg(exp.getRight()));
 
         // Handle the root node, we want to check this first as if we proved the sequent no need to continue
         if (super.getAncestorSize() == 1) {
@@ -137,7 +137,7 @@ public class RegisterSuccedent extends AbstractRegisterSequent {
 
         // Logic for handling function expressions in the succedent
         for (Exp argument : exp.getArguments()) {
-            myRegistry.appendToClusterArgList(myArgumentsCache.remove(argument));
+            myRegistry.appendToClusterArgList(resolveArg(argument));
         }
         registerFunction(exp, myExpLabels.get(exp.getOperatorAsString()));
     }
@@ -156,7 +156,7 @@ public class RegisterSuccedent extends AbstractRegisterSequent {
 
         // Logic for handling outfix expressions in the succedent
         // has only one argument, should run once
-        myRegistry.appendToClusterArgList(myArgumentsCache.remove(exp.getArgument()));
+        myRegistry.appendToClusterArgList(resolveArg(exp.getArgument()));
         registerFunction(exp, myExpLabels.get(exp.getOperatorAsString()));
     }
 
@@ -174,7 +174,7 @@ public class RegisterSuccedent extends AbstractRegisterSequent {
 
         // Logic for handling prefix expressions in the succedent
         // has only one argument, should run once
-        myRegistry.appendToClusterArgList(myArgumentsCache.remove(exp.getArgument()));
+        myRegistry.appendToClusterArgList(resolveArg(exp.getArgument()));
         registerFunction(exp, myExpLabels.get(exp.getOperatorAsString()));
     }
 
@@ -192,7 +192,7 @@ public class RegisterSuccedent extends AbstractRegisterSequent {
 
         // Logic for handling set collection expressions in the succedent
         for (Exp argument : exp.getVars()) {
-            myRegistry.appendToClusterArgList(myArgumentsCache.remove(argument));
+            myRegistry.appendToClusterArgList(resolveArg(argument));
         }
         registerFunction(exp, myExpLabels.get("{_}"));
     }
@@ -211,7 +211,7 @@ public class RegisterSuccedent extends AbstractRegisterSequent {
 
         // Logic for handling set collection expressions in the succedent
         for (Exp field : exp.getFields()) {
-            myRegistry.appendToClusterArgList(myArgumentsCache.remove(field));
+            myRegistry.appendToClusterArgList(resolveArg(field));
         }
         registerFunction(exp, myExpLabels.get("(_)"));
     }

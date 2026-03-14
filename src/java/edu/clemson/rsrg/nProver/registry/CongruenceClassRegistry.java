@@ -2317,52 +2317,56 @@ public class CongruenceClassRegistry {
         return label <= topCongruenceClassDesignator;
     }
 
-    public void displayCongruence(List<String> symbolMapping, int classIndex) {
+    public String toPrettyString(List<String> symbolMapping) {
         StringBuilder sb = new StringBuilder();
 
-        CongruenceClass congruenceClass = congruenceClassArray[classIndex];
-        if (congruenceClass.getClassTag() != congruenceClass.getDominantCClass()) {
-            congruenceClass = congruenceClassArray[congruenceClass.getDominantCClass()];
-        }
-        Stand stand = standArray[congruenceClass.getFirstStand()];
+        for (int classIndex = 1; this.isClassDesignator(classIndex); classIndex++) {
 
-        sb.append("CC").append(classIndex).append(" -> ");
-
-        while (stand.getStandTag() != 0) {
-            int crAccr = stand.getFirstStandCluster();
-            CongruenceCluster congruenceCluster = clusterArray[crAccr];
-
-            do {
-                sb.append("(CR" + crAccr + ": ");
-                displayCluster(symbolMapping, congruenceCluster, sb);
-
-                if (congruenceCluster.getNextStandCluster() != 0) {
-                    sb.append(" [NEXT: CR" + congruenceCluster.getNextStandCluster() + "]");
-                }
-                if (congruenceCluster.getNextStandCluster() != 0
-                        && congruenceCluster.getIndexToTag() != congruenceCluster.getNextStandCluster()) {
-                    sb.append("), ");
-                } else {
-                    sb.append(")");
-                }
-
-                crAccr = congruenceCluster.getNextStandCluster();
-                congruenceCluster = clusterArray[crAccr];
-            } while (congruenceCluster.getIndexToTag() != 0
-                    && congruenceCluster.getIndexToTag() != congruenceCluster.getNextStandCluster());
-
-            if (stand.getNextCCStand() != 0) {
-                sb.append(" | ");
+            CongruenceClass congruenceClass = congruenceClassArray[classIndex];
+            if (congruenceClass.getClassTag() != congruenceClass.getDominantCClass()) {
+                congruenceClass = congruenceClassArray[congruenceClass.getDominantCClass()];
             }
-            stand = standArray[stand.getNextCCStand()];
+            Stand stand = standArray[congruenceClass.getFirstStand()];
+
+            sb.append("CC").append(classIndex).append(" -> ");
+
+            while (stand.getStandTag() != 0) {
+                int crAccr = stand.getFirstStandCluster();
+                CongruenceCluster congruenceCluster = clusterArray[crAccr];
+
+                do {
+                    sb.append("(CR" + crAccr + ": ");
+                    displayCluster(symbolMapping, congruenceCluster, sb);
+
+                    if (congruenceCluster.getNextStandCluster() != 0) {
+                        sb.append(" [NEXT: CR" + congruenceCluster.getNextStandCluster() + "]");
+                    }
+                    if (congruenceCluster.getNextStandCluster() != 0
+                            && congruenceCluster.getIndexToTag() != congruenceCluster.getNextStandCluster()) {
+                        sb.append("), ");
+                    } else {
+                        sb.append(")");
+                    }
+
+                    crAccr = congruenceCluster.getNextStandCluster();
+                    congruenceCluster = clusterArray[crAccr];
+                } while (congruenceCluster.getIndexToTag() != 0
+                        && congruenceCluster.getIndexToTag() != congruenceCluster.getNextStandCluster());
+
+                if (stand.getNextCCStand() != 0) {
+                    sb.append(" | ");
+                }
+                stand = standArray[stand.getNextCCStand()];
+            }
+
+            sb.append(" ");
+            boolean isSuccedent = getCongruenceClass(classIndex).getAttribute().get(1);
+            if (isSuccedent)
+                sb.append("\u001B[35m").append("(succedent)").append("\u001B[0m");
+
+            sb.append("\n");
         }
-
-        sb.append(" ");
-        boolean isSuccedent = getCongruenceClass(classIndex).getAttribute().get(1);
-        if (isSuccedent)
-            sb.append("\u001B[35m").append("(succedent)").append("\u001B[0m");
-
-        System.out.println(sb);
+        return sb.toString();
     }
 
     private void displayCluster(List<String> symbolMapping, CongruenceCluster cluster, StringBuilder sb) {

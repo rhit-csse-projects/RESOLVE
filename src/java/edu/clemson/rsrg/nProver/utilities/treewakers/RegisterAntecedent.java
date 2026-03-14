@@ -250,11 +250,4 @@ public class RegisterAntecedent extends AbstractRegisterSequent {
         }
     }
 
-    private int resolveArg(Exp arg) {
-        if (arg instanceof ClusterExp) {
-            return ((ClusterExp) arg).getClusterId();
-        }
-        return myArgumentsCache.remove(arg);
-    }
-
 }
