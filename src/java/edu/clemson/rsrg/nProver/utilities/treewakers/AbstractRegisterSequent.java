@@ -246,7 +246,8 @@ public abstract class AbstractRegisterSequent extends TreeWalkerStackVisitor {
         }
 
         // YS: Lastly, we walk the name of the function
-        TreeWalker.visit(this, exp.getName());
+        // Rose-Hulman 25-26: We don't have to do this because it's handled in registerFunction
+        // TreeWalker.visit(this, exp.getName());
 
         postFunctionExp(exp);
         postAbstractFunctionExp(exp);

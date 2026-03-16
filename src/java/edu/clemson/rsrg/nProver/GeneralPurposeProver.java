@@ -111,7 +111,7 @@ public class GeneralPurposeProver {
      */
     private final TypeGraph myTypeGraph;
 
-    private boolean debug;
+    private final boolean debug;
 
     /**
      * <p>
@@ -240,24 +240,23 @@ public class GeneralPurposeProver {
         // Store verbose output about this module
         ST header;
         ModuleDec moduleDec = myCurrentModuleScope.getDefiningElement();
-        if (moduleDec instanceof ConceptModuleDec) {
-            header = mySTGroup.getInstanceOf("outputConceptHeader").add("conceptName", moduleDec.getName().getName());
-        } else if (moduleDec instanceof ConceptRealizModuleDec) {
-            header = mySTGroup.getInstanceOf("outputConceptRealizHeader")
+        header = switch (moduleDec) {
+            case ConceptModuleDec ignored ->
+                    mySTGroup.getInstanceOf("outputConceptHeader").add("conceptName", moduleDec.getName().getName());
+            case ConceptRealizModuleDec conceptRealizModuleDec -> mySTGroup.getInstanceOf("outputConceptRealizHeader")
                     .add("realizName", moduleDec.getName().getName())
-                    .add("conceptName", ((ConceptRealizModuleDec) moduleDec).getConceptName().getName());
-        } else if (moduleDec instanceof EnhancementModuleDec) {
-            header = mySTGroup.getInstanceOf("outputEnhancementHeader")
+                    .add("conceptName", conceptRealizModuleDec.getConceptName().getName());
+            case EnhancementModuleDec enhancementModuleDec -> mySTGroup.getInstanceOf("outputEnhancementHeader")
                     .add("enhancementName", moduleDec.getName().getName())
-                    .add("conceptName", ((EnhancementModuleDec) moduleDec).getConceptName().getName());
-        } else if (moduleDec instanceof EnhancementRealizModuleDec) {
-            header = mySTGroup.getInstanceOf("outputEnhancementRealizHeader")
-                    .add("realizName", moduleDec.getName().getName())
-                    .add("enhancementName", ((EnhancementRealizModuleDec) moduleDec).getEnhancementName().getName())
-                    .add("conceptName", ((EnhancementRealizModuleDec) moduleDec).getConceptName().getName());
-        } else {
-            header = mySTGroup.getInstanceOf("outputFacilityHeader").add("facilityName", moduleDec.getName().getName());
-        }
+                    .add("conceptName", enhancementModuleDec.getConceptName().getName());
+            case EnhancementRealizModuleDec enhancementRealizModuleDec ->
+                    mySTGroup.getInstanceOf("outputEnhancementRealizHeader")
+                            .add("realizName", moduleDec.getName().getName())
+                            .add("enhancementName", enhancementRealizModuleDec.getEnhancementName().getName())
+                            .add("conceptName", enhancementRealizModuleDec.getConceptName().getName());
+            default ->
+                    mySTGroup.getInstanceOf("outputFacilityHeader").add("facilityName", moduleDec.getName().getName());
+        };
         myProofGenDetailsModel.add("fileHeader", header.render());
     }
 
@@ -337,7 +336,6 @@ public class GeneralPurposeProver {
 
         // Keep track to total elapsed time and number of unproved/timed out VCs
         myTotalElapsedTime = System.currentTimeMillis();
-        int numUnproved = 0;
 
         // Use the new TheoremStore to preload theorems for fast lookup.
         TheoremStore theoremStore = new TheoremStore(myCurrentModuleScope);
@@ -416,6 +414,10 @@ public class GeneralPurposeProver {
                     elaborator.applyRules(ruleInstances);
                     debugLog("=== Registry after Elaboration Attempt ===");
                     debugLog(registry.toPrettyString(mappings));
+                    if (registry.checkIfProved()) {
+                        debugLog("Proved: " + registry.checkIfProved());
+                        break;
+                    }
                     debugLog("Proved: " + registry.checkIfProved());
                 }
             }
@@ -431,10 +433,12 @@ public class GeneralPurposeProver {
             // Store the verbose proof detail for this VC
             String result = registry.checkIfProved() ? "Proved" : "Not Proved";
             storeVCProofVerboseDetail(vc, result, registry, expLabels, mappings);
-            if (registry.checkIfProved()) {
-                System.out.print("\u001B[42m   Proved   \u001B[49m " + vc);
-            } else {
-                System.out.print("\u001B[41m Not Proved \u001B[49m " + vc);
+            if (!debug) {
+                if (registry.checkIfProved()) {
+                    System.out.print("\u001B[42m   Proved   \u001B[49m " + vc);
+                } else {
+                    System.out.print("\u001B[41m Not Proved \u001B[49m " + vc);
+                }
             }
         }
 
