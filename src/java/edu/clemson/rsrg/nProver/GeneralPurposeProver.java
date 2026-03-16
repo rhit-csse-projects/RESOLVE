@@ -249,11 +249,10 @@ public class GeneralPurposeProver {
             case EnhancementModuleDec enhancementModuleDec -> mySTGroup.getInstanceOf("outputEnhancementHeader")
                     .add("enhancementName", moduleDec.getName().getName())
                     .add("conceptName", enhancementModuleDec.getConceptName().getName());
-            case EnhancementRealizModuleDec enhancementRealizModuleDec ->
-                    mySTGroup.getInstanceOf("outputEnhancementRealizHeader")
-                            .add("realizName", moduleDec.getName().getName())
-                            .add("enhancementName", enhancementRealizModuleDec.getEnhancementName().getName())
-                            .add("conceptName", enhancementRealizModuleDec.getConceptName().getName());
+            case EnhancementRealizModuleDec enhancementRealizModuleDec -> mySTGroup
+                    .getInstanceOf("outputEnhancementRealizHeader").add("realizName", moduleDec.getName().getName())
+                    .add("enhancementName", enhancementRealizModuleDec.getEnhancementName().getName())
+                    .add("conceptName", enhancementRealizModuleDec.getConceptName().getName());
             default ->
                     mySTGroup.getInstanceOf("outputFacilityHeader").add("facilityName", moduleDec.getName().getName());
         };
