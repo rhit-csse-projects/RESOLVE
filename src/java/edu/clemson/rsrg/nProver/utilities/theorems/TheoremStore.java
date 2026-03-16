@@ -57,17 +57,6 @@ public final class TheoremStore {
         return res;
     }
 
-    private Set<String> getAllExpStrings(Exp exp) {
-        Set<String> expStrings = new HashSet<>();
-        expStrings.add(exp.toString());
-        System.out.println(exp);
-        for (Exp subExp : exp.getSubExpressions()) {
-            expStrings.addAll(getAllExpStrings(subExp));
-            System.out.println(subExp);
-        }
-        return expStrings;
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -120,5 +109,23 @@ public final class TheoremStore {
             }
         }
         return theorems;
+    }
+
+    public Set<TheoremEntry> getRelevantTheoremsByOperators(Set<String> knownOperators) {
+        Set<TheoremEntry> result = new HashSet<>();
+        for (Map.Entry<TheoremEntry, Set<String>> entry : theoremToOps.entrySet()) {
+            Set<String> ops = new HashSet<>(entry.getValue());
+            ops.removeIf(op -> !opStrings.contains(op));
+            ops.remove("=");
+            ops.remove("implies");
+            ops.remove(">=");
+            ops.remove("<=");
+            ops.remove("or");
+            ops.remove("and");
+            if (knownOperators.containsAll(ops)) {
+                result.add(entry.getKey());
+            }
+        }
+        return result;
     }
 }

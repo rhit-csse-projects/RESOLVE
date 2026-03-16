@@ -2335,11 +2335,11 @@ public class CongruenceClassRegistry {
                 CongruenceCluster congruenceCluster = clusterArray[crAccr];
 
                 do {
-                    sb.append("(CR" + crAccr + ": ");
+                    sb.append("(CR").append(crAccr).append(": ");
                     displayCluster(symbolMapping, congruenceCluster, sb);
 
                     if (congruenceCluster.getNextStandCluster() != 0) {
-                        sb.append(" [NEXT: CR" + congruenceCluster.getNextStandCluster() + "]");
+                        sb.append(" [NEXT: CR").append(congruenceCluster.getNextStandCluster()).append("]");
                     }
                     if (congruenceCluster.getNextStandCluster() != 0
                             && congruenceCluster.getIndexToTag() != congruenceCluster.getNextStandCluster()) {
@@ -2373,11 +2373,11 @@ public class CongruenceClassRegistry {
         String operator = symbolMapping.get(cluster.getTreeNodeLabel());
         ClusterArgument argument = clusterArgumentArray[cluster.getIndexToArgList()];
 
-        sb.append(operator + " ");
+        sb.append(operator).append(" ");
 
         while (argument.getCcNumber() != 0) {
             if (argument.getCcNumber() != 0)
-                sb.append("CC" + argument.getCcNumber());
+                sb.append("CC").append(argument.getCcNumber());
             else
                 break;
 

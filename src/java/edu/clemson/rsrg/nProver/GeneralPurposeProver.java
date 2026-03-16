@@ -14,15 +14,13 @@ package edu.clemson.rsrg.nProver;
 
 import edu.clemson.rsrg.absyn.declarations.moduledecl.*;
 import edu.clemson.rsrg.absyn.expressions.Exp;
-import edu.clemson.rsrg.absyn.expressions.mathexpr.AbstractFunctionExp;
-import edu.clemson.rsrg.absyn.expressions.mathexpr.QuantExp;
 import edu.clemson.rsrg.init.CompileEnvironment;
 import edu.clemson.rsrg.init.flag.Flag;
 import edu.clemson.rsrg.init.flag.FlagDependencies;
 import edu.clemson.rsrg.init.output.OutputListener;
 import edu.clemson.rsrg.nProver.output.VCProverResult;
 import edu.clemson.rsrg.nProver.registry.CongruenceClassRegistry;
-import edu.clemson.rsrg.nProver.utilities.theorems.ElaborationRule;
+import edu.clemson.rsrg.nProver.utilities.Elaborator;
 import edu.clemson.rsrg.nProver.utilities.theorems.ElaborationRules;
 import edu.clemson.rsrg.nProver.utilities.theorems.RuleInstance;
 import edu.clemson.rsrg.nProver.utilities.theorems.TheoremStore;
@@ -112,7 +110,6 @@ public class GeneralPurposeProver {
      * </p>
      */
     private final TypeGraph myTypeGraph;
-
 
     private boolean debug;
 
@@ -325,7 +322,7 @@ public class GeneralPurposeProver {
     }
 
     public final void debugLog(Object log) {
-        if(debug){
+        if (debug) {
             System.out.println(log);
         }
     }
@@ -362,8 +359,7 @@ public class GeneralPurposeProver {
             mappings.add("=");
             VerificationCondition vc = myVerificationConditions.get(i);
 
-            debugLog(
-                    "====================================== VC #" + i + " =====================================");
+            debugLog("====================================== VC #" + i + " =====================================");
             debugLog(vc);
             // Store the start time for generating proofs for this VC
             long startTime = System.nanoTime();
@@ -392,12 +388,11 @@ public class GeneralPurposeProver {
 
                 ElaborationRules rules = new ElaborationRules(relevantTheorems);
 
-                debugLog(
-                        "=========================== Relevant Theorems (VC #" + i + ") ===========================");
+                debugLog("=========================== Relevant Theorems (VC #" + i + ") ===========================");
                 int j = 0;
                 for (TheoremEntry te : relevantTheorems) {
-                    debugLog("Theorem " + i + "_" + j + ": " + "\u001B[33m" + te.getName() + "\u001B[0m"
-                            + " (from " + "\u001B[34m" + te.getSourceModuleIdentifier() + "\u001B[0m" + ")");
+                    debugLog("Theorem " + i + "_" + j + ": " + "\u001B[33m" + te.getName() + "\u001B[0m" + " (from "
+                            + "\u001B[34m" + te.getSourceModuleIdentifier() + "\u001B[0m" + ")");
                     debugLog(te.getAssertion());
                     debugLog("\n");
                     j++;
@@ -415,10 +410,10 @@ public class GeneralPurposeProver {
                 debugLog(registry.toPrettyString(mappings));
 
                 // TODO: Do this multiple times so one rule can match the output of another.
+                Elaborator elaborator = new Elaborator(registry, expLabels, mappings);
                 for (int l = 0; l < 5; l++) {
-                    List<RuleInstance> ruleInstances = elaborate(registry, rules.getMyElaborationRules(), expLabels);
-                    applyRules(registry, ruleInstances, expLabels, mappings);
-
+                    List<RuleInstance> ruleInstances = elaborator.elaborate(rules.getMyElaborationRules());
+                    elaborator.applyRules(ruleInstances);
                     debugLog("=== Registry after Elaboration Attempt ===");
                     debugLog(registry.toPrettyString(mappings));
                     debugLog("Proved: " + registry.checkIfProved());
@@ -436,7 +431,7 @@ public class GeneralPurposeProver {
             // Store the verbose proof detail for this VC
             String result = registry.checkIfProved() ? "Proved" : "Not Proved";
             storeVCProofVerboseDetail(vc, result, registry, expLabels, mappings);
-            if(registry.checkIfProved()) {
+            if (registry.checkIfProved()) {
                 System.out.print("\u001B[42m   Proved   \u001B[49m " + vc);
             } else {
                 System.out.print("\u001B[41m Not Proved \u001B[49m " + vc);
@@ -449,30 +444,6 @@ public class GeneralPurposeProver {
 
     }
 
-    private void applyRules(CongruenceClassRegistry registry, List<RuleInstance> ruleInstances,
-            Map<String, Integer> expLabels, List<String> mappings) {
-        for (RuleInstance rule : ruleInstances) {
-
-            Exp resultant = rule.getResultantClause();
-            if (resultant instanceof QuantExp) {
-                resultant = ((QuantExp) resultant).getBody();
-            }
-            if (resultant.getTopLevelOperator().equals("=") || resultant.getTopLevelOperator().equals("<=")) {
-                int resultantAccessor = addToRegistry(registry, resultant, expLabels, mappings, rule.isFromAntecedent());
-            }
-        }
-    }
-
-    private int addToRegistry(CongruenceClassRegistry registry, Exp resultant, Map<String, Integer> expLabels,
-            List<String> mappings, boolean isFromAntencedent) {
-        //if(isFromAntencedent) {
-            TreeWalker.visit(new RegisterAntecedent(registry, expLabels, expLabels.size(), mappings), resultant);
-        //} else {
-        //    TreeWalker.visit(new RegisterSuccedent(registry, expLabels, expLabels.size(), mappings), resultant);
-        //}
-        return 0;
-    }
-
     // ===========================================================
     // Private Methods
     // ===========================================================
@@ -482,14 +453,19 @@ public class GeneralPurposeProver {
      * An helper method that stores verbose detail about proving this {@code VC}.
      * </p>
      *
-     * @param vc        The {@link VerificationCondition} we have attempted to prove.
-     * @param result    The prover results.
-     * @param registry  The congruence class registry used on this {@code VC}.
-     * @param expLabels The expression labels assigned to the expressions in this {@code VC}.
+     * @param vc
+     *            The {@link VerificationCondition} we have attempted to prove.
+     * @param result
+     *            The prover results.
+     * @param registry
+     *            The congruence class registry used on this {@code VC}.
+     * @param expLabels
+     *            The expression labels assigned to the expressions in this {@code VC}.
      * @param mappings
+     *            The list of labels with indexes as its cluster ID
      */
     private void storeVCProofVerboseDetail(VerificationCondition vc, String result, CongruenceClassRegistry registry,
-                                           Map<String, Integer> expLabels, List<String> mappings) {
+            Map<String, Integer> expLabels, List<String> mappings) {
         // Create a model for adding all the details associated with this VC.
         LocationDetailModel detailModel = vc.getLocationDetailModel();
         ST vcModel = mySTGroup.getInstanceOf("outputVC");
@@ -521,12 +497,13 @@ public class GeneralPurposeProver {
         // Add this sequent to our vc model
         vcModel.add("sequent", sequentModel.render());
 
-        /*// Store the congruence class registry array information
-        ST ccRegistryArraysModel = mySTGroup.getInstanceOf("outputCCRegistryArrays");
-        ccRegistryArraysModel.add("clusterArguments", registry.getClusterArgArray());
-        ccRegistryArraysModel.add("clusters", registry.getClusterArray());
-        ccRegistryArraysModel.add("plantations", registry.getStandArray()); // plantations are now stands
-        ccRegistryArraysModel.add("classes", registry.getCongruenceClassArray());*/
+        /*
+         * // Store the congruence class registry array information ST ccRegistryArraysModel =
+         * mySTGroup.getInstanceOf("outputCCRegistryArrays"); ccRegistryArraysModel.add("clusterArguments",
+         * registry.getClusterArgArray()); ccRegistryArraysModel.add("clusters", registry.getClusterArray());
+         * ccRegistryArraysModel.add("plantations", registry.getStandArray()); // plantations are now stands
+         * ccRegistryArraysModel.add("classes", registry.getCongruenceClassArray());
+         */
 
         // Add the VC to the VC proof detail model
         ST vcProofDetailModel = mySTGroup.getInstanceOf("outputVCProofDetails");
@@ -534,212 +511,10 @@ public class GeneralPurposeProver {
         vcProofDetailModel.add("vc", vcModel.render());
         vcProofDetailModel.add("result", result);
         vcProofDetailModel.add("expLabels", expLabels);
-        vcProofDetailModel.add("registryArrays", registry.toPrettyString(mappings));//ccRegistryArraysModel.render());
+        vcProofDetailModel.add("registryArrays", registry.toPrettyString(mappings));// ccRegistryArraysModel.render());
 
         // Add VC proof detail model to prover generation details
         myProofGenDetailsModel.add("vcProofDetails", vcProofDetailModel.render());
     }
 
-    /**
-     * <p>
-     * Elaborates on congruence classes using the provided elaboration rules.
-     * </p>
-     */
-    private ArrayList<RuleInstance> elaborate(CongruenceClassRegistry registry, List<ElaborationRule> rules,
-            Map<String, Integer> expLabels) {
-
-        int elaborationRuleCounter = 0;
-
-        ArrayList<RuleInstance> result = new ArrayList<>();
-
-        for (ElaborationRule elaborationRule : rules) {
-            Map<Exp, Integer> variableBindings = new HashMap<>();
-
-            elaborationRuleCounter++;
-            for (Exp precursor : elaborationRule.getPrecursorClauses()) {
-                int matchedCluster = -1;
-                if (precursor.toString().matches("[0-9]+") || precursor.toString().matches("Empty_String")) {
-                    matchedCluster = expLabels.getOrDefault(precursor.toString(), -1);
-                } else {
-                    if (!(precursor instanceof AbstractFunctionExp))
-                        continue;
-
-                    int operator = expLabels.get(precursor.getTopLevelOperator());
-
-                    int currentCCAccessor = 0; // This is called c in Bill's email
-
-                    boolean firstLoop = true;
-
-                    HashSet<Integer> visited = new HashSet<>();
-                    while (firstLoop || !registry.isVarietyMaximal(operator, currentCCAccessor)) { // Loop through the
-                                                                                                   // congruence classes
-                        currentCCAccessor = firstLoop ? registry.firstCCAccessorForTreeNodeLabel(operator)
-                                : registry.advanceCClassAccessor(operator, currentCCAccessor);
-                        firstLoop = false;
-
-                        if (visited.contains(currentCCAccessor)) { // Infinite loop protection
-                            break;
-                        } else {
-                            visited.add(currentCCAccessor);
-                        }
-
-                        if (!registry.isMinimalVCCDesignator(operator, currentCCAccessor)) {
-                            continue;
-                        }
-
-                        matchedCluster = ccMatchesExpression(registry, precursor, expLabels, currentCCAccessor,
-                                operator, variableBindings);
-                        if (matchedCluster != -1) {
-                            break;
-                        }
-                    }
-
-                }
-                if (matchedCluster != -1) {
-                    debugLog("[Rule #" + elaborationRuleCounter + "] \u001B[42m Matched! \u001B[49m :"
-                            + precursor.toString());
-                    result.add(new RuleInstance(variableBindings, elaborationRule, matchedCluster));
-                } else {
-                    debugLog("[Rule #" + elaborationRuleCounter + "] \u001B[41m Not Matched \u001B[49m :"
-                            + precursor.toString());
-                }
-            }
-        }
-
-        return result;
-    }
-
-    private int ccMatchesExpression(CongruenceClassRegistry registry, Exp needToMatch, Map<String, Integer> expLabels,
-            int currentCCAccessor, int operator, Map<Exp, Integer> variableBindings) { // Determines if anything in the
-        // Congruence Class matches the Exp
-
-        // A cluster's argument is a single CC, so no need to loop through those or use a variety at this point
-        int currentClusterAccessor = registry.getFirstClusterAccessorForCC(currentCCAccessor, operator); // This is p
-
-        HashSet<Integer> visited = new HashSet<>();
-        do { // Loop through the clusters in the stand
-             // If we've made it this far, then we have at least one cluster with the correct root node
-            if (visited.contains(currentClusterAccessor)) { // Infinite loop protection
-                break;
-            } else {
-                visited.add(currentClusterAccessor);
-            }
-
-            Map<Exp, Integer> tempBindings = new HashMap<>();
-
-            List<Integer> clusterArgs = registry
-                    .getArgumentsList(registry.getCongruenceCluster(currentClusterAccessor));
-            List<Exp> subExpressions = needToMatch.getSubExpressions();
-
-            if (clusterArgs.size() != subExpressions.size())
-                continue; // If the # of args don't match, then this is not the cluster we're looking for
-
-            boolean matchedAllArgs = true;
-            for (int i = 0; i < subExpressions.size(); i++) {
-                Exp subExp = subExpressions.get(i);
-                if (!(subExp instanceof AbstractFunctionExp)) { // Base Case: At a leaf node
-                    int arg = clusterArgs.get(subExpressions.size() - i - 1);
-                    if (!matchLeafNodes(subExp, expLabels, arg, registry)) {
-                        matchedAllArgs = false;
-                        break;
-                    } else {
-                        tempBindings.put(subExp, arg);
-                    }
-                } else {
-                    boolean matchedThisSubExp = false;
-                    int subExpOperator = expLabels.get(subExp.getTopLevelOperator());
-
-                    for (int arg : clusterArgs) {
-                        int clusterArgumentOperator = registry.getCongruenceCluster(arg).getTreeNodeLabel();
-
-                        if (subExpOperator != clusterArgumentOperator)
-                            continue; // If the args don't match, no point in checking deeper.
-
-                        matchedThisSubExp = ccMatchesExpression(registry, subExp, expLabels, arg, subExpOperator,
-                                variableBindings) != -1;
-                        if (matchedThisSubExp)
-                            break; // We found a match! No need to check the rest of the clusters
-                    }
-
-                    matchedAllArgs = matchedThisSubExp;
-                    if (!matchedThisSubExp) { // None of this cluster's arguments matched subExp. Therefore this is not
-                                              // the
-                        // cluster we're looking for.
-                        break;
-                    }
-                }
-            }
-
-            if (matchedAllArgs) { // All of the arguments in this cluster matched all of the arguments in our
-                                  // expression!
-                variableBindings.putAll(tempBindings);
-                return currentClusterAccessor;
-            }
-
-            currentClusterAccessor = registry.advanceClusterAccessor(operator, currentClusterAccessor);
-            // This doesn't look like the dissertation & might be wrong.
-        } while (!registry.isStandMaximal(operator, currentClusterAccessor));
-
-        // If we've reached this point, we looped through the entire stand without matching a cluster.
-        return -1;
-    }
-
-    private boolean matchLeafNodes(Exp subExp, Map<String, Integer> expLabels, int arg,
-            CongruenceClassRegistry registry) {
-        String expString = subExp.toString();
-        int expInt = expLabels.getOrDefault(expString, -1);
-        boolean isInt;
-        try { // Horrible code because RegEx hates us
-            Integer.parseInt(expString);
-            isInt = true;
-        } catch (Exception e) {
-            isInt = false;
-        }
-        if (expString.equals("Empty_String") || isInt) { // Constants require an exact match
-            if (expInt == -1) {
-                return false;
-            }
-            int argClusterAccessor = registry.getFirstClusterAccessorForCC(arg, expInt); // This is p
-            if (argClusterAccessor == -1) {
-                return false;
-            }
-        }
-        return true; // Variables always match
-    }
-
-    private static void displayArgumentLists(ElaborationRule elaborationRule, Exp precursor, int elaborationRuleCounter,
-            List<String> arglist, int currentCCAccessor, int currentClusterAccessor, List<Integer> argListCCNums) {
-
-        System.out.println("Elaboration Rule #" + elaborationRuleCounter);
-        System.out.println("Precursor: " + precursor);
-        System.out.println("Source Theorem: " + "\u001B[33m" + elaborationRule.getSourceTheoremName() + "\u001B[0m"
-                + " (from: " + "\u001B[34m" + elaborationRule.getSourceModuleName() + "\u001B[0m" + ")");
-        System.out.println("Argument List for operator " + "\u001B[33m" + precursor.getTopLevelOperator() + "\u001B[0m"
-                + ": " + "\u001B[35m" + arglist + "\u001B[0m");
-        System.out.println("Argument CC Accessors: " + "\u001B[35m" + argListCCNums + "\u001B[0m");
-        System.out.println("currentClassAccessor: " + "\u001B[35m" + currentCCAccessor + "\u001B[0m");
-        System.out.println("currentClusterAccessor: " + "\u001B[34m" + currentClusterAccessor + "\u001B[0m" + "\n");
-    }
-
-    private boolean isUltimateAntecedent(CongruenceClassRegistry registry, int ccAccessor) {
-        BitSet attr = registry.getCongruenceClass(ccAccessor).getAttribute();
-        return attr.get(2) && attr.get(0);
-    }
-
-    private List<String> expLabelsToList(Map<String, Integer> expLabels) {
-        int maxIndex = expLabels.values().stream().max(Integer::compare).orElse(0);
-
-        List<String> list = new ArrayList<>(Collections.nCopies(maxIndex + 1, null));
-
-        for (Map.Entry<String, Integer> entry : expLabels.entrySet()) {
-            list.set(entry.getValue(), entry.getKey());
-        }
-
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i) == null)
-                list.add("null");
-        }
-
-        return list;
-    }
 }

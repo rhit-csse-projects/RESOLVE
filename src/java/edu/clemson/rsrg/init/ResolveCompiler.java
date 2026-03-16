@@ -18,6 +18,7 @@ import edu.clemson.rsrg.init.file.ResolveFileBasicInfo;
 import edu.clemson.rsrg.init.flag.Flag;
 import edu.clemson.rsrg.init.flag.FlagDependencies;
 import edu.clemson.rsrg.init.output.OutputListener;
+import edu.clemson.rsrg.init.pipeline.RegistryCIPipeline;
 import edu.clemson.rsrg.misc.Utilities;
 import edu.clemson.rsrg.nProver.GeneralPurposeProver;
 import edu.clemson.rsrg.prover.CongruenceClassProver;
@@ -488,6 +489,7 @@ public class ResolveCompiler {
             VCGenerator.setUpFlags();
             CongruenceClassProver.setUpFlags();
             GeneralPurposeProver.setUpFlags();
+            RegistryCIPipeline.setUpFlags();
             FlagDependencies.seal();
         }
     }

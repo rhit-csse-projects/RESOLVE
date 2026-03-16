@@ -13,6 +13,11 @@
 package edu.clemson.rsrg.nProver.registryCI;
 
 import edu.clemson.rsrg.nProver.registry.CongruenceClassRegistry;
+import edu.clemson.rsrg.nProver.utilities.Elaborator;
+import edu.clemson.rsrg.nProver.utilities.theorems.ElaborationRules;
+import edu.clemson.rsrg.nProver.utilities.theorems.RuleInstance;
+import edu.clemson.rsrg.nProver.utilities.theorems.TheoremStore;
+import edu.clemson.rsrg.typeandpopulate.entry.TheoremEntry;
 
 import java.util.*;
 
@@ -25,16 +30,22 @@ public class RegistryCI {
     private final List<String> mappingToSymbol;
     private final Scanner scan;
     private int currentMapping;
-
     private boolean isUltimate;
 
+    private final TheoremStore myTheoremStore;
+
     public RegistryCI() {
+        this(null);
+    }
+
+    public RegistryCI(TheoremStore theoremStore) {
         registry = new CongruenceClassRegistry(100, 100, 100, 100);
         symbolToMapping = new HashMap<>();
         mappingToSymbol = new ArrayList<>();
         scan = new Scanner(System.in);
         currentMapping = 3; // Start at 3 since 1=OP_LESS_THAN_OR_EQUALS, 2=OP_EQUALS
         isUltimate = false;
+        myTheoremStore = theoremStore;
 
         // add operators
         symbolToMapping.put("<=", OP_LESS_THAN_OR_EQUALS);
@@ -44,7 +55,7 @@ public class RegistryCI {
         mappingToSymbol.add("=");
     }
 
-    public static void sendStartupMessage() {
+    public static void sendStartupMessage(boolean hasTheoremStore) {
         System.out.println("""
                 == Antecedent Commands ==
                 RV <symbol>      - Register Variable/Constant (antecedent leaf)
@@ -56,7 +67,17 @@ public class RegistryCI {
                 RFS <symbol>     - Register Function/Operator (succedent, uses arg list)
                 RES              - Register Equals (succedent, reflexive check)
                 RLES             - Register Less-Than-Equals (succedent, reflexive check)
+                """);
 
+        if (hasTheoremStore) {
+            System.out.println("""
+                    == Elaboration Commands ==
+                    ELAB             - Run elaboration & matching using loaded theorems (5 passes)
+                    THEOREMS         - List all theorems available in the loaded module
+                    """);
+        }
+
+        System.out.println("""
                 === Level Commands ==
                 U                - Mark next registration as Ultimate (root level)
                 NU               - Mark next registration as Non-Ultimate (nested)
@@ -72,10 +93,16 @@ public class RegistryCI {
                 ?                - Show this help
                 Q                - Quit
                 """);
+
+        if (hasTheoremStore) {
+            System.out.println("Theorem store: LOADED — ELAB and THEOREMS are available.");
+        } else {
+            System.out.println("Theorem store: not loaded. Run via --registryCI <file.resolve> to enable elaboration.");
+        }
     }
 
     public void runCommandLoop() {
-        sendStartupMessage();
+        sendStartupMessage(myTheoremStore != null);
         label: while (true) {
             String prompt = isUltimate ? "[U]> " : "[NU]> ";
             System.out.print(prompt);
@@ -88,7 +115,7 @@ public class RegistryCI {
                 case "Q":
                     break label;
                 case "?":
-                    sendStartupMessage();
+                    sendStartupMessage(myTheoremStore != null);
                     break;
                 case "D":
                     displayAllClasses();
@@ -117,6 +144,12 @@ public class RegistryCI {
                 case "NU":
                     isUltimate = false;
                     System.out.println("Entered NON-ULTIMATE Mode (nested)");
+                    break;
+                case "ELAB":
+                    runElaboration();
+                    break;
+                case "THEOREMS":
+                    displayTheorems();
                     break;
                 default:
                     processCommand(input);
@@ -206,6 +239,59 @@ public class RegistryCI {
         }
     }
 
+    private void runElaboration() {
+        if (sendWrongConfigMessage())
+            return;
+
+        Set<TheoremEntry> allTheorems = myTheoremStore.getRelevantTheoremsByOperators(symbolToMapping.keySet());
+        if (allTheorems.isEmpty()) {
+            System.out.println("No theorems found in the loaded module.");
+            return;
+        }
+
+        ElaborationRules rules = new ElaborationRules(allTheorems);
+
+        System.out.println("=== Elaboration Rules ===");
+        System.out.println(rules);
+
+        Elaborator elaborator = new Elaborator(registry, symbolToMapping, mappingToSymbol);
+        for (int pass = 1; pass <= 5; pass++) {
+            System.out.println("--- Pass " + pass + " ---");
+            List<RuleInstance> instances = elaborator.elaborate(rules.getMyElaborationRules());
+            elaborator.applyRules(instances);
+
+            System.out.println("=== Registry after Pass " + pass + " ===");
+            System.out.println(registry.toPrettyString(mappingToSymbol));
+            System.out.println("Proved: " + registry.checkIfProved());
+
+            if (registry.checkIfProved()) {
+                System.out.println("*** PROVED! ***");
+                return;
+            }
+        }
+
+        System.out.println("Elaboration complete. Proved: " + registry.checkIfProved());
+    }
+
+    private void displayTheorems() {
+        if (sendWrongConfigMessage())
+            return;
+
+        Set<TheoremEntry> allTheorems = myTheoremStore.getRelevantTheoremsByOperators(symbolToMapping.keySet());
+        if (allTheorems.isEmpty()) {
+            System.out.println("No theorems found in the loaded module.");
+            return;
+        }
+
+        System.out.println("=== Loaded Theorems ===");
+        int i = 1;
+        for (TheoremEntry te : allTheorems) {
+            System.out.println("[" + i + "] " + te.getName() + " (from " + te.getSourceModuleIdentifier() + ")");
+            System.out.println("    " + te.getAssertion());
+            i++;
+        }
+    }
+
     private void registerAntecedentVariable(String symbol) {
         int mapping = getOrCreateMapping(symbol);
         int designator;
@@ -216,7 +302,6 @@ public class RegistryCI {
         } else {
             designator = registry.registerCluster(mapping);
 
-            // Probably shouldn't happen a lot since these variables are typically just args (leaves in the tree)
             if (isUltimate) {
                 BitSet attb = new BitSet();
                 attb.set(0); // antecedent
@@ -422,6 +507,20 @@ public class RegistryCI {
         System.out.println("Not registered");
     }
 
+    private void displayAllClasses() {
+        System.out.println("=== Congruence Classes ===");
+        System.out.println(registry.toPrettyString(mappingToSymbol));
+    }
+
+    private void displayAllRoots() {
+        Set<Integer> tempSet = registry.getAllRoots();
+        System.out.println("=== Root Labels ===");
+        for (Integer i : tempSet) {
+            String symbol = (i < mappingToSymbol.size()) ? mappingToSymbol.get(i) : "?";
+            System.out.println("Root: " + i + " Symbol: " + symbol);
+        }
+    }
+
     private int getOrCreateMapping(String symbol) {
         if (symbolToMapping.containsKey(symbol)) {
             return symbolToMapping.get(symbol);
@@ -432,18 +531,13 @@ public class RegistryCI {
         }
     }
 
-    private void displayAllClasses() {
-        System.out.println("=== Congruence Classes ===");
-        registry.toPrettyString(mappingToSymbol);
-    }
-
-    private void displayAllRoots() {
-        Set<Integer> tempSet = registry.getAllRoots();
-        System.out.println("=== Root Labels ===");
-        for (Integer i : tempSet) {
-            String symbol = (i < mappingToSymbol.size()) ? mappingToSymbol.get(i) : "?";
-            System.out.println("Root: " + i + " Symbol: " + symbol);
+    private boolean sendWrongConfigMessage() {
+        if (myTheoremStore == null) {
+            System.out.println(
+                    "No theorem store loaded. Launch from Main.java with working directory and --registryCI <file.rb> to enable elaboration.");
+            return true;
         }
+        return false;
     }
 
     public static void main(String[] args) {

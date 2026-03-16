@@ -191,6 +191,14 @@ class Controller {
                     translatorPipeline.process(m);
                 }
 
+                if (myCompileEnvironment.flags.isFlagSet(RegistryCIPipeline.FLAG_REGISTRY_CI)
+                        && m.equals(new ModuleIdentifier(targetModule))) {
+                    RegistryCIPipeline registryCIPipeline = new RegistryCIPipeline(myCompileEnvironment, mySymbolTable);
+                    registryCIPipeline.process(m);
+                    myCompileEnvironment.completeRecord(m);
+                    return;
+                }
+
                 // Generate VCs
                 if (myCompileEnvironment.flags.isFlagSet(VCGenerator.FLAG_VERIFY_VC)
                         && m.equals(new ModuleIdentifier(targetModule))) {
@@ -227,6 +235,7 @@ class Controller {
 
             if (cause == null) {
                 // All exceptions should extend the CompilerException class.
+                e.printStackTrace(); // without this, exceptions are hidden from view which makes debugging hard
                 if (e instanceof RuntimeException) {
                     throw (RuntimeException) e;
                 }
