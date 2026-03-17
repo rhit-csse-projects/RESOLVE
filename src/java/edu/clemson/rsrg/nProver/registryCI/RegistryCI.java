@@ -254,7 +254,7 @@ public class RegistryCI {
         System.out.println("=== Elaboration Rules ===");
         System.out.println(rules);
 
-        Elaborator elaborator = new Elaborator(registry, symbolToMapping, mappingToSymbol);
+        Elaborator elaborator = new Elaborator(registry, symbolToMapping, mappingToSymbol, true);
         for (int pass = 1; pass <= 5; pass++) {
             System.out.println("--- Pass " + pass + " ---");
             List<RuleInstance> instances = elaborator.elaborate(rules.getMyElaborationRules());

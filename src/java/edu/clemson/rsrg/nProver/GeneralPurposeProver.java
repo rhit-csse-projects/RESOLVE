@@ -407,7 +407,7 @@ public class GeneralPurposeProver {
                 debugLog(registry.toPrettyString(mappings));
 
                 // TODO: Do this multiple times so one rule can match the output of another.
-                Elaborator elaborator = new Elaborator(registry, expLabels, mappings);
+                Elaborator elaborator = new Elaborator(registry, expLabels, mappings, debug);
                 for (int l = 0; l < 5; l++) {
                     List<RuleInstance> ruleInstances = elaborator.elaborate(rules.getMyElaborationRules());
                     elaborator.applyRules(ruleInstances);

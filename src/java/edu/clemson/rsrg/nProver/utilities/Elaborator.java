@@ -37,6 +37,7 @@ public class Elaborator {
     private final CongruenceClassRegistry myRegistry;
     private final Map<String, Integer> myExpLabels;
     private final List<String> myMappings;
+    private final boolean myDebug;
 
     /**
      * <p>
@@ -51,10 +52,12 @@ public class Elaborator {
      * @param mappings
      *            Inverse of {@code expLabels} — index is the label, value is the symbol.
      */
-    public Elaborator(CongruenceClassRegistry registry, Map<String, Integer> expLabels, List<String> mappings) {
+    public Elaborator(CongruenceClassRegistry registry, Map<String, Integer> expLabels, List<String> mappings,
+            boolean debug) {
         myRegistry = registry;
         myExpLabels = expLabels;
         myMappings = mappings;
+        myDebug = debug;
     }
 
     public ArrayList<RuleInstance> elaborate(List<ElaborationRule> rules) {
@@ -106,7 +109,10 @@ public class Elaborator {
                 }
 
                 if (matchedCluster != -1) {
+                    debugLog("[Rule #" + ruleCounter + "] \u001B[42m Matched! \u001B[49m :" + precursor);
                     result.add(new RuleInstance(variableBindings, elaborationRule, matchedCluster));
+                } else {
+                    debugLog("[Rule #" + ruleCounter + "] \u001B[41m Not Matched \u001B[49m :" + precursor);
                 }
             }
         }
@@ -223,5 +229,11 @@ public class Elaborator {
     private void addToRegistry(Exp resultant) {
         // we'll need to add the resultant to the correct side(s) of the registry
         TreeWalker.visit(new RegisterAntecedent(myRegistry, myExpLabels, myExpLabels.size(), myMappings), resultant);
+    }
+
+    public final void debugLog(Object log) {
+        if (myDebug) {
+            System.out.println(log);
+        }
     }
 }
