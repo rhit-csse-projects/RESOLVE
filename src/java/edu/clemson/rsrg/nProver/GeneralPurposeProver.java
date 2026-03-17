@@ -374,14 +374,22 @@ public class GeneralPurposeProver {
                 TreeWalker.visit(regAntecedent, exp);
             }
 
+            boolean isProved = false;
+
             // Visit consequents
             RegisterSuccedent regConsequent = new RegisterSuccedent(regAntecedent.getRegistry(),
                     regAntecedent.getExpLabels(), regAntecedent.getNextLabel(), mappings);
             for (Exp exp : sequent.getConcequents()) {
                 TreeWalker.visit(regConsequent, exp);
+                if(exp.toString().equals("true")){
+                    isProved = true;
+                    break;
+                }
             }
 
-            if (!registry.checkIfProved()) {
+            isProved |= registry.checkIfProved();
+
+            if (!isProved) {
 
                 ElaborationRules rules = new ElaborationRules(relevantTheorems);
 
@@ -411,13 +419,13 @@ public class GeneralPurposeProver {
                 for (int l = 0; l < 5; l++) {
                     List<RuleInstance> ruleInstances = elaborator.elaborate(rules.getMyElaborationRules());
                     elaborator.applyRules(ruleInstances);
+                    isProved |= registry.checkIfProved();
                     debugLog("=== Registry after Elaboration Attempt ===");
                     debugLog(registry.toPrettyString(mappings));
-                    if (registry.checkIfProved()) {
-                        debugLog("Proved: " + registry.checkIfProved());
+                    debugLog("Proved: " + registry.checkIfProved());
+                    if (isProved) {
                         break;
                     }
-                    debugLog("Proved: " + registry.checkIfProved());
                 }
             }
 
@@ -427,17 +435,15 @@ public class GeneralPurposeProver {
             // Store the prover results for this VC
             myVCProverResults.add(
                     new VCProverResult(vc, TimeUnit.MILLISECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS),
-                            registry.checkIfProved(), false, false));
+                            isProved, false, false));
 
             // Store the verbose proof detail for this VC
-            String result = registry.checkIfProved() ? "Proved" : "Not Proved";
+            String result = isProved ? "Proved" : "Not Proved";
             storeVCProofVerboseDetail(vc, result, registry, expLabels, mappings);
-            if (!debug) {
-                if (registry.checkIfProved()) {
-                    System.out.print("\u001B[42m   Proved   \u001B[49m " + vc);
-                } else {
-                    System.out.print("\u001B[41m Not Proved \u001B[49m " + vc);
-                }
+            if (isProved) {
+                System.out.print("\u001B[42m   Proved   \u001B[49m " + vc);
+            } else {
+                System.out.print("\u001B[41m Not Proved \u001B[49m " + vc);
             }
         }
 

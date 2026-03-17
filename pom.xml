@@ -241,6 +241,7 @@
                     </directories>
                     <lineEnding>LF</lineEnding>
                     <encoding>UTF-8</encoding>
+                    <lineLength>200</lineLength>
                 </configuration>
                 <executions>
                     <execution>

@@ -19,6 +19,7 @@ import edu.clemson.rsrg.nProver.registry.CongruenceClassRegistry;
 import edu.clemson.rsrg.nProver.utilities.theorems.ElaborationRule;
 import edu.clemson.rsrg.nProver.utilities.theorems.RuleInstance;
 import edu.clemson.rsrg.nProver.utilities.treewakers.RegisterAntecedent;
+import edu.clemson.rsrg.nProver.utilities.treewakers.RegisterSuccedent;
 import edu.clemson.rsrg.treewalk.TreeWalker;
 
 import java.util.*;
@@ -70,18 +71,13 @@ public class Elaborator {
 
             for (Exp precursor : elaborationRule.getPrecursorClauses()) {
                 int matchedCluster = -1;
-
                 if (precursor.toString().matches("[0-9]+") || precursor.toString().matches("Empty_String")) {
                     matchedCluster = myExpLabels.getOrDefault(precursor.toString(), -1);
-                } else {
-                    if (!(precursor instanceof AbstractFunctionExp))
-                        continue;
-
-                    if (!myExpLabels.containsKey(precursor.getTopLevelOperator())) {
-                        System.out
-                                .println("The key " + precursor.getTopLevelOperator() + " does not exist in expLabels");
-                        continue;
+                } else if (!myExpLabels.containsKey(precursor.getTopLevelOperator())) {
+                    if (myDebug) {
+                        System.out.println("The key " + precursor.getTopLevelOperator() + " does not exist in expLabels");
                     }
+                } else if (precursor instanceof AbstractFunctionExp) {
 
                     int operator = myExpLabels.get(precursor.getTopLevelOperator());
                     int currentCCAccessor = 0;
@@ -221,14 +217,18 @@ public class Elaborator {
             }
             String topOp = resultant.getTopLevelOperator();
             if (topOp.equals("=") || topOp.equals("<=")) {
-                addToRegistry(resultant);
+                addToRegistry(resultant, rule.isFromAntecedent());
             }
         }
     }
 
-    private void addToRegistry(Exp resultant) {
+    private void addToRegistry(Exp resultant, boolean isFromAntencedent) {
         // we'll need to add the resultant to the correct side(s) of the registry
+        // if(isFromAntencedent) {
         TreeWalker.visit(new RegisterAntecedent(myRegistry, myExpLabels, myExpLabels.size(), myMappings), resultant);
+        // } else {
+        // TreeWalker.visit(new RegisterSuccedent(myRegistry, myExpLabels, myExpLabels.size(), myMappings), resultant);
+        // }
     }
 
     public final void debugLog(Object log) {
@@ -236,4 +236,5 @@ public class Elaborator {
             System.out.println(log);
         }
     }
+
 }
