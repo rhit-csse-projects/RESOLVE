@@ -27,6 +27,7 @@ import edu.clemson.rsrg.nProver.utilities.treewakers.AbstractRegisterSequent;
 import edu.clemson.rsrg.nProver.utilities.treewakers.RegisterAntecedent;
 import edu.clemson.rsrg.nProver.utilities.treewakers.RegisterSuccedent;
 import edu.clemson.rsrg.parsing.data.LocationDetailModel;
+import edu.clemson.rsrg.prover.utilities.theorems.Theorem;
 import edu.clemson.rsrg.statushandling.Fault;
 import edu.clemson.rsrg.statushandling.FaultType;
 import edu.clemson.rsrg.treewalk.TreeWalker;
@@ -389,22 +390,6 @@ public class GeneralPurposeProver {
             isProved |= registry.checkIfProved();
 
             if (!isProved) {
-
-                ElaborationRules rules = new ElaborationRules(relevantTheorems);
-
-                debugLog("=========================== Relevant Theorems (VC #" + i + ") ===========================");
-                int j = 0;
-                for (TheoremEntry te : relevantTheorems) {
-                    debugLog("Theorem " + i + "_" + j + ": " + "\u001B[33m" + te.getName() + "\u001B[0m" + " (from "
-                            + "\u001B[34m" + te.getSourceModuleIdentifier() + "\u001B[0m" + ")");
-                    debugLog(te.getAssertion());
-                    debugLog("\n");
-                    j++;
-                }
-
-                debugLog("============ Elaboration Rules (VC #" + i + ") ===============");
-                debugLog(rules);
-
                 debugLog("============ VC #" + i + " (Printed again for reference) " + " ===============");
                 debugLog(vc);
 
@@ -417,6 +402,9 @@ public class GeneralPurposeProver {
                 Elaborator elaborator = new Elaborator(registry, expLabels, mappings, debug);
                 for (int l = 0; l < 5; l++) {
                     // List<RuleInstance> ruleInstances = elaborator.elaborate(rules.getMyElaborationRules());
+                    relevantTheorems = theoremStore.getRelevantTheoremsByOperators(expLabels.keySet());
+                    ElaborationRules rules = new ElaborationRules(relevantTheorems);
+                    printRelevant(rules, relevantTheorems, i);
                     elaborator.elaborateAndApply(rules.getMyElaborationRules());
                     isProved |= registry.checkIfProved();
                     debugLog("=== Registry after Elaboration Attempt ===");
@@ -449,6 +437,20 @@ public class GeneralPurposeProver {
         // module
         myTotalElapsedTime = System.currentTimeMillis() - myTotalElapsedTime;
 
+    }
+
+    public void printRelevant(ElaborationRules rules, Set<TheoremEntry> relevantTheorems, int vcNum) {
+        debugLog("=========================== Relevant Theorems (VC #" + vcNum + ") ===========================");
+        int j = 0;
+        for (TheoremEntry te : relevantTheorems) {
+            debugLog("Theorem " + vcNum + "_" + j + ": " + "\u001B[33m" + te.getName() + "\u001B[0m" + " (from " + "\u001B[34m" + te.getSourceModuleIdentifier() + "\u001B[0m" + ")");
+            debugLog(te.getAssertion());
+            debugLog("\n");
+            j++;
+        }
+
+        debugLog("============ Elaboration Rules (VC #" + vcNum + ") ===============");
+        debugLog(rules);
     }
 
     // ===========================================================
