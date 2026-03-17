@@ -19,7 +19,6 @@ import edu.clemson.rsrg.nProver.registry.CongruenceClassRegistry;
 import edu.clemson.rsrg.nProver.utilities.theorems.ElaborationRule;
 import edu.clemson.rsrg.nProver.utilities.theorems.RuleInstance;
 import edu.clemson.rsrg.nProver.utilities.treewakers.RegisterAntecedent;
-import edu.clemson.rsrg.nProver.utilities.treewakers.RegisterSuccedent;
 import edu.clemson.rsrg.treewalk.TreeWalker;
 
 import java.util.*;
@@ -61,7 +60,7 @@ public class Elaborator {
         myDebug = debug;
     }
 
-    public ArrayList<RuleInstance> elaborate(List<ElaborationRule> rules) {
+    private ArrayList<RuleInstance> elaborate(List<ElaborationRule> rules) {
         int ruleCounter = 0;
         ArrayList<RuleInstance> result = new ArrayList<>();
 
@@ -75,7 +74,8 @@ public class Elaborator {
                     matchedCluster = myExpLabels.getOrDefault(precursor.toString(), -1);
                 } else if (!myExpLabels.containsKey(precursor.getTopLevelOperator())) {
                     if (myDebug) {
-                        System.out.println("The key " + precursor.getTopLevelOperator() + " does not exist in expLabels");
+                        System.out
+                                .println("The key " + precursor.getTopLevelOperator() + " does not exist in expLabels");
                     }
                 } else if (precursor instanceof AbstractFunctionExp) {
 
@@ -121,12 +121,14 @@ public class Elaborator {
 
         // Congruence Class matches the Exp
 
-        // A cluster's argument is a single CC, so no need to loop through those or use a variety at this point
+        // A cluster's argument is a single CC, so no need to loop through those or use
+        // a variety at this point
         int currentClusterAccessor = myRegistry.getFirstClusterAccessorForCC(currentCCAccessor, operator);
 
         HashSet<Integer> visited = new HashSet<>();
         do { // Loop through the clusters in the stand
-             // If we've made it this far, then we have at least one cluster with the correct root node
+             // If we've made it this far, then we have at least one cluster with the correct
+             // root node
             if (visited.contains(currentClusterAccessor))
                 break;
             visited.add(currentClusterAccessor);
@@ -138,7 +140,8 @@ public class Elaborator {
             List<Exp> subExpressions = needToMatch.getSubExpressions();
 
             if (clusterArgs.size() != subExpressions.size())
-                continue; // If the # of args don't match, then this is not the cluster we're looking for
+                continue; // If the # of args don't match, then this is not the cluster we're looking
+                          // for
 
             boolean matchedAllArgs = true;
             for (int i = 0; i < subExpressions.size(); i++) {
@@ -162,12 +165,14 @@ public class Elaborator {
                             continue;
 
                         matchedThisSubExp = ccMatchesExpression(subExp, arg, subExpOperator, variableBindings) != -1;
-                        if (matchedThisSubExp) // We found a match! No need to check the rest of the clusters
+                        if (matchedThisSubExp) // We found a match! No need to check the rest of
+                            // the clusters
                             break;
                     }
 
                     matchedAllArgs = matchedThisSubExp;
-                    if (!matchedThisSubExp) // None of this cluster's arguments matched subExp. Therefore this is not
+                    if (!matchedThisSubExp) // None of this cluster's arguments matched subExp.
+                        // Therefore this is not
                         // the cluster we're looking for.
                         break;
                 }
@@ -183,7 +188,8 @@ public class Elaborator {
 
         } while (!myRegistry.isStandMaximal(operator, currentClusterAccessor));
 
-        // If we've reached this point, we looped through the entire stand without matching a cluster.
+        // If we've reached this point, we looped through the entire stand without
+        // matching a cluster.
         return -1;
     }
 
@@ -209,7 +215,7 @@ public class Elaborator {
         return true; // variables always match
     }
 
-    public void applyRules(List<RuleInstance> ruleInstances) {
+    private void applyRules(List<RuleInstance> ruleInstances) {
         for (RuleInstance rule : ruleInstances) {
             Exp resultant = rule.getResultantClause();
             if (resultant instanceof QuantExp) {
@@ -227,7 +233,8 @@ public class Elaborator {
         // if(isFromAntencedent) {
         TreeWalker.visit(new RegisterAntecedent(myRegistry, myExpLabels, myExpLabels.size(), myMappings), resultant);
         // } else {
-        // TreeWalker.visit(new RegisterSuccedent(myRegistry, myExpLabels, myExpLabels.size(), myMappings), resultant);
+        // TreeWalker.visit(new RegisterSuccedent(myRegistry, myExpLabels,
+        // myExpLabels.size(), myMappings), resultant);
         // }
     }
 
@@ -237,4 +244,7 @@ public class Elaborator {
         }
     }
 
+    public void elaborateAndApply(List<ElaborationRule> rules) {
+        applyRules(elaborate(rules));
+    }
 }

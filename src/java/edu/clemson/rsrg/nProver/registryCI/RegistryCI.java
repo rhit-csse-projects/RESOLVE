@@ -15,7 +15,6 @@ package edu.clemson.rsrg.nProver.registryCI;
 import edu.clemson.rsrg.nProver.registry.CongruenceClassRegistry;
 import edu.clemson.rsrg.nProver.utilities.Elaborator;
 import edu.clemson.rsrg.nProver.utilities.theorems.ElaborationRules;
-import edu.clemson.rsrg.nProver.utilities.theorems.RuleInstance;
 import edu.clemson.rsrg.nProver.utilities.theorems.TheoremStore;
 import edu.clemson.rsrg.typeandpopulate.entry.TheoremEntry;
 
@@ -257,8 +256,7 @@ public class RegistryCI {
         Elaborator elaborator = new Elaborator(registry, symbolToMapping, mappingToSymbol, true);
         for (int pass = 1; pass <= 5; pass++) {
             System.out.println("--- Pass " + pass + " ---");
-            List<RuleInstance> instances = elaborator.elaborate(rules.getMyElaborationRules());
-            elaborator.applyRules(instances);
+            elaborator.elaborateAndApply(rules.getMyElaborationRules());
 
             System.out.println("=== Registry after Pass " + pass + " ===");
             System.out.println(registry.toPrettyString(mappingToSymbol));

@@ -22,7 +22,6 @@ import edu.clemson.rsrg.nProver.output.VCProverResult;
 import edu.clemson.rsrg.nProver.registry.CongruenceClassRegistry;
 import edu.clemson.rsrg.nProver.utilities.Elaborator;
 import edu.clemson.rsrg.nProver.utilities.theorems.ElaborationRules;
-import edu.clemson.rsrg.nProver.utilities.theorems.RuleInstance;
 import edu.clemson.rsrg.nProver.utilities.theorems.TheoremStore;
 import edu.clemson.rsrg.nProver.utilities.treewakers.AbstractRegisterSequent;
 import edu.clemson.rsrg.nProver.utilities.treewakers.RegisterAntecedent;
@@ -381,7 +380,7 @@ public class GeneralPurposeProver {
                     regAntecedent.getExpLabels(), regAntecedent.getNextLabel(), mappings);
             for (Exp exp : sequent.getConcequents()) {
                 TreeWalker.visit(regConsequent, exp);
-                if(exp.toString().equals("true")){
+                if (exp.toString().equals("true")) {
                     isProved = true;
                     break;
                 }
@@ -417,8 +416,8 @@ public class GeneralPurposeProver {
                 // TODO: Do this multiple times so one rule can match the output of another.
                 Elaborator elaborator = new Elaborator(registry, expLabels, mappings, debug);
                 for (int l = 0; l < 5; l++) {
-                    List<RuleInstance> ruleInstances = elaborator.elaborate(rules.getMyElaborationRules());
-                    elaborator.applyRules(ruleInstances);
+                    // List<RuleInstance> ruleInstances = elaborator.elaborate(rules.getMyElaborationRules());
+                    elaborator.elaborateAndApply(rules.getMyElaborationRules());
                     isProved |= registry.checkIfProved();
                     debugLog("=== Registry after Elaboration Attempt ===");
                     debugLog(registry.toPrettyString(mappings));
@@ -433,9 +432,8 @@ public class GeneralPurposeProver {
             long endTime = System.nanoTime();
 
             // Store the prover results for this VC
-            myVCProverResults.add(
-                    new VCProverResult(vc, TimeUnit.MILLISECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS),
-                            isProved, false, false));
+            myVCProverResults.add(new VCProverResult(vc,
+                    TimeUnit.MILLISECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS), isProved, false, false));
 
             // Store the verbose proof detail for this VC
             String result = isProved ? "Proved" : "Not Proved";
