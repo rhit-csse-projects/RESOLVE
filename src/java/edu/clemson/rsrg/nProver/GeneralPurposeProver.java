@@ -390,11 +390,6 @@ public class GeneralPurposeProver {
             isProved |= registry.checkIfProved();
 
             if (!isProved) {
-                debugLog("============ VC #" + i + " (Printed again for reference) " + " ===============");
-                debugLog(vc);
-
-                debugLog("============ Elaboration & Matching (VC #" + i + ") ===============");
-
                 debugLog("=== Initial Registry ===");
                 debugLog(registry.toPrettyString(mappings));
 
@@ -404,6 +399,12 @@ public class GeneralPurposeProver {
                 printRelevant(rules, relevantTheorems, i);
                 for (int l = 0; l < 5; l++) {
                     // List<RuleInstance> ruleInstances = elaborator.elaborate(rules.getMyElaborationRules());
+
+                    debugLog("============ VC #" + i + " (Printed again for reference) " + " ===============");
+                    debugLog(vc);
+
+                    debugLog("============ [Attempt " + l + "] Elaboration & Matching (VC #" + i + ") ===============");
+
                     elaborator.elaborateAndApply(rules.getMyElaborationRules());
                     isProved |= registry.checkIfProved();
                     debugLog("=== Registry after Elaboration Attempt ===");
