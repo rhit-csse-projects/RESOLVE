@@ -842,6 +842,10 @@ public class CongruenceClassRegistry {
         System.out.println("Cluster Argument List: " + clusterArgumentString);
     }
 
+    public int getClusterArgumentListSize() {
+        return clusterArgumentString.size();
+    }
+
     /**
      * <p>
      * This operation merges two congruence class designated by the accessor passed in the parameters.

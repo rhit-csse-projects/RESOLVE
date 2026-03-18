@@ -413,6 +413,8 @@ public class RegistryCI {
     }
 
     private void registerSuccedentEquals() {
+        if (!ensureArgListSize(2, "RES"))
+            return;
         registry.addOperatorToSuccedentReflexiveOperatorSet(OP_EQUALS);
 
         int designator = registry.registerCluster(OP_EQUALS);
@@ -432,6 +434,8 @@ public class RegistryCI {
     }
 
     private void registerSuccedentLessThanEquals() {
+        if (!ensureArgListSize(2, "RLES"))
+            return;
         registry.addOperatorToSuccedentReflexiveOperatorSet(OP_LESS_THAN_OR_EQUALS);
 
         int designator;
@@ -536,6 +540,16 @@ public class RegistryCI {
             return true;
         }
         return false;
+    }
+
+    private boolean ensureArgListSize(int expected, String opName) {
+        int size = registry.getClusterArgumentListSize();
+        if (size != expected) {
+            System.out.println("ERROR: " + opName + " requires exactly " + expected + " arguments, but found " + size
+                    + ". Command aborted.");
+            return false;
+        }
+        return true;
     }
 
     public static void main(String[] args) {

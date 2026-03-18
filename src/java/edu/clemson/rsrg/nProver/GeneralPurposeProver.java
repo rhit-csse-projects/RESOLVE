@@ -443,7 +443,8 @@ public class GeneralPurposeProver {
         debugLog("=========================== Relevant Theorems (VC #" + vcNum + ") ===========================");
         int j = 0;
         for (TheoremEntry te : relevantTheorems) {
-            debugLog("Theorem " + vcNum + "_" + j + ": " + "\u001B[33m" + te.getName() + "\u001B[0m" + " (from " + "\u001B[34m" + te.getSourceModuleIdentifier() + "\u001B[0m" + ")");
+            debugLog("Theorem " + vcNum + "_" + j + ": " + "\u001B[33m" + te.getName() + "\u001B[0m" + " (from "
+                    + "\u001B[34m" + te.getSourceModuleIdentifier() + "\u001B[0m" + ")");
             debugLog(te.getAssertion());
             debugLog("\n");
             j++;
