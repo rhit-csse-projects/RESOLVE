@@ -398,13 +398,12 @@ public class GeneralPurposeProver {
                 debugLog("=== Initial Registry ===");
                 debugLog(registry.toPrettyString(mappings));
 
-                // TODO: Do this multiple times so one rule can match the output of another.
                 Elaborator elaborator = new Elaborator(registry, expLabels, mappings, debug);
+                relevantTheorems = theoremStore.getRelevantTheoremsByOperators(expLabels.keySet());
+                ElaborationRules rules = new ElaborationRules(relevantTheorems);
+                printRelevant(rules, relevantTheorems, i);
                 for (int l = 0; l < 5; l++) {
                     // List<RuleInstance> ruleInstances = elaborator.elaborate(rules.getMyElaborationRules());
-                    relevantTheorems = theoremStore.getRelevantTheoremsByOperators(expLabels.keySet());
-                    ElaborationRules rules = new ElaborationRules(relevantTheorems);
-                    printRelevant(rules, relevantTheorems, i);
                     elaborator.elaborateAndApply(rules.getMyElaborationRules());
                     isProved |= registry.checkIfProved();
                     debugLog("=== Registry after Elaboration Attempt ===");
