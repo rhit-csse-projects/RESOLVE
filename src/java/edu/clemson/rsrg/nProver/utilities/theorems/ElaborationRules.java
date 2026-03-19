@@ -39,7 +39,7 @@ public class ElaborationRules {
      * Creates a list of elaboration rules out of a list of relevant theorems
      */
     private List<ElaborationRule> createElaborationRules() {
-        List<ElaborationRule> elaborationRules = new ArrayList<>();
+        HashSet<ElaborationRule> elaborationRules = new HashSet<>();
         List<Exp> myTheoremExpressions;
         // list of sub sub expressions for theorems with one clause
         List<Exp> myTheoremSubExpressions;
@@ -79,7 +79,7 @@ public class ElaborationRules {
                 }
             }
         }
-        return elaborationRules;
+        return new ArrayList<>(elaborationRules);
     }
 
     private ElaborationRule mkRule(List<Exp> precursorExps, TheoremEntry t) {
@@ -89,10 +89,12 @@ public class ElaborationRules {
             sourceTheoremName = t.getName();
         if (t.getSourceModuleIdentifier().toString() != null)
             sourceModuleName = t.getSourceModuleIdentifier().toString();
-        boolean forConsequent = true;
-        if (precursorExps.size() == 1)
-            forConsequent = precursorExps.get(0).getSubExpressions().size() == 0;
-        return new ElaborationRule(precursorExps, t.getAssertion(), forConsequent, sourceTheoremName, sourceModuleName);
+        if (precursorExps.size() == 1 && precursorExps.get(0).getSubExpressions().size() == 0) {
+            List<Exp> l = new ArrayList<>();
+            l.add(t.getAssertion());
+            return new ElaborationRule(l, t.getAssertion(), true, sourceTheoremName, sourceModuleName);
+        }
+        return new ElaborationRule(precursorExps, t.getAssertion(), false, sourceTheoremName, sourceModuleName);
     }
 
     /**

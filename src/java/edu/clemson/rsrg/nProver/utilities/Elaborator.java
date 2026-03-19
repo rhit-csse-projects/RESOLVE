@@ -77,6 +77,8 @@ public class Elaborator {
                         System.out
                                 .println("The key " + precursor.getTopLevelOperator() + " does not exist in expLabels");
                     }
+                } else if (!myRegistry.checkIfRegistered(myExpLabels.get(precursor.getTopLevelOperator()))) {
+                    debugLog("Operator is not registered. Skipping.");
                 } else if (precursor instanceof AbstractFunctionExp) {
 
                     int operator = myExpLabels.get(precursor.getTopLevelOperator());
@@ -87,6 +89,7 @@ public class Elaborator {
                     while (firstLoop || !myRegistry.isVarietyMaximal(operator, currentCCAccessor)) {
                         // Loop through the congruence classes
 
+                        System.out.println("Operator: " + operator + "\n Rule:" + elaborationRule);
                         currentCCAccessor = firstLoop ? myRegistry.firstCCAccessorForTreeNodeLabel(operator)
                                 : myRegistry.advanceCClassAccessor(operator, currentCCAccessor);
                         firstLoop = false;
@@ -110,6 +113,7 @@ public class Elaborator {
                 } else {
                     debugLog("[Rule #" + ruleCounter + "] \u001B[41m Not Matched \u001B[49m :" + precursor);
                 }
+                debugLog(myRegistry.toPrettyString(myMappings));
             }
         }
 

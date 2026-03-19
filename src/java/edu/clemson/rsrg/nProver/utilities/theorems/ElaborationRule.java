@@ -85,4 +85,25 @@ public class ElaborationRule {
         sb.append("\n\n");
         return sb.toString();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj instanceof ElaborationRule) {
+            ElaborationRule other = (ElaborationRule) obj;
+            return myPrecursorClauses.equals(other.myPrecursorClauses)
+                    && myResultantClause.equals(other.myResultantClause) && forConsequent == other.forConsequent
+                    && mySourceModuleName.equals(other.mySourceModuleName)
+                    && mySourceTheoremName.equals(other.mySourceTheoremName);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return myPrecursorClauses.hashCode() + (myResultantClause.hashCode() * 10) + (forConsequent ? 100 : 0)
+                + (mySourceModuleName.hashCode() * 1000) + (mySourceTheoremName.hashCode() * 10000);
+    }
 }
