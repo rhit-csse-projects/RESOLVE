@@ -13,7 +13,6 @@
 package edu.clemson.rsrg.nProver.utilities.theorems;
 
 import edu.clemson.rsrg.absyn.expressions.Exp;
-import edu.clemson.rsrg.absyn.expressions.mathexpr.VarExp;
 import edu.clemson.rsrg.typeandpopulate.entry.TheoremEntry;
 
 import java.util.ArrayList;
@@ -71,7 +70,7 @@ public class ElaborationRules {
                         if (t.getSourceModuleIdentifier().toString() != null)
                             sourceModuleName = t.getSourceModuleIdentifier().toString();
                         ElaborationRule rule = new ElaborationRule(copyOfMyTheoremSubExpressions, t.getAssertion(),
-                                t.isAntecedent(), sourceTheroemName, sourceModuleName);
+                                false, sourceTheroemName, sourceModuleName);
                         elaborationRules.add(rule);
                     }
                 }
@@ -91,8 +90,8 @@ public class ElaborationRules {
                             sourceTheroemName = t.getName();
                         if (t.getSourceModuleIdentifier().toString() != null)
                             sourceModuleName = t.getSourceModuleIdentifier().toString();
-                        ElaborationRule rule = new ElaborationRule(copyOfTheoremExpressions, t.getAssertion(),
-                                t.isAntecedent(), sourceTheroemName, sourceModuleName);
+                        ElaborationRule rule = new ElaborationRule(copyOfTheoremExpressions, t.getAssertion(), true,
+                                sourceTheroemName, sourceModuleName);
                         elaborationRules.add(rule);
                     }
                 }

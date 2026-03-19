@@ -72,45 +72,8 @@ public final class TheoremStore {
     }
 
     /**
-     * {@inheritDoc}
+     * Returns all theorems who only contain operators that are in the set.
      */
-    public Set<TheoremEntry> getRelevantTheorems(List<Exp> antecedent, List<Exp> consequent) {
-        Set<TheoremEntry> theorems = getRelevantTheoremsHelper(antecedent, true);
-        theorems.addAll(getRelevantTheoremsHelper(consequent, false));
-        return theorems;
-    }
-
-    public Set<TheoremEntry> getRelevantTheoremsHelper(List<Exp> expressions, boolean fromAntecedent) {
-        // The following line is the only thing from TheoremSelector that did anything.
-        // It seems to exist to filter out expressions by their operators, but we seem to be doing that anyways.
-        // What's worse is that the unit tests show that this line just removes all the expressions
-        // List<Exp> filteredList = expressions.stream().filter(exp -> opStrings.contains(this.getAllExpStrings(exp)))
-        // .collect(Collectors.toList());
-        Set<TheoremEntry> theorems = new HashSet<>();
-        for (Exp expr : expressions) {
-            // Set<String> exprStrings = getAllExpStrings(expr);
-            Set<String> exprStrings = expr.getOperatorStrings();
-            for (TheoremEntry theorem : theoremToOps.keySet()) {
-                Set<String> ops = theoremToOps.get(theorem);
-                // TODO show that this isn't masking a bug (yell at Carson if it is)
-                if (ops != null) {
-                    ops.removeIf((exp) -> !opStrings.contains(exp));
-                    ops.remove("=");
-                    ops.remove("implies");
-                    ops.remove(">=");
-                    ops.remove("<=");
-                    ops.remove("or");
-                    ops.remove("and");
-                    if (exprStrings.containsAll(ops)) {
-                        theorem.setAntecedent(fromAntecedent);
-                        theorems.add(theorem);
-                    }
-                }
-            }
-        }
-        return theorems;
-    }
-
     public Set<TheoremEntry> getRelevantTheoremsByOperators(Set<String> knownOperators) {
         Set<TheoremEntry> result = new HashSet<>();
         for (Map.Entry<TheoremEntry, Set<String>> entry : theoremToOps.entrySet()) {

@@ -21,7 +21,6 @@ import edu.clemson.rsrg.typeandpopulate.typereasoning.TypeGraph;
 import edu.clemson.rsrg.typeandpopulate.utilities.ModuleIdentifier;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -64,13 +63,6 @@ public class TheoremEntry extends SymbolTableEntry {
      * </p>
      */
     private final MathAssertionDec.TheoremSubtype myTheoremSubtype;
-
-    /**
-     * <p>
-     * True if this entry was generated from the antecedent of a VC.
-     * </p>
-     */
-    private boolean isAntecedent;
 
     // ===========================================================
     // Constructors
@@ -256,31 +248,6 @@ public class TheoremEntry extends SymbolTableEntry {
             sb.append(myTheoremSubtype.toString());
             sb.append("\n");
         }
-        if (isAntecedent) {
-            sb.append("Comes from the antecendent\n");
-        } else {
-            sb.append("Comes from the consequent\n");
-        }
         return sb.toString();
-    }
-
-    /**
-     * <p>
-     * Returns whether or not this theorem entry was created from the antecedent of a VC. Since the field may not be
-     * filled during construction, we return an {@link Optional}. This value could be null if it hasn't been set
-     * manually.
-     * </p>
-     */
-    public boolean isAntecedent() {
-        return isAntecedent;
-    }
-
-    /**
-     * <p>
-     * Sets whether or not this theorem entry was created from the antecedent of a VC.
-     * </p>
-     */
-    public void setAntecedent(boolean isAntecedent) {
-        this.isAntecedent = isAntecedent;
     }
 }

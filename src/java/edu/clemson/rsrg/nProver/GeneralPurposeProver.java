@@ -27,7 +27,6 @@ import edu.clemson.rsrg.nProver.utilities.treewakers.AbstractRegisterSequent;
 import edu.clemson.rsrg.nProver.utilities.treewakers.RegisterAntecedent;
 import edu.clemson.rsrg.nProver.utilities.treewakers.RegisterSuccedent;
 import edu.clemson.rsrg.parsing.data.LocationDetailModel;
-import edu.clemson.rsrg.prover.utilities.theorems.Theorem;
 import edu.clemson.rsrg.statushandling.Fault;
 import edu.clemson.rsrg.statushandling.FaultType;
 import edu.clemson.rsrg.treewalk.TreeWalker;
@@ -365,8 +364,6 @@ public class GeneralPurposeProver {
 
             // Create a registry and label map
             CongruenceClassRegistry registry = new CongruenceClassRegistry(1000, 1000, 1000, 1000);
-            Set<TheoremEntry> relevantTheorems = theoremStore.getRelevantTheorems(sequent.getAntecedents(),
-                    sequent.getConcequents());
 
             // Visit antecedents
             RegisterAntecedent regAntecedent = new RegisterAntecedent(registry, expLabels, 3, mappings);
@@ -394,7 +391,7 @@ public class GeneralPurposeProver {
                 debugLog(registry.toPrettyString(mappings));
 
                 Elaborator elaborator = new Elaborator(registry, expLabels, mappings, debug);
-                relevantTheorems = theoremStore.getRelevantTheoremsByOperators(expLabels.keySet());
+                Set<TheoremEntry> relevantTheorems = theoremStore.getRelevantTheoremsByOperators(expLabels.keySet());
                 ElaborationRules rules = new ElaborationRules(relevantTheorems);
                 printRelevant(rules, relevantTheorems, i);
                 for (int l = 0; l < 5; l++) {
