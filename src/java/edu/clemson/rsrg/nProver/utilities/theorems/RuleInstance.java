@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class RuleInstance {
     private Exp resultantClause;
-    private boolean fromAntecedent;
+    private boolean forConsequent;
     private int precursorAccessor;
 
     public RuleInstance(Map<Exp, Integer> argBindings, ElaborationRule rule, int precursorAccessor) {
@@ -29,11 +29,11 @@ public class RuleInstance {
         for (Exp replacee : argBindings.keySet())
             argReplacements.put(replacee, new ClusterExp(argBindings.get(replacee)));
         this.resultantClause = rule.getResultantClause().substitute(argReplacements);
-        this.fromAntecedent = rule.isAntecedent();
+        this.forConsequent = rule.forConsequent();
     }
 
-    public boolean isFromAntecedent() {
-        return fromAntecedent;
+    public boolean isForConsequent() {
+        return forConsequent;
     }
 
     public Exp getResultantClause() {

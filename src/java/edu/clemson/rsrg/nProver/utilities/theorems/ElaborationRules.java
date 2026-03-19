@@ -63,14 +63,6 @@ public class ElaborationRules {
                     if (isDeterministic(copyOfMyTheoremSubExpressions, exp)) {
                         // exp here has to be the whole theorem assertion and not only part of
                         // the expression
-                        // String sourceTheroemName = null;
-                        // String sourceModuleName = null;
-                        // if (t.getName() != null)
-                        // sourceTheroemName = t.getName();
-                        // if (t.getSourceModuleIdentifier().toString() != null)
-                        // sourceModuleName = t.getSourceModuleIdentifier().toString();
-                        // ElaborationRule rule = new ElaborationRule(copyOfMyTheoremSubExpressions, t.getAssertion(),
-                        // copyOfMyTheoremSubExpressions.size() != 1, sourceTheroemName, sourceModuleName);
                         elaborationRules.add(mkRule(copyOfMyTheoremSubExpressions, t));
                     }
                 }
@@ -82,18 +74,8 @@ public class ElaborationRules {
                     List<Exp> copyOfTheoremExpressions = t.getAssertion().getSubExpressions();
                     // check if the rule will be deterministic, and for the moment, if not
                     // deterministic ignore it
-                    if (isDeterministic(copyOfTheoremExpressions, te)) {
-                        // String sourceTheroemName = null;
-                        // String sourceModuleName = null;
-                        // if (t.getName() != null)
-                        // sourceTheroemName = t.getName();
-                        // if (t.getSourceModuleIdentifier().toString() != null)
-                        // sourceModuleName = t.getSourceModuleIdentifier().toString();
-                        // ElaborationRule rule = new ElaborationRule(copyOfTheoremExpressions, t.getAssertion(),
-                        // copyOfTheoremExpressions.size() != 1,
-                        // sourceTheroemName, sourceModuleName);
+                    if (isDeterministic(copyOfTheoremExpressions, te))
                         elaborationRules.add(mkRule(copyOfTheoremExpressions, t));
-                    }
                 }
             }
         }
@@ -107,8 +89,10 @@ public class ElaborationRules {
             sourceTheoremName = t.getName();
         if (t.getSourceModuleIdentifier().toString() != null)
             sourceModuleName = t.getSourceModuleIdentifier().toString();
-        return new ElaborationRule(precursorExps, t.getAssertion(), precursorExps.size() != 1, sourceTheoremName,
-                sourceModuleName);
+        boolean forConsequent = true;
+        if (precursorExps.size() == 1)
+            forConsequent = precursorExps.get(0).getSubExpressions().size() == 0;
+        return new ElaborationRule(precursorExps, t.getAssertion(), forConsequent, sourceTheoremName, sourceModuleName);
     }
 
     /**

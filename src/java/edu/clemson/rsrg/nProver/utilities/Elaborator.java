@@ -223,12 +223,12 @@ public class Elaborator {
             }
             String topOp = resultant.getTopLevelOperator();
             if (topOp.equals("=") || topOp.equals("<=")) {
-                addToRegistry(resultant, rule.isFromAntecedent());
+                addToRegistry(resultant, rule.isForConsequent());
             }
         }
     }
 
-    private void addToRegistry(Exp resultant, boolean isFromAntencedent) {
+    private void addToRegistry(Exp resultant, boolean isForConsequent) {
         // we'll need to add the resultant to the correct side(s) of the registry
         // if(isFromAntencedent) {
         TreeWalker.visit(new RegisterAntecedent(myRegistry, myExpLabels, myExpLabels.size(), myMappings), resultant);
