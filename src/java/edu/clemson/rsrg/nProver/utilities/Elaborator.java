@@ -89,7 +89,6 @@ public class Elaborator {
                     while (firstLoop || !myRegistry.isVarietyMaximal(operator, currentCCAccessor)) {
                         // Loop through the congruence classes
 
-                        System.out.println("Operator: " + operator + "\n Rule:" + elaborationRule);
                         currentCCAccessor = firstLoop ? myRegistry.firstCCAccessorForTreeNodeLabel(operator)
                                 : myRegistry.advanceCClassAccessor(operator, currentCCAccessor);
                         firstLoop = false;
