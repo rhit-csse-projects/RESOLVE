@@ -77,7 +77,7 @@ public class Elaborator {
                         System.out
                                 .println("The key " + precursor.getTopLevelOperator() + " does not exist in expLabels");
                     }
-                } else if (!myRegistry.checkIfRegistered(myExpLabels.get(precursor.getTopLevelOperator()))) {
+                } else if (!myRegistry.isRegistryLabel(myExpLabels.get(precursor.getTopLevelOperator()))) {
                     debugLog("Operator is not registered. Skipping.");
                 } else if (precursor instanceof AbstractFunctionExp) {
 
