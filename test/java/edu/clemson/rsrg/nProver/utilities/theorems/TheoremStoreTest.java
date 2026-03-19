@@ -80,14 +80,13 @@ public class TheoremStoreTest {
 
     @Test
     void getRelevantTheorems_shouldReturnAllMatchingTheorems() {
+        Set<String> operatorSet = Set.of(opString1, opString2);
         // Arrange
         when(mockExp.toString()).thenReturn("op1 and op2");
-        when(mockExp.getOperatorStrings()).thenReturn(Set.of(opString1, opString2));
-
-        List<Exp> expressions = Collections.singletonList(mockExp);
+        when(mockExp.getOperatorStrings()).thenReturn(operatorSet);
 
         // Act
-        Set<TheoremEntry> relevantTheorems = theoremStore.getRelevantTheorems(expressions, Collections.emptyList());
+        Set<TheoremEntry> relevantTheorems = theoremStore.getRelevantTheoremsByOperators(operatorSet);
 
         // Assert
         assertEquals(2, relevantTheorems.size());
@@ -104,10 +103,9 @@ public class TheoremStoreTest {
         when(mockOtherOp.getOperatorStrings()).thenReturn(Collections.emptySet());
         when(mockExp.toString()).thenReturn(otherOpString);
         when(mockExp.getOperatorStrings()).thenReturn(Set.of(otherOpString));
-        List<Exp> expressions = Collections.singletonList(mockExp);
 
         // Act
-        Set<TheoremEntry> relevantTheorems = theoremStore.getRelevantTheorems(expressions, Collections.emptyList());
+        Set<TheoremEntry> relevantTheorems = theoremStore.getRelevantTheoremsByOperators(Set.of(otherOpString));
 
         // Assert
         assertTrue(relevantTheorems.isEmpty());
@@ -118,10 +116,9 @@ public class TheoremStoreTest {
         // Arrange
         when(mockExp.toString()).thenReturn(opString1);
         when(mockExp.getOperatorStrings()).thenReturn(Set.of(opString1));
-        List<Exp> expressions = Collections.singletonList(mockExp);
 
         // Act
-        Set<TheoremEntry> relevantTheorems = theoremStore.getRelevantTheorems(expressions, Collections.emptyList());
+        Set<TheoremEntry> relevantTheorems = theoremStore.getRelevantTheoremsByOperators(Set.of(opString1));
 
         // Assert
         assertEquals(1, relevantTheorems.size());
@@ -135,7 +132,7 @@ public class TheoremStoreTest {
         List<Exp> expressions = Collections.emptyList();
 
         // Act
-        Set<TheoremEntry> relevantTheorems = theoremStore.getRelevantTheorems(expressions, Collections.emptyList());
+        Set<TheoremEntry> relevantTheorems = theoremStore.getRelevantTheoremsByOperators(Collections.emptySet());
 
         // Assert
         assertTrue(relevantTheorems.isEmpty());
@@ -143,15 +140,16 @@ public class TheoremStoreTest {
 
     @Test
     void getRelevantTheorems_shouldBeIdempotent() {
+        Set<String> operatorSet = Set.of(opString1, opString2);
         // Arrange
         when(mockExp.toString()).thenReturn("op1 and op2");
-        when(mockExp.getOperatorStrings()).thenReturn(Set.of(opString1, opString2));
+        when(mockExp.getOperatorStrings()).thenReturn(operatorSet);
 
         List<Exp> expressions = Collections.singletonList(mockExp);
 
         // Act
-        Set<TheoremEntry> result1 = theoremStore.getRelevantTheorems(expressions, Collections.emptyList());
-        Set<TheoremEntry> result2 = theoremStore.getRelevantTheorems(expressions, Collections.emptyList());
+        Set<TheoremEntry> result1 = theoremStore.getRelevantTheoremsByOperators(operatorSet);
+        Set<TheoremEntry> result2 = theoremStore.getRelevantTheoremsByOperators(operatorSet);
 
         // Assert
         assertEquals(result1, result2);
