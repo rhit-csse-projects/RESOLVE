@@ -674,8 +674,11 @@ public class CongruenceClassRegistry {
      *         otherwise.
      */
     public boolean isRegistryLabel(Integer treeNodeLabel) { /* Is_Rgry_Lab */
-        // each node at some point is considered a root node label
-        return varietyArray[treeNodeLabel] != null;
+        if (varietyArray[treeNodeLabel] != null) {
+            // each node at some point is considered a root node label
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -1154,10 +1157,7 @@ public class CongruenceClassRegistry {
      */
     private boolean isSequentVCProvedByAttributes(BitSet bitSetIn) {
         // the number of 1's is 3 when all three bits are set.
-        if (bitSetIn.cardinality() == 3) {
-            return true;
-        }
-        return false;
+        return bitSetIn.cardinality() == 3;
     }
 
     /**
