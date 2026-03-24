@@ -13,13 +13,12 @@
 package edu.clemson.rsrg.nProver.utilities.theorems;
 
 import edu.clemson.rsrg.absyn.expressions.Exp;
+import edu.clemson.rsrg.absyn.expressions.mathexpr.AbstractFunctionExp;
+import edu.clemson.rsrg.absyn.expressions.mathexpr.VarExp;
 import edu.clemson.rsrg.typeandpopulate.entry.TheoremEntry;
+import org.jgrapht.alg.shortestpath.EppsteinKShortestPath;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ElaborationRules {
 
@@ -112,20 +111,60 @@ public class ElaborationRules {
         // remove the resultant expression from the precursor expressions
         theoremExpressionList.remove(resultantExpression);
         // get the resultant sub expressions (will be only constants and variables)
-        List<Exp> resultantSubExpressions = resultantExpression.getSubExpressions();
+        Set<Exp> resultantVars = getAllVars(resultantExpression);
         // Declare the set that will collect all variables in the precursor expressions
-        Set<Exp> collectionOfPrecursorVars;
+        Set<Exp> collectionOfPrecursorVars = new LinkedHashSet<>();
 
-        // collect all the variables in the precursor expressions
-        collectionOfPrecursorVars = collectVariables(theoremExpressionList);
-
-        // check if collection of precursor vars contain all e's, if so return true
-        for (Exp e : resultantSubExpressions) {
-            if (!collectionOfPrecursorVars.contains(e))
-                return false; // a variable in the resultant is not in the precursors
+        for (Exp e : theoremExpressionList) {
+            collectionOfPrecursorVars.addAll(getAllVars(e));
         }
-        return true; // all variables in the resultant are in the precursors
 
+
+        System.out.println(collectionOfPrecursorVars);
+        System.out.println(resultantVars);
+        System.out.println(cursedContainsAll(collectionOfPrecursorVars, resultantVars));
+
+        //For some reason beyond our understanding, regular containsAll always returns false
+        return cursedContainsAll(collectionOfPrecursorVars, resultantVars); //collectionOfPrecursorVars.containsAll(resultantVars);
+    }
+
+    public static boolean cursedContainsAll(Set<Exp> precursorVars, Set<Exp> resultantVars) {
+        for(Exp resVar : resultantVars) {
+            boolean matchedSomething = false;
+            for(Exp preVar : precursorVars){
+                if(preVar.equals(resVar)){
+                    matchedSomething = true;
+                    break;
+                }
+            }
+            if(!matchedSomething) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static Set<Exp> getAllVars(Exp theorem) {
+        Set<Exp> result = new LinkedHashSet<>();
+        if (!(theorem instanceof AbstractFunctionExp)) { //TODO: Don't filter out constants. We should be able to handle a constant being in the resultant
+            String expString = theorem.toString();
+            boolean isInt;
+            try { // Horrible code because RegEx hates us
+                Integer.parseInt(expString);
+                isInt = true;
+            } catch (Exception e) {
+                isInt = false;
+            }
+
+            if (!expString.equals("Empty_String") && !isInt) {
+                result.add(theorem);
+            }
+        } else {
+            for(Exp subExp : theorem.getSubExpressions()) {
+                result.addAll(getAllVars(subExp));
+            }
+        }
+        return result;
     }
 
     /**
@@ -137,28 +176,6 @@ public class ElaborationRules {
      */
     public List<ElaborationRule> getMyElaborationRules() {
         return myElaborationRules;
-    }
-
-    /**
-     * <p>
-     * Returns the set of all variables in the precursor expressions
-     * </p>
-     *
-     * @return a {@link Set} of {@link Exp}
-     *
-     * @param precursorExpList
-     *            The list of precursor expressions
-     */
-    public static Set<Exp> collectVariables(List<Exp> precursorExpList) {
-        Set<Exp> setOfPrecursorVars = new HashSet<>();
-        for (Exp e : precursorExpList) {
-            for (Exp ve : e.getSubExpressions()) {
-                if (ve.getClass().getSimpleName().equals("VarExp")) {
-                    setOfPrecursorVars.add(ve);
-                }
-            }
-        }
-        return setOfPrecursorVars;
     }
 
     /**
