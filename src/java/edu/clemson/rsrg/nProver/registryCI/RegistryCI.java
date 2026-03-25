@@ -91,6 +91,8 @@ public class RegistryCI {
                 G                - Display all roots
                 ?                - Show this help
                 Q                - Quit
+                PM               - Print Mappings
+                PR               - Print Full Registry (includes all major arrays)
                 """);
 
         if (hasTheoremStore) {
@@ -149,6 +151,12 @@ public class RegistryCI {
                     break;
                 case "THEOREMS":
                     displayTheorems();
+                    break;
+                case "PM":
+                    printMappings();
+                    break;
+                case "PR":
+                    printFullRegistry();
                     break;
                 default:
                     processCommand(input);
@@ -413,7 +421,7 @@ public class RegistryCI {
     }
 
     private void registerSuccedentEquals() {
-        if (!ensureArgListSize(2, "RES"))
+        if (ensureArgListSize("RES"))
             return;
         registry.addOperatorToSuccedentReflexiveOperatorSet(OP_EQUALS);
 
@@ -434,7 +442,7 @@ public class RegistryCI {
     }
 
     private void registerSuccedentLessThanEquals() {
-        if (!ensureArgListSize(2, "RLES"))
+        if (ensureArgListSize("RLES"))
             return;
         registry.addOperatorToSuccedentReflexiveOperatorSet(OP_LESS_THAN_OR_EQUALS);
 
@@ -542,14 +550,24 @@ public class RegistryCI {
         return false;
     }
 
-    private boolean ensureArgListSize(int expected, String opName) {
+    private boolean ensureArgListSize(String opName) {
         int size = registry.getClusterArgumentListSize();
-        if (size != expected) {
-            System.out.println("ERROR: " + opName + " requires exactly " + expected + " arguments, but found " + size
+        if (size != 2) {
+            System.out.println("ERROR: " + opName + " requires exactly " + 2 + " arguments, but found " + size
                     + ". Command aborted.");
-            return false;
+            return true;
         }
-        return true;
+        return false;
+    }
+
+    private void printMappings() {
+        System.out.println("=== Mappings ===");
+        System.out.println(mappingToSymbol);
+    }
+
+    private void printFullRegistry() {
+        System.out.println("=== Full Registry ===");
+        System.out.println(registry);
     }
 
     public static void main(String[] args) {

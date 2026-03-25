@@ -52,6 +52,11 @@ public class ClusterExp extends MathExp {
     }
 
     @Override
+    public Exp copy() {
+        return new ClusterExp(clusterId);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o)
             return true;
