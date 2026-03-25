@@ -14,19 +14,17 @@ package edu.clemson.rsrg.nProver.utilities.theorems;
 
 import edu.clemson.rsrg.absyn.expressions.Exp;
 import edu.clemson.rsrg.absyn.expressions.mathexpr.AbstractFunctionExp;
-import edu.clemson.rsrg.absyn.expressions.mathexpr.VarExp;
 import edu.clemson.rsrg.typeandpopulate.entry.TheoremEntry;
-import org.jgrapht.alg.shortestpath.EppsteinKShortestPath;
 
 import java.util.*;
 
 public class ElaborationRules {
 
-    private Collection<TheoremEntry> myRelevantTheorems;
+    private final Collection<TheoremEntry> myRelevantTheorems;
 
     // private Exp resultantExpression;
 
-    private List<ElaborationRule> myElaborationRules;
+    private final List<ElaborationRule> myElaborationRules;
 
     // constructor
     public ElaborationRules(Collection<TheoremEntry> relevantTheorems) {
@@ -53,10 +51,10 @@ public class ElaborationRules {
             // for one expression theorem, things will be different
             if (myTheoremExpressions.size() == 1) {
                 // break down the expression further it is assumed it will be at index 0
-                myTheoremSubExpressions = myTheoremExpressions.get(0).getSubExpressions();
+                myTheoremSubExpressions = myTheoremExpressions.getFirst().getSubExpressions();
 
                 for (Exp exp : myTheoremSubExpressions) {
-                    List<Exp> copyOfMyTheoremSubExpressions = myTheoremExpressions.get(0).getSubExpressions();
+                    List<Exp> copyOfMyTheoremSubExpressions = myTheoremExpressions.getFirst().getSubExpressions();
                     // x1*x2 = x2 * x1 will create two rules with each sub exp becoming the
                     // precursor
                     if (isDeterministic(copyOfMyTheoremSubExpressions, exp)) {
@@ -88,7 +86,7 @@ public class ElaborationRules {
             sourceTheoremName = t.getName();
         if (t.getSourceModuleIdentifier().toString() != null)
             sourceModuleName = t.getSourceModuleIdentifier().toString();
-        if (precursorExps.size() == 1 && precursorExps.get(0).getSubExpressions().size() == 0) {
+        if (precursorExps.size() == 1 && precursorExps.getFirst().getSubExpressions().isEmpty()) {
             List<Exp> l = new ArrayList<>();
             l.add(t.getAssertion());
             return new ElaborationRule(l, t.getAssertion(), true, sourceTheoremName, sourceModuleName);
@@ -119,25 +117,24 @@ public class ElaborationRules {
             collectionOfPrecursorVars.addAll(getAllVars(e));
         }
 
-
         System.out.println(collectionOfPrecursorVars);
         System.out.println(resultantVars);
         System.out.println(cursedContainsAll(collectionOfPrecursorVars, resultantVars));
 
-        //For some reason beyond our understanding, regular containsAll always returns false
-        return cursedContainsAll(collectionOfPrecursorVars, resultantVars); //collectionOfPrecursorVars.containsAll(resultantVars);
+        // For some reason beyond our understanding, regular containsAll always returns false
+        return cursedContainsAll(collectionOfPrecursorVars, resultantVars); // collectionOfPrecursorVars.containsAll(resultantVars);
     }
 
     public static boolean cursedContainsAll(Set<Exp> precursorVars, Set<Exp> resultantVars) {
-        for(Exp resVar : resultantVars) {
+        for (Exp resVar : resultantVars) {
             boolean matchedSomething = false;
-            for(Exp preVar : precursorVars){
-                if(preVar.equals(resVar)){
+            for (Exp preVar : precursorVars) {
+                if (preVar.equals(resVar)) {
                     matchedSomething = true;
                     break;
                 }
             }
-            if(!matchedSomething) {
+            if (!matchedSomething) {
                 return false;
             }
         }
@@ -146,7 +143,8 @@ public class ElaborationRules {
 
     public static Set<Exp> getAllVars(Exp theorem) {
         Set<Exp> result = new LinkedHashSet<>();
-        if (!(theorem instanceof AbstractFunctionExp)) { //TODO: Don't filter out constants. We should be able to handle a constant being in the resultant
+        if (!(theorem instanceof AbstractFunctionExp)) { // TODO: Don't filter out constants. We should be able to
+                                                         // handle a constant being in the resultant
             String expString = theorem.toString();
             boolean isInt;
             try { // Horrible code because RegEx hates us
@@ -160,7 +158,7 @@ public class ElaborationRules {
                 result.add(theorem);
             }
         } else {
-            for(Exp subExp : theorem.getSubExpressions()) {
+            for (Exp subExp : theorem.getSubExpressions()) {
                 result.addAll(getAllVars(subExp));
             }
         }

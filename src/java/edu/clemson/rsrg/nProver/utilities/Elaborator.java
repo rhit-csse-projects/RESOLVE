@@ -112,7 +112,7 @@ public class Elaborator {
                 } else {
                     debugLog("[Rule #" + ruleCounter + "] \u001B[41m Not Matched \u001B[49m :" + precursor);
                 }
-                //debugLog(myRegistry.toPrettyString(myMappings));
+                // debugLog(myRegistry.toPrettyString(myMappings));
             }
         }
 

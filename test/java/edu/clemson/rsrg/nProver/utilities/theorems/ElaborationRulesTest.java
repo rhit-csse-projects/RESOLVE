@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -122,7 +121,7 @@ public class ElaborationRulesTest {
         // Expecting 1 rule: f(x) -> y (because y has no sub-vars, so it is determined by f(x))
         // y -> f(x) is NOT generated because f(x) has x, and y has no vars.
         assertEquals(1, generatedRules.size());
-        ElaborationRule rule = generatedRules.get(0);
+        ElaborationRule rule = generatedRules.getFirst();
 
         // Check resultant
         assertEquals(mockAssertion, rule.getResultantClause());
@@ -175,7 +174,7 @@ public class ElaborationRulesTest {
             List<Exp> precursors = rule.getPrecursorClauses();
             assertEquals(1, precursors.size());
 
-            Exp precursor = precursors.get(0);
+            Exp precursor = precursors.getFirst();
             if (precursor.equals(p_x)) {
                 foundPtoContainer = true;
             } else if (precursor.equals(q_x)) {
@@ -185,38 +184,6 @@ public class ElaborationRulesTest {
 
         assertTrue(foundPtoContainer, "Should have rule with P(x) as precursor");
         assertTrue(foundQtoContainer, "Should have rule with Q(x) as precursor");
-    }
-
-    @Test
-    public void testCollectVariables() {
-        VarExp x = createVarExp("x");
-        List<Exp> argsList = new ArrayList<>();
-        argsList.add(x);
-        FunctionExp f_x = createFunctionExp("f", argsList);
-
-        List<Exp> precursors = new ArrayList<>();
-        precursors.add(f_x);
-
-        Set<Exp> vars = ElaborationRules.collectVariables(precursors);
-        assertTrue(vars.contains(x));
-        assertEquals(1, vars.size());
-    }
-
-    @Test
-    public void testCollectVariables_Nested() {
-        // Verify that collectVariables is shallow (only checks direct subexpressions)
-        VarExp x = createVarExp("x");
-        FunctionExp g_x = createFunctionExp("g", Collections.singletonList(x));
-        FunctionExp f_g_x = createFunctionExp("f", Collections.singletonList(g_x));
-
-        ElaborationRules rules = new ElaborationRules(Collections.emptyList());
-        List<Exp> precursors = new ArrayList<>();
-        precursors.add(f_g_x);
-
-        Set<Exp> vars = rules.collectVariables(precursors);
-        // Based on code analysis, this should be empty because g(x) is not VarExp
-        // and collectVariables does not recurse.
-        assertTrue(vars.isEmpty());
     }
 
     @Test

@@ -674,7 +674,7 @@ public class CongruenceClassRegistry {
      *         otherwise.
      */
     public boolean isRegistryLabel(Integer treeNodeLabel) { /* Is_Rgry_Lab */
-       // each node at some point is considered a root node label
+        // each node at some point is considered a root node label
         return varietyArray[treeNodeLabel] != null;
     }
 
