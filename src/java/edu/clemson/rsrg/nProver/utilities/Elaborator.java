@@ -67,9 +67,10 @@ public class Elaborator {
         for (ElaborationRule elaborationRule : rules) {
             Map<Exp, Integer> variableBindings = new HashMap<>();
             ruleCounter++;
+            int matchedCluster = -1;
+            boolean anyMatched = false; // stops from adding duplicate resultants to the registry
 
             for (Exp precursor : elaborationRule.getPrecursorClauses()) {
-                int matchedCluster = -1;
                 if (precursor.toString().matches("[0-9]+") || precursor.toString().matches("Empty_String")) {
                     matchedCluster = myExpLabels.getOrDefault(precursor.toString(), -1);
                 } else if (!myExpLabels.containsKey(precursor.getTopLevelOperator())) {
@@ -108,11 +109,14 @@ public class Elaborator {
 
                 if (matchedCluster != -1) {
                     debugLog("[Rule #" + ruleCounter + "] \u001B[42m Matched! \u001B[49m :" + precursor);
-                    result.add(new RuleInstance(variableBindings, elaborationRule, matchedCluster));
+                    anyMatched = true;
                 } else {
                     debugLog("[Rule #" + ruleCounter + "] \u001B[41m Not Matched \u001B[49m :" + precursor);
                 }
-                // debugLog(myRegistry.toPrettyString(myMappings));
+            }
+
+            if (anyMatched) {
+                result.add(new RuleInstance(variableBindings, elaborationRule, matchedCluster));
             }
         }
 
@@ -144,14 +148,14 @@ public class Elaborator {
 
             if (clusterArgs.size() != subExpressions.size())
                 continue; // If the # of args don't match, then this is not the cluster we're looking
-                          // for
+            // for
 
             boolean matchedAllArgs = true;
             for (int i = 0; i < subExpressions.size(); i++) {
                 Exp subExp = subExpressions.get(i);
+                int arg = clusterArgs.get(subExpressions.size() - i - 1);
                 if (!(subExp instanceof AbstractFunctionExp)) {
                     // Base case: leaf node
-                    int arg = clusterArgs.get(subExpressions.size() - i - 1);
                     if (!matchLeafNodes(subExp, arg)) {
                         matchedAllArgs = false;
                         break;
@@ -159,24 +163,17 @@ public class Elaborator {
                         tempBindings.put(subExp, arg);
                     }
                 } else {
-                    boolean matchedThisSubExp = false;
                     int subExpOperator = myExpLabels.get(subExp.getTopLevelOperator());
-
-                    for (int arg : clusterArgs) {
-                        int clusterArgOperator = myRegistry.getCongruenceCluster(arg).getTreeNodeLabel();
-                        if (subExpOperator != clusterArgOperator)
-                            continue;
-
-                        matchedThisSubExp = ccMatchesExpression(subExp, arg, subExpOperator, variableBindings) != -1;
-                        if (matchedThisSubExp) // We found a match! No need to check the rest of
-                            // the clusters
-                            break;
+                    // we don't need to loop through args here, because we are already looping through the args in the
+                    // outer for loop
+                    int clusterAccessor = myRegistry.getFirstClusterAccessorForCC(arg, subExpOperator);
+                    if (clusterAccessor == -1) {
+                        matchedAllArgs = false;
+                        break;
                     }
 
-                    matchedAllArgs = matchedThisSubExp;
-                    if (!matchedThisSubExp) // None of this cluster's arguments matched subExp.
-                        // Therefore this is not
-                        // the cluster we're looking for.
+                    matchedAllArgs = ccMatchesExpression(subExp, arg, subExpOperator, variableBindings) != -1;
+                    if (!matchedAllArgs)
                         break;
                 }
             }
