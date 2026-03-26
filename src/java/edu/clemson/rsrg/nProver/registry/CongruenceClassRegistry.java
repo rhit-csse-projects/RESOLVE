@@ -2373,7 +2373,8 @@ public class CongruenceClassRegistry {
 
         sb.append(operator).append(" ");
 
-        while (argument.getCcNumber() != 0) {
+        HashSet<Integer> visited = new HashSet<>();
+        while (argument.getCcNumber() != 0 && visited.add(argument.getClusterNumber())) {
             if (argument.getCcNumber() != 0)
                 sb.append("CC").append(argument.getCcNumber());
             else
@@ -2467,8 +2468,8 @@ public class CongruenceClassRegistry {
     public List<Integer> getArgumentsList(CongruenceCluster cluster) {
         List<Integer> arguments = new ArrayList<>();
         ClusterArgument argument = clusterArgumentArray[cluster.getIndexToArgList()];
-
-        while (argument.getCcNumber() != 0) {
+        HashSet<Integer> visited = new HashSet<>();
+        while (argument.getCcNumber() != 0 && visited.add(argument.getClusterNumber())) {
             arguments.add(argument.getCcNumber());
             argument = clusterArgumentArray[argument.getPrevClusterArg()];
         }
