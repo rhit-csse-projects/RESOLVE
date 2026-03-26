@@ -355,7 +355,7 @@ public class GeneralPurposeProver {
             mappings.add("=");
             VerificationCondition vc = myVerificationConditions.get(i);
 
-            debugLog("====================================== VC #" + i + " =====================================");
+            debugLog("====================================== VC #" + vc.getName() + " =====================================");
             debugLog(vc);
             // Store the start time for generating proofs for this VC
             long startTime = System.nanoTime();
@@ -393,14 +393,14 @@ public class GeneralPurposeProver {
                 Elaborator elaborator = new Elaborator(registry, expLabels, mappings, debug);
                 Set<TheoremEntry> relevantTheorems = theoremStore.getRelevantTheoremsByOperators(expLabels.keySet());
                 ElaborationRules rules = new ElaborationRules(relevantTheorems);
-                printRelevant(rules, relevantTheorems, i);
+                printRelevant(rules, relevantTheorems, vc.getName());
                 for (int l = 0; l < 5; l++) {
                     // List<RuleInstance> ruleInstances = elaborator.elaborate(rules.getMyElaborationRules());
 
-                    debugLog("============ VC #" + i + " (Printed again for reference) " + " ===============");
+                    debugLog("============ VC #" + vc.getName() + " (Printed again for reference) " + " ===============");
                     debugLog(vc);
 
-                    debugLog("============ [Attempt " + l + "] Elaboration & Matching (VC #" + i + ") ===============");
+                    debugLog("============ [Attempt " + l + "] Elaboration & Matching (VC #" + vc.getName() + ") ===============");
 
                     elaborator.elaborateAndApply(rules.getMyElaborationRules());
                     isProved |= registry.checkIfProved();
@@ -436,7 +436,7 @@ public class GeneralPurposeProver {
 
     }
 
-    public void printRelevant(ElaborationRules rules, Set<TheoremEntry> relevantTheorems, int vcNum) {
+    public void printRelevant(ElaborationRules rules, Set<TheoremEntry> relevantTheorems, String vcNum) {
         debugLog("=========================== Relevant Theorems (VC #" + vcNum + ") ===========================");
         int j = 0;
         for (TheoremEntry te : relevantTheorems) {

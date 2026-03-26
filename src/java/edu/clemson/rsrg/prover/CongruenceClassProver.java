@@ -164,6 +164,12 @@ public class CongruenceClassProver {
         myTypeGraph = compileEnvironment.getTypeGraph();
         myVCModels = new PerVCProverModel[vcs.size()];
 
+        System.out.println("Proving...");
+
+        for(ImmutableVC vc : vcs) {
+            System.out.print("\u001B[41m Not Proved \u001B[49m " + vc);
+        }
+
         // Timeout
         if (myCompileEnvironment.flags.isFlagSet(FLAG_TIMEOUT)) {
             myTimeout = Long.parseLong(myCompileEnvironment.flags.getFlagArgument(FLAG_TIMEOUT, "milliseconds"));
