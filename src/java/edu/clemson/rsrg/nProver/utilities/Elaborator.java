@@ -74,10 +74,10 @@ public class Elaborator {
                 if (precursor.toString().matches("[0-9]+") || precursor.toString().matches("Empty_String")) {
                     matchedCluster = myExpLabels.getOrDefault(precursor.toString(), -1);
                 } else if (!myExpLabels.containsKey(precursor.getTopLevelOperator())) {
-                    if (myDebug) {
-                        System.out
-                                .println("The key " + precursor.getTopLevelOperator() + " does not exist in expLabels");
-                    }
+                    if (myDebug)
+                        System.out.println(
+                                "[\u001B[31mRule #" + ruleCounter + " Error\u001B[0m]: " + "The key `\u001B[31m"
+                                        + precursor.getTopLevelOperator() + "\u001B[0m` does not exist in expLabels");
                 } else if (!myRegistry.isRegistryLabel(myExpLabels.get(precursor.getTopLevelOperator()))) {
                     debugLog("Operator is not registered. Skipping.");
                 } else if (precursor instanceof AbstractFunctionExp) {
@@ -106,12 +106,12 @@ public class Elaborator {
                             break;
                     }
                 }
-
+                String body = getExpBodyString(precursor);
                 if (matchedCluster != -1) {
-                    debugLog("[Rule #" + ruleCounter + "] \u001B[42m Matched! \u001B[49m :" + precursor);
+                    debugLog("[Rule #" + ruleCounter + "] \u001B[42m Matched! \u001B[49m :" + body);
                     anyMatched = true;
                 } else {
-                    debugLog("[Rule #" + ruleCounter + "] \u001B[41m Not Matched \u001B[49m :" + precursor);
+                    debugLog("[Rule #" + ruleCounter + "] \u001B[41m Not Matched \u001B[49m :" + body);
                 }
             }
 
@@ -121,6 +121,14 @@ public class Elaborator {
         }
 
         return result;
+    }
+
+    private static String getExpBodyString(Exp precursor) {
+        String body = precursor.toString();
+        if (precursor instanceof QuantExp) {
+            body = ((QuantExp) precursor).getBody().toString();
+        }
+        return body;
     }
 
     private int ccMatchesExpression(Exp needToMatch, int currentCCAccessor, int operator,
@@ -208,8 +216,7 @@ public class Elaborator {
         if (expString.equals("Empty_String") || isInt) {
             if (expInt == -1)
                 return false;
-            if (myRegistry.getFirstClusterAccessorForCC(arg, expInt) == -1)
-                return false;
+            return myRegistry.getFirstClusterAccessorForCC(arg, expInt) != -1;
         }
 
         return true; // variables always match
@@ -231,7 +238,10 @@ public class Elaborator {
     private void addToRegistry(Exp resultant, boolean isForConsequent) {
         // we'll need to add the resultant to the correct side(s) of the registry
         // if(isFromAntencedent) {
+        int CCDesLeftInitial = myRegistry.remainingCCDesignatorCap();
         TreeWalker.visit(new RegisterAntecedent(myRegistry, myExpLabels, myExpLabels.size(), myMappings), resultant);
+        int CCDesLeftLater = myRegistry.remainingCCDesignatorCap();
+        debugLog("Resultant: " + resultant + " \u001B[33mAdded " + (CCDesLeftInitial - CCDesLeftLater) + " CCs to the Registry\u001B[0m");
         // } else {
         // TreeWalker.visit(new RegisterSuccedent(myRegistry, myExpLabels,
         // myExpLabels.size(), myMappings), resultant);

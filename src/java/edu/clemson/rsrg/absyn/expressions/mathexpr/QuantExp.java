@@ -336,4 +336,12 @@ public class QuantExp extends MathExp {
 
         return copyVars;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getTopLevelOperator() {
+        return getBody().getTopLevelOperator();
+    }
 }

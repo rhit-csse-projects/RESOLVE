@@ -197,4 +197,12 @@ public class EqualsExp extends InfixExp {
                 substitute(myRightHandSide, substitutions));
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getTopLevelOperator() {
+        return myOperator.toString();
+    }
+
 }
