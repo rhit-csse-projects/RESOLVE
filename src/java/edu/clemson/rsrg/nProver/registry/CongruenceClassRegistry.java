@@ -591,7 +591,7 @@ public class CongruenceClassRegistry {
             }
         }
         // this is just defensive, we will never get here as the operation is always called when we have next accessor
-        System.out.println("ERROR: reached unreachable code in advanceCClassAccessor");
+        System.out.println("WARNING: reached unreachable code in advanceCClassAccessor");
         return 0;
     }
 
@@ -724,7 +724,14 @@ public class CongruenceClassRegistry {
      */
     public int advanceClusterAccessor(Integer treeNodeLabel, int currentClusterAccessor) {
         int dominantCluster = currentClusterAccessor;
+        HashSet<Integer> visited = new HashSet<>();
         while (clusterArray[dominantCluster].getDominantCluster() != currentClusterAccessor) {
+            if (visited.contains(dominantCluster)) {
+                System.out
+                        .println("\u001B[31mWARNING: advanceClusterAccessor visited a cluster it already saw\u001B[0m");
+                break;
+            }
+            visited.add(dominantCluster);
             dominantCluster = clusterArray[dominantCluster].getDominantCluster();
         }
         return clusterArray[dominantCluster].getNextStandCluster();
@@ -744,7 +751,13 @@ public class CongruenceClassRegistry {
      */
     public boolean isStandMaximal(Integer treeNodeLabel, int currentClusterAccessor) {
         int dominantCluster = currentClusterAccessor;
+        HashSet<Integer> visited = new HashSet<>();
         while (clusterArray[dominantCluster].getDominantCluster() != currentClusterAccessor) {
+            if (visited.contains(dominantCluster)) {
+                System.out.println("\u001B[31mWARNING: isStandMaximal visited a cluster it already saw\u001B[0m");
+                break;
+            }
+            visited.add(dominantCluster);
             dominantCluster = clusterArray[dominantCluster].getDominantCluster();
         }
         return clusterArray[dominantCluster].getNextStandCluster() == 0;
@@ -2367,20 +2380,19 @@ public class CongruenceClassRegistry {
 
     private void displayCluster(List<String> symbolMapping, CongruenceCluster cluster, StringBuilder sb) {
         String operator = symbolMapping.get(cluster.getTreeNodeLabel());
+        ClusterArgument argument = clusterArgumentArray[cluster.getIndexToArgList()];
+
         sb.append(operator).append(" ");
 
-        int currentIndex = cluster.getIndexToArgList();
-        Set<Integer> visited = new HashSet<>();
-
-        while (clusterArgumentArray[currentIndex].getCcNumber() != 0) {
-            if (visited.contains(currentIndex)) {
-                // stopping infinite loops
+        HashSet<Integer> visited = new HashSet<>();
+        while (argument.getCcNumber() != 0 && visited.add(argument.getClusterNumber())) {
+            if (argument.getCcNumber() != 0)
+                sb.append("CC").append(argument.getCcNumber());
+            else
                 break;
-            }
-            visited.add(currentIndex);
-            sb.append("CC").append(clusterArgumentArray[currentIndex].getCcNumber());
-            currentIndex = clusterArgumentArray[currentIndex].getPrevClusterArg();
-            if (clusterArgumentArray[currentIndex].getCcNumber() != 0)
+
+            argument = clusterArgumentArray[argument.getPrevClusterArg()];
+            if (argument.getCcNumber() != 0)
                 sb.append(", ");
         }
     }
