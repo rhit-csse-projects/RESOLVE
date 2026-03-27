@@ -458,7 +458,12 @@ public class CongruenceClassRegistry {
                 }
                 int clusterNumber = clusterArray[clusterArgumentArray[currentClusterArgIndex].getClusterNumber()]
                         .getNextWithSameArg();
+                Set<Integer> visitedClusters = new HashSet<>(); // stopping infinite loops
                 while (clusterNumber != 0) {
+                    if (visitedClusters.contains(clusterNumber)) {
+                        break;
+                    }
+                    visitedClusters.add(clusterNumber);
                     if (clusterArray[clusterNumber].getTreeNodeLabel() == treeNodeLabel
                             && clusterArray[clusterNumber].getIndexToArgList() == currentClusterArgIndex) {
                         // restore the cluster argument list
@@ -2158,6 +2163,16 @@ public class CongruenceClassRegistry {
                                 }
                             }
                         }
+                        if (existed && argListLength(clusterArgumentString) == 0) {
+                            if (clusterArgumentArray[index].getClusterNumber() == 0) {
+                                clusterArgumentArray[index].setClusterNumber(topCongruenceClusterDesignator);
+                            } else if (clusterArgumentArray[index]
+                                    .getClusterNumber() != topCongruenceClusterDesignator) {
+                                // Only update if different cluster
+                                updateNextWithSameArgument(label, index, topCongruenceClusterDesignator);
+                            }
+                            return index;
+                        }
 
                         if (!existed) {
                             index = clusterArgumentArray[clusterArgumentArray[index].getPrevClusterArg()]
@@ -2174,8 +2189,9 @@ public class CongruenceClassRegistry {
                                 if (argListLength(clusterArgumentString) == 0)
                                     // if it is the last arg string we are creating
                                     clusterNumber = topCongruenceClusterDesignator;
+                                // precedingIndex is the last valid entry and always has the correct prevClusterArg.
                                 ClusterArgument clusterArgument = new ClusterArgument(0,
-                                        clusterArgumentArray[index].getPrevClusterArg(), lastCCDesignator,
+                                        clusterArgumentArray[precedingIndex].getPrevClusterArg(), lastCCDesignator,
                                         clusterNumber, index);
                                 clusterArgumentArray[topArgStrArrIndex] = clusterArgument;
                                 clusterArgumentArray[precedingIndex].setAlternativeArg(topArgStrArrIndex);
@@ -2369,19 +2385,20 @@ public class CongruenceClassRegistry {
 
     private void displayCluster(List<String> symbolMapping, CongruenceCluster cluster, StringBuilder sb) {
         String operator = symbolMapping.get(cluster.getTreeNodeLabel());
-        ClusterArgument argument = clusterArgumentArray[cluster.getIndexToArgList()];
-
         sb.append(operator).append(" ");
 
-        HashSet<Integer> visited = new HashSet<>();
-        while (argument.getCcNumber() != 0 && visited.add(argument.getClusterNumber())) {
-            if (argument.getCcNumber() != 0)
-                sb.append("CC").append(argument.getCcNumber());
-            else
-                break;
+        int currentIndex = cluster.getIndexToArgList();
+        Set<Integer> visited = new HashSet<>();
 
-            argument = clusterArgumentArray[argument.getPrevClusterArg()];
-            if (argument.getCcNumber() != 0)
+        while (clusterArgumentArray[currentIndex].getCcNumber() != 0) {
+            if (visited.contains(currentIndex)) {
+                // stopping infinite loops
+                break;
+            }
+            visited.add(currentIndex);
+            sb.append("CC").append(clusterArgumentArray[currentIndex].getCcNumber());
+            currentIndex = clusterArgumentArray[currentIndex].getPrevClusterArg();
+            if (clusterArgumentArray[currentIndex].getCcNumber() != 0)
                 sb.append(", ");
         }
     }
@@ -2467,24 +2484,15 @@ public class CongruenceClassRegistry {
      */
     public List<Integer> getArgumentsList(CongruenceCluster cluster) {
         List<Integer> arguments = new ArrayList<>();
-        ClusterArgument argument = clusterArgumentArray[cluster.getIndexToArgList()];
-        HashSet<Integer> visited = new HashSet<>();
-        while (argument.getCcNumber() != 0 && visited.add(argument.getClusterNumber())) {
-            arguments.add(argument.getCcNumber());
-            argument = clusterArgumentArray[argument.getPrevClusterArg()];
+        int currentIndex = cluster.getIndexToArgList();
+        Set<Integer> visited = new HashSet<>();
+        while (clusterArgumentArray[currentIndex].getCcNumber() != 0) {
+            if (visited.contains(currentIndex))
+                break;
+            visited.add(currentIndex);
+            arguments.add(clusterArgumentArray[currentIndex].getCcNumber());
+            currentIndex = clusterArgumentArray[currentIndex].getPrevClusterArg();
         }
         return arguments;
-    }
-
-    public List<String> reverseLabelMapping(List<Integer> arglist, List<String> mappings) {
-        List<String> ids = new ArrayList<>();
-        for (Integer arg : arglist) {
-            CongruenceCluster cluster = getCongruenceCluster(arg);
-            if (arg == 0)
-                ids.add("NULL");
-            else
-                ids.add(mappings.get(cluster.getTreeNodeLabel()));
-        }
-        return ids;
     }
 }
