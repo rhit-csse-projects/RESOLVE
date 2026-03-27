@@ -340,7 +340,7 @@ public class GeneralPurposeProver {
 
         // Loop through each of the VCs and attempt to prove them
         for (VerificationCondition vc : myVerificationConditions) {
-
+            // if (!Objects.equals(vc.getName(), "0_4")) continue;
             Map<String, Integer> expLabels = new LinkedHashMap<>();
             // revert ExpLabels to before Senior Project Team things
             // NM: 0, 1 are spared for <= (1), = (2), etc., the list can expand with more reflexive operators

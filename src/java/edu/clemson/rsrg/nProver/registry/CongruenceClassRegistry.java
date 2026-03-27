@@ -2385,15 +2385,22 @@ public class CongruenceClassRegistry {
         sb.append(operator).append(" ");
 
         HashSet<Integer> visited = new HashSet<>();
-        while (argument.getCcNumber() != 0 && visited.add(argument.getClusterNumber())) {
-            if (argument.getCcNumber() != 0)
-                sb.append("CC").append(argument.getCcNumber());
-            else
-                break;
+        List<Integer> args = new ArrayList<>();
 
+        while (argument.getCcNumber() != 0 && visited.add(argument.getClusterNumber())) {
+            args.add(argument.getCcNumber());
             argument = clusterArgumentArray[argument.getPrevClusterArg()];
-            if (argument.getCcNumber() != 0)
+        }
+
+        // reverse to restore original order
+        Collections.reverse(args);
+
+        // print
+        for (int i = 0; i < args.size(); i++) {
+            sb.append("CC").append(args.get(i));
+            if (i < args.size() - 1) {
                 sb.append(", ");
+            }
         }
     }
 
