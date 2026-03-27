@@ -2041,9 +2041,6 @@ public class CongruenceClassRegistry {
         int index = 1;
         int precedingIndex = 0;
         int clusterNumber = 0;
-        boolean existed = false;
-        boolean alternativeExists = true;
-        boolean precedingIndexUsed = false;
 
         // for ASOP
         int level = 0;
@@ -2062,6 +2059,12 @@ public class CongruenceClassRegistry {
             while (argListLength(clusterArgumentString) > 0) {
                 // remove the far right one first (FIFO)
                 int lastCCDesignator = removeFirstArgDesignator();
+
+                // Reset search flags for the new argument level
+                boolean existed = false;
+                boolean alternativeExists = true;
+                boolean precedingIndexUsed = false;
+
                 if (clusterArgumentArray[index].getNextClusterArg() == 0
                         && clusterArgumentArray[index].getCcNumber() != lastCCDesignator) {
                     if (argListLength(clusterArgumentString) == 0)
@@ -2088,6 +2091,19 @@ public class CongruenceClassRegistry {
                             clusterArgumentArray[index].setClusterNumber(topCongruenceClusterDesignator);
                         } else {
                             // it is an active string, and we should update previous cluster with similar arg
+                            updateNextWithSameArgument(label, index, topCongruenceClusterDesignator);
+                        }
+                    }
+                    // When we match the target CC, but it already has children
+                } else if (clusterArgumentArray[index].getNextClusterArg() != 0
+                        && clusterArgumentArray[index].getCcNumber() == lastCCDesignator) {
+                    // Update the cluster if it is the last argument in the current cluster arg string even though it
+                    // already has children from other branches
+                    if (argListLength(clusterArgumentString) == 0) {
+                        if (clusterArgumentArray[index].getClusterNumber() == 0) {
+                            clusterArgumentArray[index].setClusterNumber(topCongruenceClusterDesignator);
+                        } else if (clusterArgumentArray[index].getClusterNumber() != topCongruenceClusterDesignator) {
+                            // Only update if different cluster
                             updateNextWithSameArgument(label, index, topCongruenceClusterDesignator);
                         }
                     }
