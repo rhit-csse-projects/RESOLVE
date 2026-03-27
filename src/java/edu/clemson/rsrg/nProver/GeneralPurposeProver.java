@@ -339,7 +339,7 @@ public class GeneralPurposeProver {
         TheoremStore theoremStore = new TheoremStore(myCurrentModuleScope);
 
         // Loop through each of the VCs and attempt to prove them
-        for (VerificationCondition myVerificationCondition : myVerificationConditions) {
+        for (VerificationCondition vc : myVerificationConditions) {
 
             Map<String, Integer> expLabels = new LinkedHashMap<>();
             // revert ExpLabels to before Senior Project Team things
@@ -353,7 +353,6 @@ public class GeneralPurposeProver {
             mappings.add("");
             mappings.add("<=");
             mappings.add("=");
-            VerificationCondition vc = myVerificationCondition;
 
             debugLog("====================================== VC #" + vc.getName()
                     + " =====================================");
@@ -427,9 +426,9 @@ public class GeneralPurposeProver {
             String result = isProved ? "Proved" : "Not Proved";
             storeVCProofVerboseDetail(vc, result, registry, expLabels, mappings);
             if (isProved) {
-                System.out.print("\u001B[42m   Proved   \u001B[49m " + vc);
+                System.out.print("[VC #" + vc.getName() + "]: \u001B[42m   Proved   \u001B[49m " + vc);
             } else {
-                System.out.print("\u001B[41m Not Proved \u001B[49m " + vc);
+                System.out.print("[VC #" + vc.getName() + "]: \u001B[41m Not Proved \u001B[49m " + vc);
             }
         }
 

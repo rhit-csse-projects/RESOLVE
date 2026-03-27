@@ -76,7 +76,7 @@ public class Elaborator {
                 } else if (!myExpLabels.containsKey(precursor.getTopLevelOperator())) {
                     if (myDebug)
                         System.out.println(
-                                "[\u001B[31mRule #" + ruleCounter + " Error\u001B[0m]: " + "The key `\u001B[31m"
+                                "\u001B[31m[Rule #" + ruleCounter + " Error]\u001B[0m: " + "The key `\u001B[31m"
                                         + precursor.getTopLevelOperator() + "\u001B[0m` does not exist in expLabels");
                 } else if (!myRegistry.isRegistryLabel(myExpLabels.get(precursor.getTopLevelOperator()))) {
                     debugLog("Operator is not registered. Skipping.");
