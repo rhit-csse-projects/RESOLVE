@@ -166,7 +166,7 @@ public class CongruenceClassProver {
 
         System.out.println("Proving...");
 
-        for(ImmutableVC vc : vcs) {
+        for (ImmutableVC vc : vcs) {
             System.out.print("\u001B[41m Not Proved \u001B[49m " + vc);
         }
 

@@ -133,7 +133,7 @@ public class CCRegCheckRegisteredTest {
         myRegistry.appendToClusterArgList(concatenate4);
         int equals = myRegistry.registerCluster(2);
 
-        System.out.println(myRegistry.toPrettyString(myMappings));
+//        System.out.println(myRegistry.toPrettyString(myMappings));
 
         myRegistry.appendToClusterArgList(s);
         myRegistry.appendToClusterArgList(concatenate4);

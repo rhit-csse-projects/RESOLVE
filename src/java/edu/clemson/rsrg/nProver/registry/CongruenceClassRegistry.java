@@ -29,30 +29,30 @@ public class CongruenceClassRegistry {
 
     /**
      * <p>
-     * Maximum capacity set for congruece class designators
+     * Maximum capacity set for congruence class designators
      * </p>
      */
-    private int ccDesignatorCapacity;
+    private final int ccDesignatorCapacity;
     /**
      * <p>
      * Maximum capacity set for cluster designators
      * </p>
      */
-    private int cClusterDesignatorCapacity;
+    private final int cClusterDesignatorCapacity;
 
     /**
      * <p>
      * Maximum capacity set for the arguments
      * </p>
      */
-    private int argumentListCapacity;
+    private final int argumentListCapacity;
 
     /**
      * <p>
      * Maximum capacity set for the registry root labels
      * </p>
      */
-    private int rootLabelCapacity;
+    private final int rootLabelCapacity;
 
     /**
      * <p>
@@ -81,28 +81,28 @@ public class CongruenceClassRegistry {
      * of this array.
      * </p>
      */
-    private VarietyList[] varietyArray;
+    private final VarietyList[] varietyArray;
 
     /**
      * <p>
      * This array keeps a list of congruence clusters containing the same root node.
      * </p>
      */
-    private Stand[] standArray;
+    private final Stand[] standArray;
 
     /**
      * <p>
      * This array keeps all created congruence clusters in the registry for the target sequent VC to be verified.
      * </p>
      */
-    private CongruenceCluster[] clusterArray;
+    private final CongruenceCluster[] clusterArray;
 
     /**
      * <p>
      * This array keeps all created congruence classes in the registry for the target sequent VC to be verified.
      * </p>
      */
-    private CongruenceClass[] congruenceClassArray;
+    private final CongruenceClass[] congruenceClassArray;
 
     /**
      * <p>
@@ -110,14 +110,14 @@ public class CongruenceClassRegistry {
      * are created only once.
      * </p>
      */
-    private ClusterArgument[] clusterArgumentArray;
+    private final ClusterArgument[] clusterArgumentArray;
 
     /**
      * <p>
      * This Queue store the arguments appended by the client before creating a cluster.
      * </p>
      */
-    private Queue<Integer> clusterArgumentString;
+    private final Queue<Integer> clusterArgumentString;
 
     /**
      * <p>
@@ -125,7 +125,7 @@ public class CongruenceClassRegistry {
      * collapsing.
      * </p>
      */
-    private Queue<Integer> classMergeList;
+    private final Queue<Integer> classMergeList;
 
     /**
      * <p>
@@ -133,7 +133,7 @@ public class CongruenceClassRegistry {
      * add respective integers for the operators before the operator is registered.
      * </p>
      */
-    private Set<Integer> succedentReflexiveOperatorsSet;
+    private final Set<Integer> succedentReflexiveOperatorsSet;
 
     /**
      * <p>
@@ -180,8 +180,6 @@ public class CongruenceClassRegistry {
      *            The maximum capacity provided for congruence class designators
      * @param cClusterDesignatorCapacity
      *            The maximum capacity provided for congruence cluster designators
-     * @param argumentListCapacity
-     *            The maximum capacity provided for arguments
      * @param rootLabelCapacity
      *            The maximum capacity provided for root labels.
      */
@@ -235,9 +233,9 @@ public class CongruenceClassRegistry {
 
     }
 
-    /****************************************************************************************************************
+    /*
      * PUBLIC METHODS
-     ***************************************************************************************************************/
+     */
 
     /**
      * <p>
@@ -285,7 +283,7 @@ public class CongruenceClassRegistry {
             }
         }
 
-        if (isProved == false) {
+        if (!isProved) {
 
             topCongruenceClassDesignator++;
             topCongruenceClusterDesignator++;
@@ -334,7 +332,7 @@ public class CongruenceClassRegistry {
 
     /**
      * <p>
-     * This operatipon checks if the cluster to be registered already exists in the registry. It involves checking into
+     * This operation checks if the cluster to be registered already exists in the registry. It involves checking into
      * the cluster argument array if the argument exists
      * </p>
      *
@@ -344,8 +342,8 @@ public class CongruenceClassRegistry {
      * @return {@code true} if the cluster exists in the registry, otherwise, it returns false.
      */
     public boolean checkIfRegistered(Integer treeNodeLabel) { /* Is_Already_Reg_Clstr */
-        int classDesignator = 0;
-        int nextClusterArgIndex = 0;
+        int classDesignator;
+        int nextClusterArgIndex;
         int count = 0;
         int argStringLengh = argListLength(clusterArgumentString);
         int currentClusterArgIndex = 1;
@@ -357,18 +355,19 @@ public class CongruenceClassRegistry {
                 return false;
             } else {
                 // The condition checks if the label and the argument is the same as one to be registered
-                if (clusterArray[clusterArgumentArray[currentClusterArgIndex].getClusterNumber()]
-                        .getTreeNodeLabel() == treeNodeLabel
+                if (Objects
+                        .equals(clusterArray[clusterArgumentArray[currentClusterArgIndex].getClusterNumber()]
+                                .getTreeNodeLabel(), treeNodeLabel)
                         && clusterArray[clusterArgumentArray[currentClusterArgIndex].getClusterNumber()]
                                 .getIndexToArgList() == currentClusterArgIndex) {
                     return true;
                 }
                 // The while loop checks clusters in cluster array with one argument by following a pointer next with
-                // same argument filed until we find one or we get to the end.
+                // same argument filed until we find one, or we get to the end.
                 int currentClusterIndex = clusterArray[clusterArgumentArray[currentClusterArgIndex].getClusterNumber()]
                         .getNextWithSameArg();
                 while (clusterArray[currentClusterIndex].getNextWithSameArg() != 0) {
-                    if (clusterArray[currentClusterIndex].getTreeNodeLabel() == treeNodeLabel
+                    if (Objects.equals(clusterArray[currentClusterIndex].getTreeNodeLabel(), treeNodeLabel)
                             && clusterArray[currentClusterIndex].getIndexToArgList() == currentClusterArgIndex) {
                         return true;
                     }
@@ -380,17 +379,15 @@ public class CongruenceClassRegistry {
                 }
 
                 if (clusterArray[currentClusterIndex].getNextWithSameArg() == 0) {
-                    if (clusterArray[currentClusterIndex].getTreeNodeLabel() == treeNodeLabel
-                            && clusterArray[currentClusterIndex].getIndexToArgList() == currentClusterArgIndex) {
-                        return true;
-                    }
+                    return Objects.equals(clusterArray[currentClusterIndex].getTreeNodeLabel(), treeNodeLabel)
+                            && clusterArray[currentClusterIndex].getIndexToArgList() == currentClusterArgIndex;
                 }
 
             }
             return false;
         }
         // The while loop checks for clusters with arguments, and assumed they are already appended in the argument list
-        while (clusterArgumentString.size() > 0) {
+        while (!clusterArgumentString.isEmpty()) {
             classDesignator = removeFirstArgDesignator();
             tempQueue.add(classDesignator);
             classDesignator = getTheUltimateDominantClass(congruenceClassArray[classDesignator].getDominantCClass());
@@ -399,10 +396,10 @@ public class CongruenceClassRegistry {
             if (nextClusterArgIndex == 0) {
                 // This if statement is entered if there is no next level after the argument being checked.
                 // Just restore the argument list and return false.
-                while (clusterArgumentString.size() > 0) {
+                while (!clusterArgumentString.isEmpty()) {
                     tempQueue.add(clusterArgumentString.remove());
                 }
-                while (tempQueue.size() > 0) {
+                while (!tempQueue.isEmpty()) {
                     appendToClusterArgList(tempQueue.remove());
                 }
                 return false;
@@ -416,11 +413,11 @@ public class CongruenceClassRegistry {
                     // it didn't have even the first class for the first argument, just return false and exit
                     if (clusterArgumentArray[nextClusterArgIndex].getAlternativeArg() == 0) {
 
-                        while (clusterArgumentString.size() > 0) {
+                        while (!clusterArgumentString.isEmpty()) {
                             tempQueue.add(clusterArgumentString.remove());
                         }
                         // restore the cluster argument list
-                        while (tempQueue.size() > 0) {
+                        while (!tempQueue.isEmpty()) {
                             appendToClusterArgList(tempQueue.remove());
                         }
                         return false;
@@ -446,12 +443,13 @@ public class CongruenceClassRegistry {
             // check if we found all arguments
             if (argStringLengh == count) {
                 // now check if the cluster exists by checking the label and the arg string
-                if (clusterArray[clusterArgumentArray[currentClusterArgIndex].getClusterNumber()]
-                        .getTreeNodeLabel() == treeNodeLabel
+                if (Objects
+                        .equals(clusterArray[clusterArgumentArray[currentClusterArgIndex].getClusterNumber()]
+                                .getTreeNodeLabel(), treeNodeLabel)
                         && clusterArray[clusterArgumentArray[currentClusterArgIndex].getClusterNumber()]
                                 .getIndexToArgList() == currentClusterArgIndex) {
                     // restore the cluster argument list
-                    while (tempQueue.size() > 0) {
+                    while (!tempQueue.isEmpty()) {
                         appendToClusterArgList(tempQueue.remove());
                     }
                     return true;
@@ -464,10 +462,10 @@ public class CongruenceClassRegistry {
                         break;
                     }
                     visitedClusters.add(clusterNumber);
-                    if (clusterArray[clusterNumber].getTreeNodeLabel() == treeNodeLabel
+                    if (Objects.equals(clusterArray[clusterNumber].getTreeNodeLabel(), treeNodeLabel)
                             && clusterArray[clusterNumber].getIndexToArgList() == currentClusterArgIndex) {
                         // restore the cluster argument list
-                        while (tempQueue.size() > 0) {
+                        while (!tempQueue.isEmpty()) {
                             appendToClusterArgList(tempQueue.remove());
                         }
                         return true;
@@ -478,7 +476,7 @@ public class CongruenceClassRegistry {
         }
 
         // restore the cluster argument list
-        while (tempQueue.size() > 0) {
+        while (!tempQueue.isEmpty()) {
             appendToClusterArgList(tempQueue.remove());
         }
         return false;
@@ -497,11 +495,11 @@ public class CongruenceClassRegistry {
     public int getAccessorFor(Integer treeNodeLabel) {/* Get_Accr_for */
         int currentIndexInArgumentString = 1;
         int currentIndexInClusterArray = clusterArgumentArray[currentIndexInArgumentString].getClusterNumber();
-        if (clusterArgumentString.size() == 0) {
+        if (clusterArgumentString.isEmpty()) {
             // Assuming everything in the list of clusters with same arguments will point to
             // currentIndexInArgumentString, walking the list we should eventually find one with the tree node label
             // we are looking for
-            while (clusterArray[currentIndexInClusterArray].getTreeNodeLabel() != treeNodeLabel) {
+            while (!Objects.equals(clusterArray[currentIndexInClusterArray].getTreeNodeLabel(), treeNodeLabel)) {
                 currentIndexInClusterArray = clusterArray[currentIndexInClusterArray].getNextWithSameArg();
             }
             // return the class designator and it should be the dominant one
@@ -511,13 +509,13 @@ public class CongruenceClassRegistry {
         } else {
             // The approach assumes the way the args were put in the structure is maintained all throughout
             int finalCountNeeded = clusterArgumentString.size();
-            int currentClassDesignator = 0;
+            int currentClassDesignator;
             int nextClusterArgument = 1;
             int countArgumentsFound = 0;
 
             // The operation is called when we know the cluster exists. Therefore, we should find everything in the
             // argument string no need to keep the count.
-            while (clusterArgumentString.size() > 0) {
+            while (!clusterArgumentString.isEmpty()) {
                 currentClassDesignator = removeFirstArgDesignator();
                 currentClassDesignator = congruenceClassArray[currentClassDesignator].getDominantCClass();
                 nextClusterArgument = clusterArgumentArray[nextClusterArgument].getNextClusterArg();
@@ -565,8 +563,8 @@ public class CongruenceClassRegistry {
      * @return the next congruence class accessor after {@param currentCCAccessor}.
      */
     public int advanceCClassAccessor(Integer treeNodeLabel, int currentCCAccessor) { // Advance_CC_Accr_for
-        int currentStandForTreeNodeLabel = 0;
-        int nextStandInNextClassAccessor = 0;
+        int currentStandForTreeNodeLabel;
+        int nextStandInNextClassAccessor;
 
         currentStandForTreeNodeLabel = varietyArray[treeNodeLabel].getFirstStand();
 
@@ -635,8 +633,8 @@ public class CongruenceClassRegistry {
      * @return {@code true} if we have exhausted all the classes in the variety designated by {@param treeNodeLabel}.
      */
     public boolean isVarietyMaximal(Integer treeNodeLabel, int currentCCAccessor) { /* Is_Vrty_Maximal_for */
-        int currentStandForTreeNodeLabel = 0;
-        int nextStandInNextClassAccessor = 0;
+        int currentStandForTreeNodeLabel;
+        int nextStandInNextClassAccessor;
 
         currentStandForTreeNodeLabel = varietyArray[treeNodeLabel].getFirstStand();
 
@@ -648,11 +646,7 @@ public class CongruenceClassRegistry {
             if (congruenceClassForCluster == currentCCAccessor
                     || dominantCongruenceClassForCluster == currentCCAccessor) {
                 nextStandInNextClassAccessor = standArray[currentStandForTreeNodeLabel].getNextVrtyStand();
-                if (nextStandInNextClassAccessor == 0) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return nextStandInNextClassAccessor == 0;
             } else {
                 currentStandForTreeNodeLabel = standArray[currentStandForTreeNodeLabel].getNextVrtyStand();
                 if (currentStandForTreeNodeLabel != 0) {
@@ -673,7 +667,7 @@ public class CongruenceClassRegistry {
      * </p>
      *
      * @param treeNodeLabel
-     *            Tree node lable to be checked.
+     *            Tree node label to be checked.
      *
      * @return {@code true} if the {@param treeNodeLabel} is within the nodes in the registry, returns {@code false}
      *         otherwise.
@@ -788,11 +782,8 @@ public class CongruenceClassRegistry {
      * @return {@code true} if the stand designator is minimal, otherwise, it returns {@code false}
      */
     public boolean isMinimalStandClusterDesignator(Integer treeNodeLabel, int cClassAccessor, int clusterAccessor) {
-        if (clusterArray[clusterAccessor].getDominantCluster() == clusterAccessor
-                && isMinimalVCCDesignator(treeNodeLabel, cClassAccessor)) {
-            return true;
-        }
-        return false;
+        return clusterArray[clusterAccessor].getDominantCluster() == clusterAccessor
+                && isMinimalVCCDesignator(treeNodeLabel, cClassAccessor);
     }
 
     /**
@@ -862,10 +853,10 @@ public class CongruenceClassRegistry {
         // The approach takes assumes firstCCAccessor is smaller than secondCCAccessor always.
         // The example used is for first accessor being 3 and second accessor being 7
         // The variables are named with 3 and 7 to simplify tracing
-        int indexToArgString_3_L1 = 0;
-        int indexToArgString_7_L2 = 0;
-        int indexToArgString_3_L2 = 0;
-        int indexTOArgString_7_L1 = 0;
+        int indexToArgString_3_L1;
+        int indexToArgString_7_L2;
+        int indexToArgString_3_L2;
+        int indexTOArgString_7_L1;
         int level_2 = 2;
         int level_1 = 1;
         BitSet bitSet = new BitSet();
@@ -880,7 +871,7 @@ public class CongruenceClassRegistry {
 
         // if no classes are added during merging process it will only execute once. Otherwise, the while loop continue
         // until the class merge list is exhausted
-        while (classMergeList.size() != 0) {
+        while (!classMergeList.isEmpty()) {
             firstCCAccessor = classMergeList.remove();
             secondCCAccessor = classMergeList.remove();
             bitSet.clear();
@@ -969,7 +960,7 @@ public class CongruenceClassRegistry {
      *            The attribute to be attached to the class
      */
     public void updateClassAttributes(int classAccessor, BitSet attributeIn) {
-        BitSet attributeAt = new BitSet();
+        BitSet attributeAt;
         attributeAt = congruenceClassArray[classAccessor].getAttribute();
         attributeAt.or(attributeIn);
         congruenceClassArray[classAccessor].setClassAttribute(attributeAt);
@@ -991,25 +982,25 @@ public class CongruenceClassRegistry {
         succedentReflexiveOperatorsSet.add(treeNodeLabel);
     }
 
-    /*************************************
+    /*
      * PRIVATE METHODS
-     ****************************************************************************/
+     */
 
     /**
      * <p>
      * The operation that gets the ultimate dominant class designator for a given class
      * </p>
      *
-     * @param cClassDesingator
+     * @param cClassDesignator
      *            is a current class designator.
      *
      * @return int value for the ultimate class designator for the provided designator.
      */
-    private int getTheUltimateDominantClass(int cClassDesingator) {
-        while (congruenceClassArray[cClassDesingator].getDominantCClass() != cClassDesingator) {
-            cClassDesingator = congruenceClassArray[cClassDesingator].getDominantCClass();
+    private int getTheUltimateDominantClass(int cClassDesignator) {
+        while (congruenceClassArray[cClassDesignator].getDominantCClass() != cClassDesignator) {
+            cClassDesignator = congruenceClassArray[cClassDesignator].getDominantCClass();
         }
-        return cClassDesingator;
+        return cClassDesignator;
     }
 
     /**
@@ -1032,12 +1023,9 @@ public class CongruenceClassRegistry {
 
             int dominantSecondClass = getTheUltimateDominantClass(secondAccessor);
 
-            if (dominantFirstClass == dominantSecondClass) {
-                return true;
-            }
+            return dominantFirstClass == dominantSecondClass;
 
         }
-        return false;
     }
 
     /**
@@ -1052,13 +1040,13 @@ public class CongruenceClassRegistry {
      *
      * @return {@code true} iff the previous class from {@param indexToArgInSecondLevel} is
      *         {@param classAccessorInFirstLevel}, and the root node of the cluster is in the set of reflexive
-     *         operators. Otherwise return {@code false}.
+     *         operators. Otherwise, return {@code false}.
      */
     private boolean subReflexiveBingoTest(int indexToArgInSecondLevel, int classAccessorInFirstLevel) {
 
         int currentCluster;
         BitSet multiplier = new BitSet();
-        BitSet classAttributes = new BitSet();
+        BitSet classAttributes;
         // this check is from the second level looking the second argument upwards
         // moving from one 7 to another 7 in the same level to see if we hit the right 7 that has been changed to a 3
         // and previous is 3
@@ -1083,7 +1071,7 @@ public class CongruenceClassRegistry {
                     currentCluster = clusterArray[currentCluster].getNextWithSameArg();
                 }
             }
-            // get the next 7 in the lavel 2, it might have been another seven preceded with 3
+            // get the next 7 in the level 2, it might have been another seven preceded with 3
             indexToArgInSecondLevel = clusterArgumentArray[indexToArgInSecondLevel]
                     .getNxtIndexWithSameCCNumberInLevel();
             // currentCluster = clusterArgumentArray[indexToArgString_7].getClusterNumber();
@@ -1177,7 +1165,7 @@ public class CongruenceClassRegistry {
      *            a stand tag for the {@param newStand}
      */
     private void addInVarietyListArray(Integer treeNodeLabel, int newStand, int standTag) {
-        int currentStandInVarietyList = 0;
+        int currentStandInVarietyList;
         if (varietyArray[treeNodeLabel] == null) {
             VarietyList varietyList = new VarietyList(newStand, standTag);
             varietyArray[treeNodeLabel] = varietyList;
@@ -1229,7 +1217,7 @@ public class CongruenceClassRegistry {
             // update the stand either by joining their clusters or moving the stand to the smaller class
             updateStandInSmallerClass(secondCCAccessor, firstCCAccessor);
         }
-        int level = 0;
+        int level;
         // take the second accessor and find where we should start looking in the arg string, get the level and index in
         // FASOP
         if (firstCCAccessor < secondCCAccessor) {
@@ -1308,8 +1296,8 @@ public class CongruenceClassRegistry {
      */
     private void removeClassFromVarietyList(Integer treeNodeLabel, int standDesignatorToRemove) {
         int currentStandInList = varietyArray[treeNodeLabel].getFirstStand();
-        int previousStandInList = 0;
-        int nextStandInList = 0;
+        int previousStandInList;
+        int nextStandInList;
         // it is the first one in the variety array list, now it has to be removed
         if (currentStandInList == standDesignatorToRemove) {
             // get rid of the first one and make the second one in the variety list the first one
@@ -1337,14 +1325,12 @@ public class CongruenceClassRegistry {
      * The operation update the stands in the smaller class after the two classes are merged
      * </p>
      *
-     * @param firstCCAccessor
+     * @param currentFirstAccessor
      *            the smaller class designator
-     * @param secondCCAccessor
+     * @param currentSecondAccessor
      *            the larger class designator
      */
-    private void updateStandInSmallerClass(int firstCCAccessor, int secondCCAccessor) {
-        int currentFirstAccessor = firstCCAccessor;
-        int currentSecondAccessor = secondCCAccessor;
+    private void updateStandInSmallerClass(int currentFirstAccessor, int currentSecondAccessor) {
 
         int standDesignator_1 = congruenceClassArray[currentFirstAccessor].getFirstStand();
         int standDesignator_2 = congruenceClassArray[currentSecondAccessor].getFirstStand();
@@ -1391,7 +1377,7 @@ public class CongruenceClassRegistry {
 
                 // update the 1st stand in the first class, this is assuming the idea that this part will only be
                 // executed once.
-                congruenceClassArray[firstCCAccessor].setFirstStand(standDesignator_2);
+                congruenceClassArray[currentFirstAccessor].setFirstStand(standDesignator_2);
                 // start from the next one on the second list
                 standDesignator_2 = nextStandDesignator_2;
             }
@@ -1403,7 +1389,7 @@ public class CongruenceClassRegistry {
      * <p>
      * The operation move a stand from the larger class to the smaller class where it will be merged to the new list
      * according to their root node label. In this case, the operation covers the merger when the root nodes are either
-     * greater than or less than than each other
+     * greater than or less than each other
      * </p>
      *
      * @param standDesignator_1
@@ -1439,7 +1425,7 @@ public class CongruenceClassRegistry {
 
         int reserveCurrentStandCluster_1 = currentClusterDesignator_1;
         int reserveCurrentStandCluster_2 = currentClusterDesignator_2;
-        int tempCurrentClusterDesignator_2 = 0;
+        int tempCurrentClusterDesignator_2;
 
         // update all clusters in the stand to belong to the new class by changing their class field
         // we are using the dominant class, and we do this before the merging of clusters
@@ -1530,7 +1516,7 @@ public class CongruenceClassRegistry {
      * @param standDesignator_1
      *            index to stand array for the first stand
      * @param standDesignator_2
-     *            index to stand orray for the second stand
+     *            index to stand array for the second stand
      */
     private void standJoinCase_01(int standDesignator_1, int standDesignator_2) {
         int next_1, currentStandCluster_2, currentStandCluster_1, dominantClassDesignator;
@@ -1617,7 +1603,7 @@ public class CongruenceClassRegistry {
      * @param standDesignator_1
      *            index to stand array for the first stand
      * @param standDesignator_2
-     *            index to stand orray for the second stand
+     *            index to stand array for the second stand
      */
     private void standJoinCase_02(int standDesignator_1, int standDesignator_2) {
         int currentStandCluster_2, currentStandCluster_1, dominantClassDesignator;
@@ -1669,7 +1655,7 @@ public class CongruenceClassRegistry {
                 indexToArgString = clusterArgumentArray[indexToArgString].getNxtIndexWithSameCCNumberInLevel();
             }
 
-            // there is no other argument string of 7 in the level and non is existing for 3 in the level or its the
+            // there is no other argument string of 7 in the level and non is existing for 3 in the level, or it's the
             // final 7 after the list
             // first change the class number in the argument record from 7 to 3
             clusterArgumentArray[indexToArgString].setCcNumber(firstAccessor);
@@ -1695,17 +1681,7 @@ public class CongruenceClassRegistry {
                         updateClassFASOP(firstAccessor, level, indexToArgString);
 
                         // make 7 which is now 3 dormant by skipping it
-                        int nextIndexToFollow = clusterArgumentArray[clusterArgumentArray[indexToArgString]
-                                .getPrevClusterArg()].getNextClusterArg();
-                        int prevIndexToFollow = 0;
-                        // The if statement around while loop is a change after debugging
-                        if (nextIndexToFollow != 0) {
-                            // if it is zero it means it is the only argument, and alternative argument is 0
-                            while (nextIndexToFollow != indexToArgString) {
-                                prevIndexToFollow = nextIndexToFollow;
-                                nextIndexToFollow = clusterArgumentArray[nextIndexToFollow].getAlternativeArg();
-                            }
-                        }
+                        int prevIndexToFollow = getPrevIndexToFollow(indexToArgString);
                         if (prevIndexToFollow == 0) {
                             // it is the first one in the children make the second child first
                             clusterArgumentArray[clusterArgumentArray[indexToArgString].getPrevClusterArg()]
@@ -1740,6 +1716,21 @@ public class CongruenceClassRegistry {
         }
     }
 
+    private int getPrevIndexToFollow(int indexToArgString) {
+        int nextIndexToFollow = clusterArgumentArray[clusterArgumentArray[indexToArgString].getPrevClusterArg()]
+                .getNextClusterArg();
+        int prevIndexToFollow = 0;
+        // The if statement around while loop is a change after debugging
+        if (nextIndexToFollow != 0) {
+            // if it is zero it means it is the only argument, and alternative argument is 0
+            while (nextIndexToFollow != indexToArgString) {
+                prevIndexToFollow = nextIndexToFollow;
+                nextIndexToFollow = clusterArgumentArray[nextIndexToFollow].getAlternativeArg();
+            }
+        }
+        return prevIndexToFollow;
+    }
+
     /**
      * <p>
      * The operation updates the cluster argument string by merging the children of arguments with classes that got
@@ -1757,7 +1748,7 @@ public class CongruenceClassRegistry {
         int nextArgumentToMove = clusterArgumentArray[currentArgumentToMove].getAlternativeArg();
         int currentLargestArgumentInList_3 = clusterArgumentArray[indexToArgString_3].getNextClusterArg();
         int previousLargestArgumentInList_3 = 0;
-        int nextLargestArgumentInList_3 = 0;
+        int nextLargestArgumentInList_3;
 
         // int nextLargestArgumentInList_3 = clusterArgumentArray[currentLargestArgumentInList_3].getAlternativeArg();
 
@@ -1839,7 +1830,7 @@ public class CongruenceClassRegistry {
 
     /**
      * <p>
-     * The operation merges to two clusters that used to have different arguments and now they have the same argument
+     * The operation merges to two clusters that used to have different arguments, and now they have the same argument
      * after the larger class turning to the smaller class e.g., 7 ---> 3
      * </p>
      *
@@ -1853,8 +1844,8 @@ public class CongruenceClassRegistry {
         int indexInClusterArray_7 = clusterArgumentArray[indexToArgString].getClusterNumber();
         int indexInClusterArray_3 = clusterArgumentArray[indexToArgString_3].getClusterNumber();
 
-        int nextIndexInClusterArray_7 = 0;
-        int nextIndexInClusterArray_3 = 0;
+        int nextIndexInClusterArray_7;
+        int nextIndexInClusterArray_3;
         Integer label_7 = clusterArray[indexInClusterArray_7].getTreeNodeLabel();
         Integer label_3 = clusterArray[indexInClusterArray_3].getTreeNodeLabel();
 
@@ -1875,7 +1866,6 @@ public class CongruenceClassRegistry {
                 if (clusterArray[clusterArray[indexInClusterArray_3].getNextWithSameArg()].getTreeNodeLabel()
                         .equals(clusterArray[indexInClusterArray_7].getTreeNodeLabel())) {
                     indexInClusterArray_3 = clusterArray[indexInClusterArray_3].getNextWithSameArg();
-                    label_3 = clusterArray[indexInClusterArray_3].getTreeNodeLabel();
                 } else {
                     nextIndexInClusterArray_7 = clusterArray[indexInClusterArray_7].getNextWithSameArg();
                     while (clusterArray[clusterArray[indexInClusterArray_3].getNextWithSameArg()]
@@ -1888,8 +1878,8 @@ public class CongruenceClassRegistry {
                     indexInClusterArray_3 = indexInClusterArray_7;
                     indexInClusterArray_7 = nextIndexInClusterArray_7;
                     label_7 = clusterArray[indexInClusterArray_7].getTreeNodeLabel();
-                    label_3 = clusterArray[indexInClusterArray_3].getTreeNodeLabel();
                 }
+                label_3 = clusterArray[indexInClusterArray_3].getTreeNodeLabel();
             } else if (label_3.equals(label_7)) {
                 int dominantClass_3 = getTheUltimateDominantClass(
                         congruenceClassArray[clusterArray[indexInClusterArray_3].getIndexToCongruenceClass()]
@@ -1931,9 +1921,8 @@ public class CongruenceClassRegistry {
     private void reArrangeArguments(int argIndexWithChangedClass) {
 
         // It is the only child under a parent, or the last one of the children,
-        // No rearrangement needed
-        if (clusterArgumentArray[argIndexWithChangedClass].getAlternativeArg() == 0) {
-        } else {
+        // No rearrangement needed if sibling is null
+        if (clusterArgumentArray[argIndexWithChangedClass].getAlternativeArg() != 0) {
             // changed class has siblings under the parent, some shifting will happen in different cases below
             if (clusterArgumentArray[clusterArgumentArray[argIndexWithChangedClass].getPrevClusterArg()]
                     .getNextClusterArg() == argIndexWithChangedClass) {
@@ -2017,10 +2006,7 @@ public class CongruenceClassRegistry {
                 indexToFollow = clusterArgumentArray[indexToFollow].getNxtIndexWithSameCCNumberInLevel();
                 parent_03 = clusterArgumentArray[indexToFollow].getPrevClusterArg();
             }
-            if (parent_07 == parent_03) {
-                return true;
-            }
-            return false;
+            return parent_07 == parent_03;
         }
 
     }
@@ -2041,7 +2027,6 @@ public class CongruenceClassRegistry {
         // initial index for the cluster argument array (CAA)
         int index = 1;
         int precedingIndex = 0;
-        int indexInClusterArray = 0;
         int clusterNumber = 0;
         boolean existed = false;
         boolean alternativeExists = true;
@@ -2237,20 +2222,18 @@ public class CongruenceClassRegistry {
      * them in the list, the list is kept in order
      * </p>
      *
-     * @param lab
+     * @param label_2
      *            label for the cluster we want it to join the list of clusters with same arguments
      * @param index
      *            index to the first cluster in the list of clusters with same arguments
      * @param topCongruenceClusterDesignator
      *            the top congruence cluster designator
      */
-    private void updateNextWithSameArgument(Integer lab, int index, int topCongruenceClusterDesignator) {
+    private void updateNextWithSameArgument(Integer label_2, int index, int topCongruenceClusterDesignator) {
         // get the tree node label of the first cluster
         Integer label_1 = clusterArray[clusterArgumentArray[index].getClusterNumber()].getTreeNodeLabel();
-        Integer label_2 = lab;
         int prevIndexInClusterArray = 0;
         int nextIndexInClusterArray = clusterArgumentArray[index].getClusterNumber();
-        ;
         if (label_1 < label_2) {
             // it is greater than the first one, make it the first one and change the argument string position
             clusterArray[topCongruenceClusterDesignator]
@@ -2289,7 +2272,7 @@ public class CongruenceClassRegistry {
             // just add an index to the arg array one to that level
             congruenceClassArray[ccDesignator].addToArgStringOccPos(indexInArgumentString, level);
         } else {
-            // there is a class at that level and it has more to fix this as we have to keep the list in order of
+            // there is a class at that level, and it has more to fix this as we have to keep the list in order of
             // their parents
             int prevIndexToFollow = 0;
             boolean specialCase = true;
@@ -2322,9 +2305,8 @@ public class CongruenceClassRegistry {
         // this should update last argument string position in a class to get us to the lowest level during searching.
         if (congruenceClassArray[ccDesignator].getIndexInClusterArgArrayFromASOP(level + 1) == 0) {
             congruenceClassArray[ccDesignator].setLastArgStringPosition(level);
-        } else {
-            // it is not the last position leave the current one
         }
+        // it is not the last position leave the current one
     }
 
     public boolean isClassDesignator(int label) {

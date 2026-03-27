@@ -241,7 +241,8 @@ public class Elaborator {
         int CCDesLeftInitial = myRegistry.remainingCCDesignatorCap();
         TreeWalker.visit(new RegisterAntecedent(myRegistry, myExpLabels, myExpLabels.size(), myMappings), resultant);
         int CCDesLeftLater = myRegistry.remainingCCDesignatorCap();
-        debugLog("Resultant: " + resultant + " \u001B[33mAdded " + (CCDesLeftInitial - CCDesLeftLater) + " CCs to the Registry\u001B[0m");
+        debugLog("Resultant: " + resultant + " \u001B[33mAdded " + (CCDesLeftInitial - CCDesLeftLater)
+                + " CCs to the Registry\u001B[0m");
         // } else {
         // TreeWalker.visit(new RegisterSuccedent(myRegistry, myExpLabels,
         // myExpLabels.size(), myMappings), resultant);

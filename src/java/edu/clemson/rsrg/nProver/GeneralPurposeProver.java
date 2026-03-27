@@ -87,7 +87,7 @@ public class GeneralPurposeProver {
      * The various different output listeners that are expecting an update.
      * </p>
      */
-    private List<OutputListener> myOutputListeners;
+    private final List<OutputListener> myOutputListeners;
 
     /**
      * <p>
@@ -339,7 +339,7 @@ public class GeneralPurposeProver {
         TheoremStore theoremStore = new TheoremStore(myCurrentModuleScope);
 
         // Loop through each of the VCs and attempt to prove them
-        for (int i = 0; i < myVerificationConditions.size(); i++) {
+        for (VerificationCondition myVerificationCondition : myVerificationConditions) {
 
             Map<String, Integer> expLabels = new LinkedHashMap<>();
             // revert ExpLabels to before Senior Project Team things
@@ -353,9 +353,10 @@ public class GeneralPurposeProver {
             mappings.add("");
             mappings.add("<=");
             mappings.add("=");
-            VerificationCondition vc = myVerificationConditions.get(i);
+            VerificationCondition vc = myVerificationCondition;
 
-            debugLog("====================================== VC #" + vc.getName() + " =====================================");
+            debugLog("====================================== VC #" + vc.getName()
+                    + " =====================================");
             debugLog(vc);
             // Store the start time for generating proofs for this VC
             long startTime = System.nanoTime();
@@ -397,10 +398,12 @@ public class GeneralPurposeProver {
                 for (int l = 0; l < 5; l++) {
                     // List<RuleInstance> ruleInstances = elaborator.elaborate(rules.getMyElaborationRules());
 
-                    debugLog("============ VC #" + vc.getName() + " (Printed again for reference) " + " ===============");
+                    debugLog("============ VC #" + vc.getName() + " (Printed again for reference) "
+                            + " ===============");
                     debugLog(vc);
 
-                    debugLog("============ [Attempt " + l + "] Elaboration & Matching (VC #" + vc.getName() + ") ===============");
+                    debugLog("============ [Attempt " + l + "] Elaboration & Matching (VC #" + vc.getName()
+                            + ") ===============");
 
                     elaborator.elaborateAndApply(rules.getMyElaborationRules());
                     isProved |= registry.checkIfProved();
