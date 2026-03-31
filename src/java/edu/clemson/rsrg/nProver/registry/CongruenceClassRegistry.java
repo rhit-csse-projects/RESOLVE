@@ -603,9 +603,21 @@ public class CongruenceClassRegistry {
 
         int cluster = standArray[stand].getFirstStandCluster();
 
-        int cc = clusterArray[cluster].getIndexToCongruenceClass();
+        int dominantCluster = clusterArray[cluster].getDominantCluster();
 
-        return congruenceClassArray[cc].getDominantCClass();
+        int cc = clusterArray[dominantCluster].getIndexToCongruenceClass();
+
+       int dominantCC = congruenceClassArray[cc].getDominantCClass();
+
+        if (isMinimalStandClusterDesignator(treeNodeLabel,dominantCC, dominantCluster)) {
+            return dominantCC;
+        }
+        else  {
+            System.out.println("Oops, we probably need more code to fix getting the dominant stand");
+            return -1;
+        }
+
+
     }
 
     public int getFirstClusterAccessorForCC(Integer currentCCAccessor, int operator) {
@@ -617,7 +629,7 @@ public class CongruenceClassRegistry {
         if (stand == 0) {
             return -1;
         }
-        return standArray[stand].getFirstStandCluster();
+        return clusterArray[standArray[stand].getFirstStandCluster()].getDominantCluster();
     }
 
     /**
