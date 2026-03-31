@@ -117,10 +117,6 @@ public class ElaborationRules {
             collectionOfPrecursorVars.addAll(getAllVars(e));
         }
 
-        // System.out.println(collectionOfPrecursorVars);
-        // System.out.println(resultantVars);
-        // System.out.println(cursedContainsAll(collectionOfPrecursorVars, resultantVars));
-
         // For some reason beyond our understanding, regular containsAll always returns false
         return cursedContainsAll(collectionOfPrecursorVars, resultantVars); // collectionOfPrecursorVars.containsAll(resultantVars);
     }
