@@ -536,7 +536,12 @@ public abstract class AbstractRegisterSequent extends TreeWalkerStackVisitor {
         if (arg instanceof ClusterExp) {
             return ((ClusterExp) arg).getClusterId();
         }
-        return myArgumentsCache.remove(arg);
+        try{
+            return myArgumentsCache.remove(arg);
+        } catch (Exception e) {
+            throw new RuntimeException("Tried to remove nonexistent argument " + arg + " from cache!");
+        }
+
     }
 
 }

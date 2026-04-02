@@ -14,11 +14,15 @@ package edu.clemson.rsrg.nProver.utilities;
 
 import edu.clemson.rsrg.absyn.expressions.Exp;
 import edu.clemson.rsrg.absyn.expressions.mathexpr.AbstractFunctionExp;
+import edu.clemson.rsrg.absyn.expressions.mathexpr.ClusterExp;
+import edu.clemson.rsrg.absyn.expressions.mathexpr.EqualsExp;
 import edu.clemson.rsrg.absyn.expressions.mathexpr.QuantExp;
 import edu.clemson.rsrg.nProver.registry.CongruenceClassRegistry;
 import edu.clemson.rsrg.nProver.utilities.theorems.ElaborationRule;
 import edu.clemson.rsrg.nProver.utilities.theorems.RuleInstance;
 import edu.clemson.rsrg.nProver.utilities.treewakers.RegisterAntecedent;
+import edu.clemson.rsrg.parsing.data.Location;
+import edu.clemson.rsrg.parsing.data.PosSymbol;
 import edu.clemson.rsrg.treewalk.TreeWalker;
 
 import java.util.*;
@@ -69,6 +73,9 @@ public class Elaborator {
             int matchedCluster = -1;
             boolean anyMatched = false; // stops from adding duplicate resultants to the registry
 
+            if(elaborationRule.getPrecursorClauses().size() != 1) {
+                continue;
+            }
             for (Exp precursor : elaborationRule.getPrecursorClauses()) {
                 if (precursor.toString().matches("[0-9]+") || precursor.toString().matches("Empty_String")) {
                     matchedCluster = myExpLabels.getOrDefault(precursor.toString(), -1);
@@ -230,20 +237,17 @@ public class Elaborator {
 
     private void applyRules(List<RuleInstance> ruleInstances) {
         for (RuleInstance rule : ruleInstances) {
-            Exp resultant = rule.getResultantClause();
-            if (resultant instanceof QuantExp) {
-                resultant = ((QuantExp) resultant).getBody();
-            }
-            String topOp = resultant.getTopLevelOperator();
-            if (topOp.equals("=") || topOp.equals("<=")) {
-                addToRegistry(resultant, rule.isForConsequent());
-            }
+            addToRegistry(rule);
         }
     }
 
-    private void addToRegistry(Exp resultant, boolean isForConsequent) {
+    private void addToRegistry(RuleInstance rule) {
         // we'll need to add the resultant to the correct side(s) of the registry
         // if(isFromAntencedent) {
+        Exp resultant = rule.getResultantClause();
+
+        debugLog("Trying to add " + resultant + " to the registry");
+
         int CCDesLeftInitial = myRegistry.remainingCCDesignatorCap();
         TreeWalker.visit(new RegisterAntecedent(myRegistry, myExpLabels, myExpLabels.size(), myMappings), resultant);
         int CCDesLeftLater = myRegistry.remainingCCDesignatorCap();

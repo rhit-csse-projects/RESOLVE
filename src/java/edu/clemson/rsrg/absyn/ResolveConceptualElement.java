@@ -42,7 +42,7 @@ public abstract class ResolveConceptualElement implements BasicCapabilities, Clo
      * the construct itself.
      * </p>
      */
-    protected final Location myLoc;
+    protected Location myLoc;
 
     // ===========================================================
     // Constructors

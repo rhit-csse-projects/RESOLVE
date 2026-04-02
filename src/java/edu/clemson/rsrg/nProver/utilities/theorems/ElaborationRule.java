@@ -22,14 +22,16 @@ public class ElaborationRule {
     private boolean forConsequent;
     private String mySourceTheoremName;
     private String mySourceModuleName;
+    private String mySourceTheoremOperator;
 
     public ElaborationRule(List<Exp> precursorClauses, Exp resultantClause, boolean forConsequent,
-            String sourceTheoremName, String sourceModuleName) {
+            String sourceTheoremName, String sourceModuleName, String sourceTheoremOperator) {
         myPrecursorClauses = precursorClauses;
         myResultantClause = resultantClause;
         this.forConsequent = forConsequent;
         this.mySourceTheoremName = sourceTheoremName;
         this.mySourceModuleName = sourceModuleName;
+        this.mySourceTheoremOperator = sourceTheoremOperator;
     }
 
     public List<Exp> getPrecursorClauses() {
@@ -76,6 +78,8 @@ public class ElaborationRule {
         }
         sb.append("\n\n Precursor Clauses: ");
         sb.append(myPrecursorClauses.toString());
+        sb.append("\n Source Operator: ");
+        sb.append(mySourceTheoremOperator);
         sb.append("\n Resultant Clause: ");
         sb.append(myResultantClause.toString());
         sb.append("\n For Succedent: ");
