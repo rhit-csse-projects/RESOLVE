@@ -23,6 +23,8 @@ import edu.clemson.rsrg.treewalk.TreeWalker;
 
 import java.util.*;
 
+import static edu.clemson.rsrg.misc.DebuggerHelper.debugLog;
+
 /**
  * <p>
  * Encapsulates the elaboration and matching logic used by the nProver.
@@ -37,7 +39,6 @@ public class Elaborator {
     private final CongruenceClassRegistry myRegistry;
     private final Map<String, Integer> myExpLabels;
     private final List<String> myMappings;
-    private final boolean myDebug;
 
     /**
      * <p>
@@ -52,12 +53,10 @@ public class Elaborator {
      * @param mappings
      *            Inverse of {@code expLabels} — index is the label, value is the symbol.
      */
-    public Elaborator(CongruenceClassRegistry registry, Map<String, Integer> expLabels, List<String> mappings,
-            boolean debug) {
+    public Elaborator(CongruenceClassRegistry registry, Map<String, Integer> expLabels, List<String> mappings) {
         myRegistry = registry;
         myExpLabels = expLabels;
         myMappings = mappings;
-        myDebug = debug;
     }
 
     private ArrayList<RuleInstance> elaborate(List<ElaborationRule> rules) {
@@ -74,10 +73,8 @@ public class Elaborator {
                 if (precursor.toString().matches("[0-9]+") || precursor.toString().matches("Empty_String")) {
                     matchedCluster = myExpLabels.getOrDefault(precursor.toString(), -1);
                 } else if (!myExpLabels.containsKey(precursor.getTopLevelOperator())) {
-                    if (myDebug)
-                        System.out.println(
-                                "\u001B[31m[Rule #" + ruleCounter + " Error]\u001B[0m: " + "The key `\u001B[31m"
-                                        + precursor.getTopLevelOperator() + "\u001B[0m` does not exist in expLabels");
+                    debugLog("\u001B[31m[Rule #" + ruleCounter + " Error]\u001B[0m: " + "The key `\u001B[31m"
+                            + precursor.getTopLevelOperator() + "\u001B[0m` does not exist in expLabels");
                 } else if (!myRegistry.isRegistryLabel(myExpLabels.get(precursor.getTopLevelOperator()))) {
                     debugLog("Operator is not registered. Skipping.");
                 } else if (precursor instanceof AbstractFunctionExp) {
@@ -256,12 +253,6 @@ public class Elaborator {
         // TreeWalker.visit(new RegisterSuccedent(myRegistry, myExpLabels,
         // myExpLabels.size(), myMappings), resultant);
         // }
-    }
-
-    public final void debugLog(Object log) {
-        if (myDebug) {
-            System.out.println(log);
-        }
     }
 
     public void elaborateAndApply(List<ElaborationRule> rules) {

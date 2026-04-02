@@ -12,6 +12,7 @@
  */
 package edu.clemson.rsrg.init;
 
+import static edu.clemson.rsrg.misc.DebuggerHelper.setDebug;
 import edu.clemson.rsrg.init.file.ModuleType;
 import edu.clemson.rsrg.init.file.ResolveFile;
 import edu.clemson.rsrg.init.file.ResolveFileBasicInfo;
@@ -432,6 +433,7 @@ public class ResolveCompiler {
                 compileEnvironment.setSymbolTable(symbolTable);
                 compileEnvironment.setTypeGraph(symbolTable.getTypeGraph());
             }
+            setDebug(compileEnvironment.flags.isFlagSet("debug"));
         } catch (FlagDependencyException fde) {
             // YS - Check to see if we have a status handler.
             if (compileEnvironment != null && compileEnvironment.getStatusHandler() != null) {

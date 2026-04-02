@@ -22,6 +22,7 @@ import java.util.*;
 
 import static edu.clemson.rsrg.nProver.utilities.treewakers.AbstractRegisterSequent.OP_EQUALS;
 import static edu.clemson.rsrg.nProver.utilities.treewakers.AbstractRegisterSequent.OP_LESS_THAN_OR_EQUALS;
+import static edu.clemson.rsrg.misc.DebuggerHelper.setDebug;
 
 public class RegistryCI {
     private final CongruenceClassRegistry registry;
@@ -261,7 +262,8 @@ public class RegistryCI {
         System.out.println("=== Elaboration Rules ===");
         System.out.println(rules);
 
-        Elaborator elaborator = new Elaborator(registry, symbolToMapping, mappingToSymbol, true);
+        setDebug(true);
+        Elaborator elaborator = new Elaborator(registry, symbolToMapping, mappingToSymbol);
         for (int pass = 1; pass <= 5; pass++) {
             System.out.println("--- Pass " + pass + " ---");
             elaborator.elaborateAndApply(rules.getMyElaborationRules());

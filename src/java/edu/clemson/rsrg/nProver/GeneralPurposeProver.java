@@ -44,6 +44,7 @@ import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 import static edu.clemson.rsrg.vcgeneration.VCGenerator.FLAG_VERIFY_VC;
+import static edu.clemson.rsrg.misc.DebuggerHelper.debugLog;
 
 /**
  * <p>
@@ -109,8 +110,6 @@ public class GeneralPurposeProver {
      * </p>
      */
     private final TypeGraph myTypeGraph;
-
-    private final boolean debug;
 
     /**
      * <p>
@@ -219,7 +218,6 @@ public class GeneralPurposeProver {
         myVCProverResults = new ArrayList<>(vcs.size());
         myVerificationConditions = vcs;
         myProofGenDetailsModel = mySTGroup.getInstanceOf("outputProofGenDetails");
-        debug = compileEnvironment.flags.isFlagSet("debug");
 
         // Timeout
         if (myCompileEnvironment.flags.isFlagSet(FLAG_TIMEOUT)) {
@@ -318,12 +316,6 @@ public class GeneralPurposeProver {
         return myProofGenDetailsModel.render();
     }
 
-    public final void debugLog(Object log) {
-        if (debug) {
-            System.out.println(log);
-        }
-    }
-
     /**
      * <p>
      * This method runs the general purpose prover on all the VCs.
@@ -341,7 +333,7 @@ public class GeneralPurposeProver {
         // Loop through each of the VCs and attempt to prove them
         for (VerificationCondition vc : myVerificationConditions) {
             // if (!Objects.equals(vc.getName(), "0_4"))
-            //     continue;
+            // continue;
             Map<String, Integer> expLabels = new LinkedHashMap<>();
             // revert ExpLabels to before Senior Project Team things
             // NM: 0, 1 are spared for <= (1), = (2), etc., the list can expand with more reflexive operators
@@ -391,7 +383,7 @@ public class GeneralPurposeProver {
                 debugLog("=== Initial Registry ===");
                 debugLog(registry.toPrettyString(mappings));
 
-                Elaborator elaborator = new Elaborator(registry, expLabels, mappings, debug);
+                Elaborator elaborator = new Elaborator(registry, expLabels, mappings);
                 Set<TheoremEntry> relevantTheorems = theoremStore.getRelevantTheoremsByOperators(expLabels.keySet());
                 ElaborationRules rules = new ElaborationRules(relevantTheorems);
                 printRelevant(rules, relevantTheorems, vc.getName());
