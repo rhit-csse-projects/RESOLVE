@@ -116,6 +116,9 @@ public class Elaborator {
             }
 
             if (anyMatched) {
+                if(matchedCluster == -1) {
+                    continue;
+                }
                 int dominantCluster = myRegistry.getClusterArray()[matchedCluster].getDominantCluster();
                 result.add(new RuleInstance(variableBindings, elaborationRule, dominantCluster));
             }

@@ -15,6 +15,7 @@ package edu.clemson.rsrg.nProver.utilities.theorems;
 import edu.clemson.rsrg.absyn.expressions.Exp;
 import edu.clemson.rsrg.absyn.expressions.mathexpr.AbstractFunctionExp;
 import edu.clemson.rsrg.typeandpopulate.entry.TheoremEntry;
+import edu.clemson.rsrg.typeandpopulate.symboltables.SyntacticScope;
 
 import java.util.*;
 
@@ -51,17 +52,38 @@ public class ElaborationRules {
             // for one expression theorem, things will be different
             if (myTheoremExpressions.size() == 1) {
                 // break down the expression further it is assumed it will be at index 0
-                myTheoremSubExpressions = myTheoremExpressions.getFirst().getSubExpressions();
+                Exp thisTheorem = myTheoremExpressions.getFirst();
+                myTheoremSubExpressions = thisTheorem.getSubExpressions();
 
-                for (Exp exp : myTheoremSubExpressions) {
-                    List<Exp> copyOfMyTheoremSubExpressions = myTheoremExpressions.getFirst().getSubExpressions();
-                    // x1*x2 = x2 * x1 will create two rules with each sub exp becoming the
-                    // precursor
-                    if (isDeterministic(copyOfMyTheoremSubExpressions, exp)) {
-                        // exp here has to be the whole theorem assertion and not only part of
-                        // the expression
-                        elaborationRules.add(mkRule(copyOfMyTheoremSubExpressions, t));
+                if(thisTheorem.getTopLevelOperator().equals("=")) {
+                    //If the top level operator is =, create two ERs, one in each direction
+                    Exp firstPart = myTheoremSubExpressions.getFirst();
+                    Exp lastPart = myTheoremSubExpressions.getLast();
+
+                    List<Exp> firstPartPrecursors = processPrecursors(firstPart);
+                    if(isDeterministic(firstPartPrecursors, lastPart)) {
+                        elaborationRules.add(mkRule(firstPartPrecursors, t));
                     }
+
+                    List<Exp> lastPartPrecursors = processPrecursors(lastPart);
+                    if(isDeterministic(lastPartPrecursors, firstPart)) {
+                        elaborationRules.add(mkRule(lastPartPrecursors, t));
+                    }
+
+                } else if (thisTheorem.getTopLevelOperator().equals("implies")) {
+                    //If the top level is implies, only create on ER. The inverse is not valid.
+                    Exp firstPart = myTheoremSubExpressions.getFirst();
+
+                    List<Exp> firstPartPrecursors = processPrecursors(firstPart);
+                    if(isDeterministic(firstPartPrecursors, thisTheorem)) {
+                        elaborationRules.add(mkRule(firstPartPrecursors, t));
+                    }
+                } else if (thisTheorem.getTopLevelOperator().equals("<=")) {
+                    //TODO: This should make special ER that automatically proves the VC if it matches
+                    //System.out.println("Ignoring <= ER");
+                } else {
+                    //System.out.println(t);
+                    System.err.println("WARNING: Unable to process ER with top level operator " + thisTheorem.getTopLevelOperator());
                 }
 
             } else {
@@ -77,6 +99,16 @@ public class ElaborationRules {
             }
         }
         return new ArrayList<>(elaborationRules);
+    }
+
+    private List<Exp> processPrecursors(Exp precursor) {
+        if(precursor.getTopLevelOperator().equals("and")) {
+            return precursor.getSubExpressions(); //TODO: Investigate if nested ands exist in MT files
+        } else {
+            List<Exp> output = new ArrayList<>();
+            output.add(precursor);
+            return output;
+        }
     }
 
     private ElaborationRule mkRule(List<Exp> precursorExps, TheoremEntry t) {
