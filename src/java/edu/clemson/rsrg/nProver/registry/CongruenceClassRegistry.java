@@ -274,7 +274,7 @@ public class CongruenceClassRegistry {
 
             // use an internal procedure to do what are congruent is doing, and call that inside are congruent operation
             // are congruent is meant for the client outside
-            if (areClassesCongruent(tempArgList.remove(), tempArgList.remove())) {
+            if (areCongruent(tempArgList.remove(), tempArgList.remove())) {
                 isProved = true;
             } else {
                 // for efficiency, this will tell the registry there is a reflexive operator in the succedent and the
@@ -958,7 +958,16 @@ public class CongruenceClassRegistry {
      * @return {@code true} iff the two classes are congruent. Otherwise, it returns {@code false}
      */
     public boolean areCongruent(int firstAccessor, int secondAccessor) {
-        return areClassesCongruent(firstAccessor, secondAccessor);
+        if (firstAccessor == secondAccessor) {
+            return true;
+        } else {// one is the dominant of each other, or both have the same dominant class
+            int dominantFirstClass = getTheUltimateDominantClass(firstAccessor);
+
+            int dominantSecondClass = getTheUltimateDominantClass(secondAccessor);
+
+            return dominantFirstClass == dominantSecondClass;
+
+        }
     }
 
     /**
@@ -1024,31 +1033,6 @@ public class CongruenceClassRegistry {
             cClassDesignator = congruenceClassArray[cClassDesignator].getDominantCClass();
         }
         return cClassDesignator;
-    }
-
-    /**
-     * <p>
-     * This operation checks to see of two classes are congruent
-     * </p>
-     *
-     * @param firstAccessor
-     *            is an accessor for the first class provided by the client.
-     * @param secondAccessor
-     *            is an accessor for the second class provided by the client
-     *
-     * @return {@code true} iff the two provided classes are congruent. Otherwise, return {@code false}.
-     */
-    private boolean areClassesCongruent(int firstAccessor, int secondAccessor) {
-        if (firstAccessor == secondAccessor) {
-            return true;
-        } else {// one is the dominant of each other, or both have the same dominant class
-            int dominantFirstClass = getTheUltimateDominantClass(firstAccessor);
-
-            int dominantSecondClass = getTheUltimateDominantClass(secondAccessor);
-
-            return dominantFirstClass == dominantSecondClass;
-
-        }
     }
 
     /**
