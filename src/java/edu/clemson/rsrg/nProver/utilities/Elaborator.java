@@ -109,6 +109,11 @@ public class Elaborator {
                 String body = getExpBodyString(precursor);
                 if (matchedCluster != -1) {
                     debugLog("[Rule #" + ruleCounter + "] \u001B[42m Matched! \u001B[49m :" + body);
+                    debugLog("[Rule #" + ruleCounter + "]" + " Matched Cluster: " + "CC"
+                            + myRegistry.getClusterArray()[matchedCluster].getTreeNodeLabel() + " -> (CR"
+                            + matchedCluster + ": "
+                            + myMappings.get(myRegistry.getClusterArray()[matchedCluster].getTreeNodeLabel()) + " "
+                            + getArgsAsStrings(matchedCluster) + ")");
                     anyMatched = true;
                 } else {
                     debugLog("[Rule #" + ruleCounter + "] \u001B[41m Not Matched \u001B[49m :" + body);
@@ -116,7 +121,7 @@ public class Elaborator {
             }
 
             if (anyMatched) {
-                if(matchedCluster == -1) {
+                if (matchedCluster == -1) {
                     continue;
                 }
                 int dominantCluster = myRegistry.getClusterArray()[matchedCluster].getDominantCluster();
@@ -261,5 +266,15 @@ public class Elaborator {
 
     public void elaborateAndApply(List<ElaborationRule> rules) {
         applyRules(elaborate(rules));
+    }
+
+    private String getArgsAsStrings(int matchedCluster) {
+        List<Integer> args = myRegistry.getArgumentsList(myRegistry.getCongruenceCluster(matchedCluster));
+        StringBuilder sb = new StringBuilder();
+        for (Integer arg : args) {
+            sb.append("CC").append(myRegistry.getCongruenceCluster(arg).getTreeNodeLabel()).append(", ");
+        }
+        sb.delete(sb.length() - 2, sb.length());
+        return sb.toString();
     }
 }

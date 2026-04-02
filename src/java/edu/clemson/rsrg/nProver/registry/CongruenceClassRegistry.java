@@ -607,16 +607,14 @@ public class CongruenceClassRegistry {
 
         int cc = clusterArray[dominantCluster].getIndexToCongruenceClass();
 
-       int dominantCC = congruenceClassArray[cc].getDominantCClass();
+        int dominantCC = congruenceClassArray[cc].getDominantCClass();
 
-        if (isMinimalStandClusterDesignator(treeNodeLabel,dominantCC, dominantCluster)) {
+        if (isMinimalStandClusterDesignator(treeNodeLabel, dominantCC, dominantCluster)) {
             return dominantCC;
-        }
-        else  {
+        } else {
             System.out.println("Oops, we probably need more code to fix getting the dominant stand");
             return -1;
         }
-
 
     }
 
