@@ -15,6 +15,7 @@ package edu.clemson.rsrg.nProver.utilities.theorems;
 import edu.clemson.rsrg.absyn.expressions.Exp;
 import edu.clemson.rsrg.absyn.expressions.mathexpr.AbstractFunctionExp;
 import edu.clemson.rsrg.absyn.expressions.mathexpr.QuantExp;
+import edu.clemson.rsrg.misc.DebuggerHelper;
 import edu.clemson.rsrg.typeandpopulate.entry.TheoremEntry;
 
 import java.util.*;
@@ -50,70 +51,67 @@ public class ElaborationRules {
             // System.out.println("The size of the clause is: " +
             // myTheoremExpressions.size());
             // for one expression theorem, things will be different
-            //if (myTheoremExpressions.size() == 1) {
-                // break down the expression further it is assumed it will be at index 0
-                Exp thisTheorem = t.getAssertion();//myTheoremExpressions.getFirst();
+            // if (myTheoremExpressions.size() == 1) {
+            // break down the expression further it is assumed it will be at index 0
+            Exp thisTheorem = t.getAssertion();// myTheoremExpressions.getFirst();
 
-                if (thisTheorem instanceof QuantExp) {
-                    thisTheorem = ((QuantExp) thisTheorem).getBody();
+            if (thisTheorem instanceof QuantExp) {
+                thisTheorem = ((QuantExp) thisTheorem).getBody();
+            }
+
+            myTheoremSubExpressions = thisTheorem.getSubExpressions();
+
+            if (thisTheorem.getTopLevelOperator().equals("=")) {
+                // If the top level operator is =, create two ERs, one in each direction
+                Exp firstPart = myTheoremSubExpressions.getFirst();
+                Exp lastPart = myTheoremSubExpressions.getLast();
+
+                List<Exp> firstPartPrecursors = processPrecursors(firstPart);
+                if (isDeterministic(firstPartPrecursors, lastPart)) {
+                    elaborationRules.add(mkRule(firstPartPrecursors, t, thisTheorem, "="));
                 }
 
-                myTheoremSubExpressions = thisTheorem.getSubExpressions();
-
-                if (thisTheorem.getTopLevelOperator().equals("=")) {
-                    // If the top level operator is =, create two ERs, one in each direction
-                    Exp firstPart = myTheoremSubExpressions.getFirst();
-                    Exp lastPart = myTheoremSubExpressions.getLast();
-
-                    List<Exp> firstPartPrecursors = processPrecursors(firstPart);
-                    if (isDeterministic(firstPartPrecursors, lastPart)) {
-                        elaborationRules.add(mkRule(firstPartPrecursors, t, thisTheorem, "="));
-                    }
-
-                    if(lastPart.getSubExpressions().isEmpty()) { //This theorem is not reversible
-                        continue;
-                    }
-
-                    List<Exp> lastPartPrecursors = processPrecursors(lastPart);
-                    if (isDeterministic(lastPartPrecursors, firstPart)) {
-                        elaborationRules.add(mkRule(lastPartPrecursors, t, thisTheorem, "="));
-                    }
-
-                } else if (thisTheorem.getTopLevelOperator().equals("implies")) {
-                    // If the top level is implies, only create on ER. The inverse is not valid.
-                    Exp firstPart = myTheoremSubExpressions.getFirst();
-                    Exp lastPart = myTheoremSubExpressions.getLast();
-
-                    List<Exp> firstPartPrecursors = processPrecursors(firstPart);
-                    if (isDeterministic(firstPartPrecursors, thisTheorem)) {
-                        elaborationRules.add(mkRule(firstPartPrecursors, t, lastPart, "implies"));
-                    }
-                } else if (thisTheorem.getTopLevelOperator().equals("<=")) {
-                    // If the top level operator is =, create two ERs, one in each direction
-                    Exp firstPart = myTheoremSubExpressions.getFirst();
-                    Exp lastPart = myTheoremSubExpressions.getLast();
-
-                    List<Exp> firstPartPrecursors = processPrecursors(firstPart);
-                    if (isDeterministic(firstPartPrecursors, lastPart)) {
-                        elaborationRules.add(mkRule(firstPartPrecursors, t, thisTheorem, "="));
-                    }
-                } else {
-                    // System.out.println(t);
-                    System.err.println("WARNING: Unable to process ER with top level operator "
-                            + thisTheorem.getTopLevelOperator());
+                if (lastPart.getSubExpressions().isEmpty()) { // This theorem is not reversible
+                    continue;
                 }
 
-            /*} else {
-                // build the elaboration rule out of each expression by making it a resultant
-                // and the reset precursors
-                for (Exp te : myTheoremExpressions) {
-                    List<Exp> copyOfTheoremExpressions = t.getAssertion().getSubExpressions();
-                    // check if the rule will be deterministic, and for the moment, if not
-                    // deterministic ignore it
-                    if (isDeterministic(copyOfTheoremExpressions, te))
-                        elaborationRules.add(mkRule(copyOfTheoremExpressions, t, te, t.getAssertion().getTopLevelOperator()));
+                List<Exp> lastPartPrecursors = processPrecursors(lastPart);
+                if (isDeterministic(lastPartPrecursors, firstPart)) {
+                    elaborationRules.add(mkRule(lastPartPrecursors, t, thisTheorem, "="));
                 }
-            }*/
+
+            } else if (thisTheorem.getTopLevelOperator().equals("implies")) {
+                // If the top level is implies, only create on ER. The inverse is not valid.
+                Exp firstPart = myTheoremSubExpressions.getFirst();
+                Exp lastPart = myTheoremSubExpressions.getLast();
+
+                List<Exp> firstPartPrecursors = processPrecursors(firstPart);
+                if (isDeterministic(firstPartPrecursors, thisTheorem)) {
+                    elaborationRules.add(mkRule(firstPartPrecursors, t, lastPart, "implies"));
+                }
+            } else if (thisTheorem.getTopLevelOperator().equals("<=")) {
+                // If the top level operator is =, create two ERs, one in each direction
+                Exp firstPart = myTheoremSubExpressions.getFirst();
+                Exp lastPart = myTheoremSubExpressions.getLast();
+
+                List<Exp> firstPartPrecursors = processPrecursors(firstPart);
+                if (isDeterministic(firstPartPrecursors, lastPart)) {
+                    elaborationRules.add(mkRule(firstPartPrecursors, t, thisTheorem, "="));
+                }
+            } else {
+                // System.out.println(t);
+                DebuggerHelper.debugLog(
+                        "WARNING: Unable to process ER with top level operator " + thisTheorem.getTopLevelOperator());
+            }
+
+            /*
+             * } else { // build the elaboration rule out of each expression by making it a resultant // and the reset
+             * precursors for (Exp te : myTheoremExpressions) { List<Exp> copyOfTheoremExpressions =
+             * t.getAssertion().getSubExpressions(); // check if the rule will be deterministic, and for the moment, if
+             * not // deterministic ignore it if (isDeterministic(copyOfTheoremExpressions, te))
+             * elaborationRules.add(mkRule(copyOfTheoremExpressions, t, te, t.getAssertion().getTopLevelOperator())); }
+             * }
+             */
         }
         return new ArrayList<>(elaborationRules);
     }

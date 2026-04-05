@@ -12,6 +12,8 @@
  */
 package edu.clemson.rsrg.nProver.registry;
 
+import edu.clemson.rsrg.misc.DebuggerHelper;
+
 import java.util.*;
 
 /**
@@ -366,14 +368,20 @@ public class CongruenceClassRegistry {
                 // same argument filed until we find one, or we get to the end.
                 int currentClusterIndex = clusterArray[clusterArgumentArray[currentClusterArgIndex].getClusterNumber()]
                         .getNextWithSameArg();
+                Set<Integer> visitedClusters = new HashSet<>();
                 while (clusterArray[currentClusterIndex].getNextWithSameArg() != 0) {
+                    if (visitedClusters.contains(currentClusterIndex)) {
+                        DebuggerHelper.debugLog(
+                                "\u001B[31mWARNING: checkIfRegistered visited a cluster it already saw\u001B[0m");
+                        break;
+                    }
+                    visitedClusters.add(currentClusterIndex);
                     if (Objects.equals(clusterArray[currentClusterIndex].getTreeNodeLabel(), treeNodeLabel)
                             && clusterArray[currentClusterIndex].getIndexToArgList() == currentClusterArgIndex) {
                         return true;
                     }
                     currentClusterIndex = clusterArray[currentClusterIndex].getNextWithSameArg();
                     if (currentClusterIndex == 0) {
-                        // if it is 0 there is nothing more we can do, it is not there.
                         return false;
                     }
                 }
@@ -423,7 +431,14 @@ public class CongruenceClassRegistry {
                         return false;
                     }
                     // check the alternative args if we can find it
+                    Set<Integer> visitedAlts = new HashSet<>();
                     while (clusterArgumentArray[nextClusterArgIndex].getAlternativeArg() != 0) {
+                        if (visitedAlts.contains(nextClusterArgIndex)) {
+                            DebuggerHelper.debugLog(
+                                    "\u001B[31mWARNING: checkIfRegistered visited an alernative arg it already saw\u001B[0m");
+                            break;
+                        }
+                        visitedAlts.add(nextClusterArgIndex);
 
                         if (getTheUltimateDominantClass(
                                 clusterArgumentArray[clusterArgumentArray[nextClusterArgIndex].getAlternativeArg()]
@@ -591,7 +606,7 @@ public class CongruenceClassRegistry {
             }
         }
         // this is just defensive, we will never get here as the operation is always called when we have next accessor
-        System.out.println("WARNING: reached unreachable code in advanceCClassAccessor");
+        DebuggerHelper.debugLog("WARNING: reached unreachable code in advanceCClassAccessor");
         return 0;
     }
 
@@ -612,7 +627,7 @@ public class CongruenceClassRegistry {
         if (isMinimalStandClusterDesignator(treeNodeLabel, dominantCC, dominantCluster)) {
             return dominantCC;
         } else {
-            System.out.println("Oops, we probably need more code to fix getting the dominant stand");
+            DebuggerHelper.debugLog("Oops, we probably need more code to fix getting the dominant stand");
             return -1;
         }
 
@@ -737,8 +752,8 @@ public class CongruenceClassRegistry {
         HashSet<Integer> visited = new HashSet<>();
         while (clusterArray[dominantCluster].getDominantCluster() != currentClusterAccessor) {
             if (visited.contains(dominantCluster)) {
-                System.out
-                        .println("\u001B[31mWARNING: advanceClusterAccessor visited a cluster it already saw\u001B[0m");
+                DebuggerHelper.debugLog(
+                        "\u001B[31mWARNING: advanceClusterAccessor visited a cluster it already saw\u001B[0m");
                 break;
             }
             visited.add(dominantCluster);
@@ -764,7 +779,7 @@ public class CongruenceClassRegistry {
         HashSet<Integer> visited = new HashSet<>();
         while (clusterArray[dominantCluster].getDominantCluster() != currentClusterAccessor) {
             if (visited.contains(dominantCluster)) {
-                System.out.println("\u001B[31mWARNING: isStandMaximal visited a cluster it already saw\u001B[0m");
+                DebuggerHelper.debugLog("\u001B[31mWARNING: isStandMaximal visited a cluster it already saw\u001B[0m");
                 break;
             }
             visited.add(dominantCluster);
@@ -854,8 +869,8 @@ public class CongruenceClassRegistry {
         }
     }
 
-    public void displayClusterArgumentList() {
-        System.out.println("Cluster Argument List: " + clusterArgumentString);
+    public String displayClusterArgumentList() {
+        return "Cluster Argument List: " + clusterArgumentString;
     }
 
     public int getClusterArgumentListSize() {
@@ -1658,7 +1673,11 @@ public class CongruenceClassRegistry {
                 clusterArgumentArray[indexToArgString].setCcNumber(firstAccessor);
 
                 updateClassFASOP(firstAccessor, level, indexToArgString);
-                reArrangeArguments(indexToArgString);
+                if (clusterArgumentArray[indexToArgString].getAlternativeArg() != 0
+                        && firstAccessor < clusterArgumentArray[clusterArgumentArray[indexToArgString]
+                                .getAlternativeArg()].getCcNumber()) {
+                    reArrangeArguments(indexToArgString);
+                }
                 indexToArgString = clusterArgumentArray[indexToArgString].getNxtIndexWithSameCCNumberInLevel();
             }
 
@@ -1666,9 +1685,12 @@ public class CongruenceClassRegistry {
             // final 7 after the list
             // first change the class number in the argument record from 7 to 3
             clusterArgumentArray[indexToArgString].setCcNumber(firstAccessor);
-            // now we should go to the FASOP for class 3 and update it as now 3 exists in the level
             updateClassFASOP(firstAccessor, level, indexToArgString);
-            reArrangeArguments(indexToArgString);
+            if (clusterArgumentArray[indexToArgString].getAlternativeArg() != 0
+                    && firstAccessor < clusterArgumentArray[clusterArgumentArray[indexToArgString].getAlternativeArg()]
+                            .getCcNumber()) {
+                reArrangeArguments(indexToArgString);
+            }
 
         } else {
             // 3 is existing in the level and can be anywhere, take this by looking at each father and its children
@@ -1715,7 +1737,11 @@ public class CongruenceClassRegistry {
                     clusterArgumentArray[indexToArgString].setCcNumber(firstAccessor);
                     // now we should go to the FASOP for class 3 and update it as now 3 exists in the level
                     updateClassFASOP(firstAccessor, level, indexToArgString);
-                    reArrangeArguments(indexToArgString);
+                    if (clusterArgumentArray[indexToArgString].getAlternativeArg() != 0
+                            && firstAccessor < clusterArgumentArray[clusterArgumentArray[indexToArgString]
+                                    .getAlternativeArg()].getCcNumber()) {
+                        reArrangeArguments(indexToArgString);
+                    }
                 }
                 // updated after debugging to the next line after commented one
                 indexToArgString = tempIndexToArgString;
@@ -1730,7 +1756,7 @@ public class CongruenceClassRegistry {
         // The if statement around while loop is a change after debugging
         if (nextIndexToFollow != 0) {
             // if it is zero it means it is the only argument, and alternative argument is 0
-            while (nextIndexToFollow != indexToArgString) {
+            while (nextIndexToFollow != indexToArgString && nextIndexToFollow != 0) {
                 prevIndexToFollow = nextIndexToFollow;
                 nextIndexToFollow = clusterArgumentArray[nextIndexToFollow].getAlternativeArg();
             }
@@ -1897,7 +1923,7 @@ public class CongruenceClassRegistry {
 
                 // gone back to the dominant class
                 if (dominantClass_7 == dominantClass_3) {
-                    // TODO: put unused cluster to the re-use list
+                    // TODO: put unused cluster to the re-use list for optimization
                 } else {
                     classMergeList.add(dominantClass_3);
                     classMergeList.add(dominantClass_7);
@@ -1959,7 +1985,7 @@ public class CongruenceClassRegistry {
                 int previousIndexToArgString = currentIndexToArgString;
 
                 // walk the list of children until we get to the changed child
-                while (nextIndexToArgString != argIndexWithChangedClass) {
+                while (nextIndexToArgString != argIndexWithChangedClass && nextIndexToArgString != 0) {
                     previousIndexToArgString = nextIndexToArgString;
                     nextIndexToArgString = clusterArgumentArray[nextIndexToArgString].getAlternativeArg();
                 }
@@ -2088,6 +2114,8 @@ public class CongruenceClassRegistry {
                             updateNextWithSameArgument(label, index, topCongruenceClusterDesignator);
                         }
                     }
+                    // advance level when reusing an existing path
+                    level++;
                     // When we match the target CC, but it already has children
                 } else if (clusterArgumentArray[index].getNextClusterArg() != 0
                         && clusterArgumentArray[index].getCcNumber() == lastCCDesignator) {
@@ -2101,6 +2129,8 @@ public class CongruenceClassRegistry {
                             updateNextWithSameArgument(label, index, topCongruenceClusterDesignator);
                         }
                     }
+                    // advance level when reusing an existing path
+                    level++;
                 } else if (clusterArgumentArray[index].getNextClusterArg() != 0
                         && clusterArgumentArray[index].getCcNumber() != lastCCDesignator) {
                     // change index to the next one
@@ -2154,7 +2184,15 @@ public class CongruenceClassRegistry {
 
                             topArgStrArrIndex++;
                         }
+                        HashSet<Integer> visitedAlts = new HashSet<>();
                         while (alternativeExists) {
+                            if (visitedAlts.contains(index)) {
+                                alternativeExists = false;
+                                DebuggerHelper.debugLog(
+                                        "\u001B[31mWARNING: createClusterArgumentArray visited an Alternate Arg it already visited\u001B[0m");
+                                break;
+                            }
+                            visitedAlts.add(index);
                             if (clusterArgumentArray[index].getAlternativeArg() != 0) {
                                 if (clusterArgumentArray[index].getCcNumber() == lastCCDesignator) {
                                     existed = true;
@@ -2180,6 +2218,11 @@ public class CongruenceClassRegistry {
                                 updateNextWithSameArgument(label, index, topCongruenceClusterDesignator);
                             }
                             return index;
+                        }
+
+                        // advance level when reusing an existing path found via alternatives
+                        if (existed) {
+                            level++;
                         }
 
                         if (!existed) {

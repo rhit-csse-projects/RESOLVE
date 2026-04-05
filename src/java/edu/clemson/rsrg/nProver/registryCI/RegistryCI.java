@@ -134,7 +134,7 @@ public class RegistryCI {
                         System.out.println("Removed CC" + rc + " from Cluster Argument List");
                     break;
                 case "DA":
-                    registry.displayClusterArgumentList();
+                    System.out.println(registry.displayClusterArgumentList());
                     break;
                 case "G":
                     displayAllRoots();

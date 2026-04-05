@@ -14,15 +14,11 @@ package edu.clemson.rsrg.nProver.utilities;
 
 import edu.clemson.rsrg.absyn.expressions.Exp;
 import edu.clemson.rsrg.absyn.expressions.mathexpr.AbstractFunctionExp;
-import edu.clemson.rsrg.absyn.expressions.mathexpr.ClusterExp;
-import edu.clemson.rsrg.absyn.expressions.mathexpr.EqualsExp;
 import edu.clemson.rsrg.absyn.expressions.mathexpr.QuantExp;
 import edu.clemson.rsrg.nProver.registry.CongruenceClassRegistry;
 import edu.clemson.rsrg.nProver.utilities.theorems.ElaborationRule;
 import edu.clemson.rsrg.nProver.utilities.theorems.RuleInstance;
 import edu.clemson.rsrg.nProver.utilities.treewakers.RegisterAntecedent;
-import edu.clemson.rsrg.parsing.data.Location;
-import edu.clemson.rsrg.parsing.data.PosSymbol;
 import edu.clemson.rsrg.treewalk.TreeWalker;
 
 import java.util.*;
@@ -73,7 +69,7 @@ public class Elaborator {
             int matchedCluster = -1;
             boolean anyMatched = false; // stops from adding duplicate resultants to the registry
 
-            if(elaborationRule.getPrecursorClauses().size() != 1) {
+            if (elaborationRule.getPrecursorClauses().size() != 1) {
                 continue;
             }
             for (Exp precursor : elaborationRule.getPrecursorClauses()) {
