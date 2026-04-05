@@ -121,13 +121,42 @@ jobs:
         timeout-minutes: 5
         run: |
           java -cp "$GITHUB_WORKSPACE/target/classes:$GITHUB_WORKSPACE/target/deps/*" \
-            edu.clemson.rsrg.Main -addConstraints -sprove Obvious_Flipping_Realiz.rb
+            edu.clemson.rsrg.Main -addConstraints -sprove Obvious_Flipping_Realiz.rb 2>&1 | tee prove_flipping.txt
+      - name: Prove Inject_Front_Realiz
+        working-directory: RESOLVE-Workspace/Main/Concepts/Queue_Template
+        timeout-minutes: 5
+        run: |
+          java -cp "$GITHUB_WORKSPACE/target/classes:$GITHUB_WORKSPACE/target/deps/*" \
+            edu.clemson.rsrg.Main -addConstraints -sprove Inject_Front_Realiz.rb 2>&1 | tee prove_inject.txt
+      - name: Proof summary
+        if: always()
+        run: |
+          echo "### Proof Results" >> $GITHUB_STEP_SUMMARY
+          echo "| File | Proved | Not Proved | Total |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|--------|------------|-------|" >> $GITHUB_STEP_SUMMARY
+          for FILE in \
+            "RESOLVE-Workspace/Main/Concepts/Stack_Template/prove_flipping.txt:Obvious_Flipping_Realiz" \
+            "RESOLVE-Workspace/Main/Concepts/Queue_Template/prove_inject.txt:Inject_Front_Realiz"; do
+            PATH_PART="${FILE%%:*}"
+            NAME="${FILE##*:}"
+            if [ -f "$PATH_PART" ]; then
+              PROVED=$(grep -c "Proved" "$PATH_PART" || echo 0)
+              NOT_PROVED=$(grep -c "Not Proved" "$PATH_PART" || echo 0)
+              PROVED=$((PROVED - NOT_PROVED))
+              TOTAL=$((PROVED + NOT_PROVED))
+              echo "| $NAME | $PROVED | $NOT_PROVED | $TOTAL |" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "| $NAME | - | - | DID NOT RUN |" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
       - name: Upload proof artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: proof-results
-          path: RESOLVE-Workspace/Main/Concepts/Stack_Template/*.proof
+          path: |
+            RESOLVE-Workspace/Main/Concepts/Stack_Template/*.proof
+            RESOLVE-Workspace/Main/Concepts/Queue_Template/*.proof
           if-no-files-found: warn
 
   # This job runs the RESOLVE compiler to analyze files that we know to be working.
