@@ -73,51 +73,32 @@ public class Elaborator {
                 continue;
             }
             for (Exp precursor : elaborationRule.getPrecursorClauses()) {
-                if (precursor.toString().matches("[0-9]+") || precursor.toString().matches("Empty_String")) {
-                    matchedCluster = myExpLabels.getOrDefault(precursor.toString(), -1);
-                } else if (!myExpLabels.containsKey(precursor.getTopLevelOperator())) {
-                    debugLog("\u001B[31m[Rule #" + ruleCounter + " Error]\u001B[0m: " + "The key `\u001B[31m"
-                            + precursor.getTopLevelOperator() + "\u001B[0m` does not exist in expLabels");
-                } else if (!myRegistry.isRegistryLabel(myExpLabels.get(precursor.getTopLevelOperator()))) {
-                    debugLog("Operator is not registered. Skipping.");
-                } else if (precursor instanceof AbstractFunctionExp) {
-
-                    int operator = myExpLabels.get(precursor.getTopLevelOperator());
-                    int currentCCAccessor = 0;
-                    boolean firstLoop = true;
-                    HashSet<Integer> visited = new HashSet<>();
-
-                    while (firstLoop || !myRegistry.isVarietyMaximal(operator, currentCCAccessor)) {
-                        // Loop through the congruence classes
-
-                        currentCCAccessor = firstLoop ? myRegistry.firstCCAccessorForTreeNodeLabel(operator)
-                                : myRegistry.advanceCClassAccessor(operator, currentCCAccessor);
-                        firstLoop = false;
-
-                        if (visited.contains(currentCCAccessor))
-                            break;
-                        visited.add(currentCCAccessor);
-
-                        if (!myRegistry.isMinimalVCCDesignator(operator, currentCCAccessor))
-                            continue;
-
-                        matchedCluster = ccMatchesExpression(precursor, currentCCAccessor, operator, variableBindings);
-                        if (matchedCluster != -1)
-                            break;
-                    }
-                }
-                String body = getExpBodyString(precursor);
-                if (matchedCluster != -1) {
-                    debugLog("[Rule #" + ruleCounter + "] \u001B[42m Matched! \u001B[49m :" + body);
-                    debugLog("[Rule #" + ruleCounter + "]" + " Matched Cluster: " + "CC"
-                            + myRegistry.getClusterArray()[matchedCluster].getTreeNodeLabel() + " -> (CR"
-                            + matchedCluster + ": "
-                            + myMappings.get(myRegistry.getClusterArray()[matchedCluster].getTreeNodeLabel()) + " "
-                            + getArgsAsStrings(matchedCluster) + ")");
-                    anyMatched = true;
-                } else {
-                    debugLog("[Rule #" + ruleCounter + "] \u001B[41m Not Matched \u001B[49m :" + body);
-                }
+		if (precursor.getTopLevelOperator().equals("=")) {
+		    Exp leftSide = precursor.getSubExpressions().getFirst();
+		    Exp rightSide = precursor.getSubExpressions().getLast();
+		    Map<Exp, Integer> leftBindings = new HashMap<>();
+		    Map<Exp, Integer> rightBindings = new HashMap<>();
+		    int leftMatched = matchExpression(leftSide, leftBindings, ruleCounter, new HashMap<>());
+		    int rightMatched = matchExpression(rightSide, rightBindings, ruleCounter, leftBindings);
+		    if (rightMatched != -1 && leftMatched != -1) {
+			debugLog("Left Matched: " + leftMatched);
+			debugLog("Right Matched: " + rightMatched);
+		    }
+		} else {
+		    matchedCluster = matchExpression(precursor, variableBindings, ruleCounter, new HashMap<>());
+		}
+		anyMatched = matchedCluster != -1;
+		String body = getExpBodyString(precursor);
+		if (matchedCluster != -1) {
+		    debugLog("[Rule #" + ruleCounter + "] \u001B[42m Matched! \u001B[49m :" + body);
+		    debugLog("[Rule #" + ruleCounter + "]" + " Matched Cluster: " + "CC"
+			     + myRegistry.getClusterArray()[matchedCluster].getTreeNodeLabel() + " -> (CR"
+			     + matchedCluster + ": "
+			     + myMappings.get(myRegistry.getClusterArray()[matchedCluster].getTreeNodeLabel()) + " "
+			     + getArgsAsStrings(matchedCluster) + ")");
+		} else {
+		    debugLog("[Rule #" + ruleCounter + "] \u001B[41m Not Matched \u001B[49m :" + body);
+		}
             }
 
             if (anyMatched) {
@@ -131,6 +112,43 @@ public class Elaborator {
 
         return result;
     }
+    
+    private int matchExpression(Exp precursor, Map<Exp, Integer> variableBindings, int ruleCounter, Map<Exp, Integer> requiredBindings) {
+	int matchedCluster = -1;
+        if (precursor.toString().matches("[0-9]+") || precursor.toString().matches("Empty_String")) {
+            matchedCluster = myExpLabels.getOrDefault(precursor.toString(), -1);
+        } else if (!myExpLabels.containsKey(precursor.getTopLevelOperator())) {
+            debugLog("\u001B[31m[Rule #" + ruleCounter + " Error]\u001B[0m: " + "The key `\u001B[31m"
+                     + precursor.getTopLevelOperator() + "\u001B[0m` does not exist in expLabels");
+        } else if (!myRegistry.isRegistryLabel(myExpLabels.get(precursor.getTopLevelOperator()))) {
+            debugLog("Operator is not registered. Skipping.");
+        } else if (precursor instanceof AbstractFunctionExp) {
+	    int operator = myExpLabels.get(precursor.getTopLevelOperator());
+            int currentCCAccessor = 0;
+            boolean firstLoop = true;
+            HashSet<Integer> visited = new HashSet<>();
+
+            while (firstLoop || !myRegistry.isVarietyMaximal(operator, currentCCAccessor)) {
+                // Loop through the congruence classes
+
+                currentCCAccessor = firstLoop ? myRegistry.firstCCAccessorForTreeNodeLabel(operator)
+                    : myRegistry.advanceCClassAccessor(operator, currentCCAccessor);
+                firstLoop = false;
+
+                if (visited.contains(currentCCAccessor))
+                    break;
+                visited.add(currentCCAccessor);
+
+                if (!myRegistry.isMinimalVCCDesignator(operator, currentCCAccessor))
+                    continue;
+
+                matchedCluster = ccMatchesExpression(precursor, currentCCAccessor, operator, variableBindings, requiredBindings);
+                if (matchedCluster != -1)
+                    break;
+            }
+        }
+	return matchedCluster;
+    }
 
     private static String getExpBodyString(Exp precursor) {
         String body = precursor.toString();
@@ -141,7 +159,7 @@ public class Elaborator {
     }
 
     private int ccMatchesExpression(Exp needToMatch, int currentCCAccessor, int operator,
-            Map<Exp, Integer> variableBindings) {
+        Map<Exp, Integer> variableBindings, Map<Exp, Integer> requiredBindings) {
 
         // Congruence Class matches the Exp
 
@@ -173,7 +191,7 @@ public class Elaborator {
                 int arg = clusterArgs.get(subExpressions.size() - i - 1);
                 if (!(subExp instanceof AbstractFunctionExp)) {
                     // Base case: leaf node
-                    if (!matchLeafNodes(subExp, arg)) {
+                    if (!matchLeafNodes(subExp, arg, requiredBindings)) {
                         matchedAllArgs = false;
                         break;
                     } else {
@@ -189,7 +207,7 @@ public class Elaborator {
                         break;
                     }
 
-                    matchedAllArgs = ccMatchesExpression(subExp, arg, subExpOperator, variableBindings) != -1;
+                    matchedAllArgs = ccMatchesExpression(subExp, arg, subExpOperator, variableBindings, requiredBindings) != -1;
                     if (!matchedAllArgs)
                         break;
                 }
@@ -210,7 +228,7 @@ public class Elaborator {
         return -1;
     }
 
-    private boolean matchLeafNodes(Exp subExp, int arg) {
+    private boolean matchLeafNodes(Exp subExp, int arg, Map<Exp, Integer> requiredBindings) {
         String expString = subExp.toString();
         int expInt = myExpLabels.getOrDefault(expString, -1);
 
@@ -226,9 +244,12 @@ public class Elaborator {
             if (expInt == -1)
                 return false;
             return myRegistry.getFirstClusterAccessorForCC(arg, expInt) != -1;
-        }
+        } else if (requiredBindings.containsKey(subExp)) {
+	    int cc = myRegistry.getClusterArray()[requiredBindings.get(subExp)].getIndexToCongruenceClass();
+	    return cc == arg; // this is a variable that requires an exact match
+	}
 
-        return true; // variables always match
+        return true; // variables not in requiredBindings always match
     }
 
     private void applyRules(List<RuleInstance> ruleInstances) {
