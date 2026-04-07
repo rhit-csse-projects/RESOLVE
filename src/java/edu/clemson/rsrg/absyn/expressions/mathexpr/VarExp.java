@@ -261,8 +261,8 @@ public class VarExp extends MathExp {
     @Override
     public final int hashCode() {
         int result = super.hashCode();
-        //result = 31 * result + (myQualifier != null ? myQualifier.hashCode() : 0);
-        result = 31 * result + myName.toString().hashCode();
+        result = 31 * result + (myQualifier != null ? myQualifier.hashCode() : 0);
+        result = 31 * result + myName.hashCode();
         result = 31 * result + (myIsPrecisDefinitionName ? 1 : 0);
         result = 31 * result + myQuantification.hashCode();
         return result;

@@ -24,6 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.IdentityHashMap;
 
 /**
  * <p>
@@ -122,7 +123,7 @@ public abstract class AbstractRegisterSequent extends TreeWalkerStackVisitor {
      */
     protected AbstractRegisterSequent(CongruenceClassRegistry registry, Map<String, Integer> expLabels, int nextLabel,
             List<String> mappings) {
-        myArgumentsCache = new LinkedHashMap<>();
+        myArgumentsCache = new IdentityHashMap<>();
         myRegistry = registry;
         myExpLabels = expLabels;
         myLiteralCounter = 0;
