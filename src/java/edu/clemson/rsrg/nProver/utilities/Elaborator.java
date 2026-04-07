@@ -66,47 +66,56 @@ public class Elaborator {
         for (ElaborationRule elaborationRule : rules) {
             Map<Exp, Integer> variableBindings = new HashMap<>();
             ruleCounter++;
-            int matchedCluster = -1;
-            boolean anyMatched = false; // stops from adding duplicate resultants to the registry
+            ArrayList<Integer> matchedClusters = new ArrayList<>();
+            boolean anyMatched = true; // stops from adding duplicate resultants to the registry
 
             if (elaborationRule.getPrecursorClauses().size() != 1) {
                 continue;
             }
             for (Exp precursor : elaborationRule.getPrecursorClauses()) {
-		if (precursor.getTopLevelOperator().equals("=")) {
-		    Exp leftSide = precursor.getSubExpressions().getFirst();
-		    Exp rightSide = precursor.getSubExpressions().getLast();
-		    Map<Exp, Integer> leftBindings = new HashMap<>();
-		    Map<Exp, Integer> rightBindings = new HashMap<>();
-		    int leftMatched = matchExpression(leftSide, leftBindings, ruleCounter, new HashMap<>());
-		    int rightMatched = matchExpression(rightSide, rightBindings, ruleCounter, leftBindings);
-		    if (rightMatched != -1 && leftMatched != -1) {
-			debugLog("Left Matched: " + leftMatched);
-			debugLog("Right Matched: " + rightMatched);
-		    }
-		} else {
-		    matchedCluster = matchExpression(precursor, variableBindings, ruleCounter, new HashMap<>());
-		}
-		anyMatched = matchedCluster != -1;
-		String body = getExpBodyString(precursor);
-		if (matchedCluster != -1) {
-		    debugLog("[Rule #" + ruleCounter + "] \u001B[42m Matched! \u001B[49m :" + body);
-		    debugLog("[Rule #" + ruleCounter + "]" + " Matched Cluster: " + "CC"
-			     + myRegistry.getClusterArray()[matchedCluster].getTreeNodeLabel() + " -> (CR"
-			     + matchedCluster + ": "
-			     + myMappings.get(myRegistry.getClusterArray()[matchedCluster].getTreeNodeLabel()) + " "
-			     + getArgsAsStrings(matchedCluster) + ")");
-		} else {
-		    debugLog("[Rule #" + ruleCounter + "] \u001B[41m Not Matched \u001B[49m :" + body);
-		}
+                if (precursor.getTopLevelOperator().equals("=")) {
+                    Exp leftSide = precursor.getSubExpressions().getFirst();
+                    Exp rightSide = precursor.getSubExpressions().getLast();
+                    Map<Exp, Integer> leftBindings = new HashMap<>();
+                    Map<Exp, Integer> rightBindings = new HashMap<>();
+                    int leftMatched = matchExpression(leftSide, leftBindings, ruleCounter, new HashMap<>());
+                    int rightMatched = matchExpression(rightSide, rightBindings, ruleCounter, leftBindings);
+                    if (rightMatched != -1 && leftMatched != -1) {
+                        int leftCC = myRegistry.getClusterArray()[leftMatched].getIndexToCongruenceClass();
+                        int rightCC = myRegistry.getClusterArray()[rightMatched].getIndexToCongruenceClass();
+                        if(myRegistry.areCongruent(leftCC, rightCC)){
+                            variableBindings.putAll(rightBindings);
+                            variableBindings.putAll(leftBindings);
+                            matchedClusters.add(leftMatched);
+                            matchedClusters.add(rightMatched);
+                        }
+                    }
+                } else {
+                    int matchedCluster = matchExpression(precursor, variableBindings, ruleCounter, new HashMap<>());
+                    if(matchedCluster != -1) {
+                        matchedClusters.add(matchedCluster);
+                    }
+                }
+                String body = getExpBodyString(precursor);
+                if (!matchedClusters.isEmpty()) {
+                    debugLog("[Rule #" + ruleCounter + "] \u001B[42m Matched! \u001B[49m :" + body);
+                    for(Integer matchedCluster : matchedClusters) {
+                        debugLog("[Rule #" + ruleCounter + "]" + " Matched Cluster: " + "CC"
+                                + myRegistry.getClusterArray()[matchedCluster].getTreeNodeLabel() + " -> (CR"
+                                + matchedCluster + ": "
+                                + myMappings.get(myRegistry.getClusterArray()[matchedCluster].getTreeNodeLabel()) + " "
+                                + getArgsAsStrings(matchedCluster) + ")");
+                    }
+                } else {
+                    debugLog("[Rule #" + ruleCounter + "] \u001B[41m Not Matched \u001B[49m :" + body);
+                }
             }
 
             if (anyMatched) {
-                if (matchedCluster == -1) {
+                if (matchedClusters.isEmpty()) {
                     continue;
                 }
-                int dominantCluster = myRegistry.getClusterArray()[matchedCluster].getDominantCluster();
-                result.add(new RuleInstance(variableBindings, elaborationRule, dominantCluster));
+                result.add(new RuleInstance(variableBindings, elaborationRule));
             }
         }
 
@@ -245,9 +254,15 @@ public class Elaborator {
                 return false;
             return myRegistry.getFirstClusterAccessorForCC(arg, expInt) != -1;
         } else if (requiredBindings.containsKey(subExp)) {
-	    int cc = myRegistry.getClusterArray()[requiredBindings.get(subExp)].getIndexToCongruenceClass();
-	    return cc == arg; // this is a variable that requires an exact match
-	}
+            int cc = myRegistry.getClusterArray()[requiredBindings.get(subExp)].getIndexToCongruenceClass();
+            return cc == arg; // this is a variable that requires an exact match
+        } else {
+            //Ensure that arg does not contain any cluster in requiredBindings
+            for(Integer forbiddenCluster : requiredBindings.values()){
+                if(myRegistry.getClusterArray()[forbiddenCluster].getIndexToCongruenceClass() == arg)
+                    return false;
+            }
+        }
 
         return true; // variables not in requiredBindings always match
     }

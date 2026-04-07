@@ -21,10 +21,8 @@ import java.util.Map;
 public class RuleInstance {
     private Exp resultantClause;
     private boolean forConsequent;
-    private int precursorAccessor;
 
-    public RuleInstance(Map<Exp, Integer> argBindings, ElaborationRule rule, int precursorAccessor) {
-        this.precursorAccessor = precursorAccessor;
+    public RuleInstance(Map<Exp, Integer> argBindings, ElaborationRule rule) {
         Map<Exp, Exp> argReplacements = new HashMap<>();
         for (Exp replacee : argBindings.keySet())
             argReplacements.put(replacee, new ClusterExp(argBindings.get(replacee)));
@@ -38,9 +36,5 @@ public class RuleInstance {
 
     public Exp getResultantClause() {
         return resultantClause;
-    }
-
-    public int getPrecursorAccessor() {
-        return precursorAccessor;
     }
 }
