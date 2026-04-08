@@ -12,6 +12,7 @@
  */
 package edu.clemson.rsrg.nProver.utilities.treewakers;
 
+import edu.clemson.rsrg.absyn.ResolveConceptualElement;
 import edu.clemson.rsrg.absyn.expressions.Exp;
 import edu.clemson.rsrg.absyn.expressions.mathexpr.*;
 import edu.clemson.rsrg.nProver.GeneralPurposeProver;
@@ -20,7 +21,6 @@ import edu.clemson.rsrg.parsing.data.LocationDetailModel;
 import edu.clemson.rsrg.statushandling.exception.SourceErrorException;
 import edu.clemson.rsrg.treewalk.TreeWalker;
 import edu.clemson.rsrg.treewalk.TreeWalkerStackVisitor;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -134,6 +134,12 @@ public abstract class AbstractRegisterSequent extends TreeWalkerStackVisitor {
     // ===========================================================
     // Visitor Methods
     // ===========================================================
+
+    @Override
+    public final void postAny(ResolveConceptualElement data) {
+        super.postAny(data);
+        this.myRegistry.setMyStringRepresentationWithMapping(myMappings);
+    }
 
     // -----------------------------------------------------------
     // Math Expression-Related
@@ -475,6 +481,17 @@ public abstract class AbstractRegisterSequent extends TreeWalkerStackVisitor {
      */
     public final Map<String, Integer> getExpLabels() {
         return myExpLabels;
+    }
+
+    /**
+     * <p>
+     * This method returns the list mapping from index to its associated expression string.
+     * </p>
+     *
+     * @return A list from {@link Integer} to {@link String}.
+     */
+    public final List<String> getMyMappings() {
+        return myMappings;
     }
 
     /**

@@ -42,7 +42,7 @@ public abstract class TreeWalkerStackVisitor extends TreeWalkerVisitor {
         pushParent();
     }
 
-    public final void postAny(ResolveConceptualElement data) {
+    public void postAny(ResolveConceptualElement data) {
         popParent();
         postAnyStack(data);
     }
@@ -71,11 +71,11 @@ public abstract class TreeWalkerStackVisitor extends TreeWalkerVisitor {
     // Private Methods
     // ===========================================================
 
-    private final void pushParent() {
+    private void pushParent() {
         myVisitStack.push(myParent);
     }
 
-    private final void popParent() {
+    private void popParent() {
         myVisitStack.pop();
     }
 

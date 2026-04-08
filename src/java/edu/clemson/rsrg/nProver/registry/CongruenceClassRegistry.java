@@ -174,6 +174,14 @@ public class CongruenceClassRegistry {
 
     /**
      * <p>
+     * This String representation is only used for debugging, and should later be only present when running with a debug
+     * flag
+     * </p>
+     */
+    private String myStringRepresentation;
+
+    /**
+     * <p>
      * The constructor for the registry that stores the target sequent VC in classes that contain clusters organized in
      * varieties and stands.
      * </p>
@@ -208,6 +216,8 @@ public class CongruenceClassRegistry {
         clusterArgumentString = new ArrayDeque<>();
         classMergeList = new ArrayDeque<>();
         succedentReflexiveOperatorsSet = new HashSet<>();
+
+        this.myStringRepresentation = toPrettyString(new ArrayList<>());
 
         // start the index 0 with {0,0,0,0,0,0} by creating a cluster object,
         // with 0 index to argument list then update later
@@ -2498,6 +2508,10 @@ public class CongruenceClassRegistry {
             }
         }
         return roots;
+    }
+
+    public void setMyStringRepresentationWithMapping(List<String> newMappings) {
+        this.myStringRepresentation = toPrettyString(newMappings);
     }
 
     /**
