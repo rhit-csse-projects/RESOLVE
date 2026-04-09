@@ -12,7 +12,8 @@ All phases of the verification process spanning verification condition (VC) gene
 
 ## Project Goal
 This project's goal is to implement a new proving architecture as detailed in the following diagram.
-![goal](https://github.com/user-attachments/assets/55136166-625d-429c-90d2-b8f2822bdac0)
+<img width="1550" height="1100" alt="overview" src="https://github.com/user-attachments/assets/30018885-21c7-4cb2-8ee9-53b0bfc359bd" />
+
 
 ## Authors and major contributors
 
