@@ -38,7 +38,7 @@ public class ElaborationRules {
      * Creates a list of elaboration rules out of a list of relevant theorems
      */
     private List<ElaborationRule> createElaborationRules() {
-        HashSet<ElaborationRule> elaborationRules = new HashSet<>();
+        HashSet<ElaborationRule> elaborationRules = new LinkedHashSet<>();
         List<Exp> myTheoremExpressions;
         // list of sub sub expressions for theorems with one clause
         List<Exp> myTheoremSubExpressions;

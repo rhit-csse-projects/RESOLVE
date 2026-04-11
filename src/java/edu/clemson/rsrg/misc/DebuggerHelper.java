@@ -24,4 +24,8 @@ public class DebuggerHelper {
     public static void setDebug(boolean debug) {
         myDebug = debug;
     }
+
+    public static boolean isDebug() {
+        return myDebug;
+    }
 }

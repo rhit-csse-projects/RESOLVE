@@ -15,6 +15,7 @@ package edu.clemson.rsrg.nProver.utilities.treewakers;
 import edu.clemson.rsrg.absyn.ResolveConceptualElement;
 import edu.clemson.rsrg.absyn.expressions.Exp;
 import edu.clemson.rsrg.absyn.expressions.mathexpr.*;
+import edu.clemson.rsrg.misc.DebuggerHelper;
 import edu.clemson.rsrg.nProver.GeneralPurposeProver;
 import edu.clemson.rsrg.nProver.registry.CongruenceClassRegistry;
 import edu.clemson.rsrg.parsing.data.LocationDetailModel;
@@ -138,7 +139,9 @@ public abstract class AbstractRegisterSequent extends TreeWalkerStackVisitor {
     @Override
     public final void postAny(ResolveConceptualElement data) {
         super.postAny(data);
-        this.myRegistry.setMyStringRepresentationWithMapping(myMappings);
+        if (DebuggerHelper.isDebug()) {
+            this.myRegistry.setMyStringRepresentationWithMapping(myMappings);
+        }
     }
 
     // -----------------------------------------------------------

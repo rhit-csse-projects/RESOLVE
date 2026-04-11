@@ -61,7 +61,7 @@ public final class TheoremStore {
      * {@inheritDoc}
      */
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (TheoremEntry theoremEntry : theoremToOps.keySet()) {
             sb.append("Name: ");
             sb.append(theoremEntry.getName());
@@ -75,7 +75,7 @@ public final class TheoremStore {
      * Returns all theorems who only contain operators that are in the set.
      */
     public Set<TheoremEntry> getRelevantTheoremsByOperators(Set<String> knownOperators) {
-        Set<TheoremEntry> result = new HashSet<>();
+        Set<TheoremEntry> result = new LinkedHashSet<>();
         for (Map.Entry<TheoremEntry, Set<String>> entry : theoremToOps.entrySet()) {
             Set<String> ops = new HashSet<>(entry.getValue());
             ops.removeIf(op -> !opStrings.contains(op));

@@ -178,8 +178,10 @@ public class Elaborator {
         // a variety at this point
         int currentClusterAccessor = myRegistry.getFirstClusterAccessorForCC(currentCCAccessor, operator);
 
-        if (currentClusterAccessor == -1)
+        if (currentClusterAccessor == -1) {
+            debugLog("[Elaborator] CC" + currentCCAccessor + " has no stand for operator " + operator + ", skipping");
             return -1; // this is probably not correct
+        }
 
         HashSet<Integer> visited = new HashSet<>();
         do { // Loop through the clusters in the stand
@@ -209,6 +211,7 @@ public class Elaborator {
                         matchedAllArgs = false;
                         break;
                     } else {
+                        subExp.setLocationDetailModel(null);
                         tempBindings.put(subExp, arg);
                     }
                 } else {
