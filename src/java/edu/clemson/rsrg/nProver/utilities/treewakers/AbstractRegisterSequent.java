@@ -25,7 +25,7 @@ import edu.clemson.rsrg.treewalk.TreeWalkerStackVisitor;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.IdentityHashMap;
+import java.util.HashMap;
 
 /**
  * <p>
@@ -124,7 +124,7 @@ public abstract class AbstractRegisterSequent extends TreeWalkerStackVisitor {
      */
     protected AbstractRegisterSequent(CongruenceClassRegistry registry, Map<String, Integer> expLabels, int nextLabel,
             List<String> mappings) {
-        myArgumentsCache = new IdentityHashMap<>();
+        myArgumentsCache = new HashMap<>();
         myRegistry = registry;
         myExpLabels = expLabels;
         myLiteralCounter = 0;

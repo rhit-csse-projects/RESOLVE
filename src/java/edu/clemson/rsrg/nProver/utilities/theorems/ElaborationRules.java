@@ -39,27 +39,17 @@ public class ElaborationRules {
      */
     private List<ElaborationRule> createElaborationRules() {
         HashSet<ElaborationRule> elaborationRules = new LinkedHashSet<>();
-        List<Exp> myTheoremExpressions;
         // list of sub sub expressions for theorems with one clause
-        List<Exp> myTheoremSubExpressions;
         // pick each relevant theorem one at a time
         for (TheoremEntry t : myRelevantTheorems) {
-            // get the sub expressions out of t
-            myTheoremExpressions = t.getAssertion().getSubExpressions();
-            // System.out.println(myTheoremExpressions);
 
-            // System.out.println("The size of the clause is: " +
-            // myTheoremExpressions.size());
-            // for one expression theorem, things will be different
-            // if (myTheoremExpressions.size() == 1) {
-            // break down the expression further it is assumed it will be at index 0
             Exp thisTheorem = t.getAssertion();// myTheoremExpressions.getFirst();
 
             if (thisTheorem instanceof QuantExp) {
                 thisTheorem = ((QuantExp) thisTheorem).getBody();
             }
 
-            myTheoremSubExpressions = thisTheorem.getSubExpressions();
+            List<Exp> myTheoremSubExpressions = thisTheorem.getSubExpressions();
 
             if (thisTheorem.getTopLevelOperator().equals("=")) {
                 // If the top level operator is =, create two ERs, one in each direction
@@ -81,13 +71,19 @@ public class ElaborationRules {
                 }
 
             } else if (thisTheorem.getTopLevelOperator().equals("implies")) {
-                // If the top level is implies, only create on ER. The inverse is not valid.
                 Exp firstPart = myTheoremSubExpressions.getFirst();
                 Exp lastPart = myTheoremSubExpressions.getLast();
 
                 List<Exp> firstPartPrecursors = processPrecursors(firstPart);
                 if (isDeterministic(firstPartPrecursors, thisTheorem)) {
-                    elaborationRules.add(mkRule(firstPartPrecursors, t, lastPart, "implies"));
+                    // Split "and" resultants into separate rules
+                    if (lastPart.getTopLevelOperator().equals("and")) {
+                        for (Exp subResultant : lastPart.getSubExpressions()) {
+                            elaborationRules.add(mkRule(firstPartPrecursors, t, subResultant, "implies"));
+                        }
+                    } else {
+                        elaborationRules.add(mkRule(firstPartPrecursors, t, lastPart, "implies"));
+                    }
                 }
             } else if (thisTheorem.getTopLevelOperator().equals("<=")) {
                 // If the top level operator is =, create two ERs, one in each direction
@@ -99,19 +95,9 @@ public class ElaborationRules {
                     elaborationRules.add(mkRule(firstPartPrecursors, t, thisTheorem, "="));
                 }
             } else {
-                // System.out.println(t);
                 DebuggerHelper.debugLog(
                         "WARNING: Unable to process ER with top level operator " + thisTheorem.getTopLevelOperator());
             }
-
-            /*
-             * } else { // build the elaboration rule out of each expression by making it a resultant // and the reset
-             * precursors for (Exp te : myTheoremExpressions) { List<Exp> copyOfTheoremExpressions =
-             * t.getAssertion().getSubExpressions(); // check if the rule will be deterministic, and for the moment, if
-             * not // deterministic ignore it if (isDeterministic(copyOfTheoremExpressions, te))
-             * elaborationRules.add(mkRule(copyOfTheoremExpressions, t, te, t.getAssertion().getTopLevelOperator())); }
-             * }
-             */
         }
         return new ArrayList<>(elaborationRules);
     }
@@ -165,6 +151,7 @@ public class ElaborationRules {
         }
 
         // For some reason beyond our understanding, regular containsAll always returns false
+        // probably because of the location stuff in Exps
         return cursedContainsAll(collectionOfPrecursorVars, resultantVars); // collectionOfPrecursorVars.containsAll(resultantVars);
     }
 

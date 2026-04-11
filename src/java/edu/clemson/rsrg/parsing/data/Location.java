@@ -156,7 +156,7 @@ public class Location implements Cloneable {
     @Override
     public final int hashCode() {
         int result = myFile.hashCode();
-        result = 31 * result + myPosition.myCurrline;
+        result = 31 * result + myPosition.hashCode();
         return result;
     }
 
