@@ -19,15 +19,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RuleInstance {
-    private Exp resultantClause;
-    private boolean forConsequent;
+    private final Exp resultantClause;
+    private final boolean forConsequent;
+    private final int counter;
 
-    public RuleInstance(Map<Exp, Integer> argBindings, ElaborationRule rule) {
+    public RuleInstance(Map<Exp, Integer> argBindings, ElaborationRule rule, int counter) {
         Map<Exp, Exp> argReplacements = new HashMap<>();
         for (Exp replacee : argBindings.keySet())
             argReplacements.put(replacee, new ClusterExp(argBindings.get(replacee)));
         this.resultantClause = rule.getResultantClause().substitute(argReplacements);
         this.forConsequent = rule.forConsequent();
+        this.counter = counter;
     }
 
     public boolean isForConsequent() {
@@ -36,5 +38,9 @@ public class RuleInstance {
 
     public Exp getResultantClause() {
         return resultantClause;
+    }
+
+    public String getCounter() {
+        return Integer.toString(counter);
     }
 }

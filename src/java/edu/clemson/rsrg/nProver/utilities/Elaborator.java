@@ -15,6 +15,7 @@ package edu.clemson.rsrg.nProver.utilities;
 import edu.clemson.rsrg.absyn.expressions.Exp;
 import edu.clemson.rsrg.absyn.expressions.mathexpr.AbstractFunctionExp;
 import edu.clemson.rsrg.absyn.expressions.mathexpr.QuantExp;
+import edu.clemson.rsrg.absyn.expressions.mathexpr.VarExp;
 import edu.clemson.rsrg.nProver.registry.CongruenceClassRegistry;
 import edu.clemson.rsrg.nProver.utilities.theorems.ElaborationRule;
 import edu.clemson.rsrg.nProver.utilities.theorems.RuleInstance;
@@ -67,11 +68,8 @@ public class Elaborator {
             Map<Exp, Integer> variableBindings = new HashMap<>();
             ruleCounter++;
             ArrayList<Integer> matchedClusters = new ArrayList<>();
-            boolean anyMatched = true; // stops from adding duplicate resultants to the registry
+            boolean allMatched = true; // stops from adding duplicate resultants to the registry
 
-            if (elaborationRule.getPrecursorClauses().size() != 1) {
-                continue;
-            }
             for (Exp precursor : elaborationRule.getPrecursorClauses()) {
                 if (precursor.getTopLevelOperator().equals("=")) {
                     Exp leftSide = precursor.getSubExpressions().getFirst();
@@ -88,20 +86,29 @@ public class Elaborator {
                             variableBindings.putAll(leftBindings);
                             matchedClusters.add(leftMatched);
                             matchedClusters.add(rightMatched);
+                        } else {
+                            allMatched = false;
+                            matchedClusters = new ArrayList<>();
                         }
+                    } else {
+                        allMatched = false;
+                        matchedClusters = new ArrayList<>();
                     }
                 } else {
-                    int matchedCluster = matchExpression(precursor, variableBindings, ruleCounter, new HashMap<>());
+                    int matchedCluster = matchExpression(precursor, variableBindings, ruleCounter, variableBindings);
                     if (matchedCluster != -1) {
                         matchedClusters.add(matchedCluster);
+                    } else {
+                        allMatched = false;
+                        matchedClusters = new ArrayList<>();
                     }
                 }
                 String body = getExpBodyString(precursor);
-                if (!matchedClusters.isEmpty()) {
+                if (allMatched) {
                     debugLog("[Rule #" + ruleCounter + "] \u001B[42m Matched! \u001B[49m :" + body);
                     for (Integer matchedCluster : matchedClusters) {
                         debugLog("[Rule #" + ruleCounter + "]" + " Matched Cluster: " + "CC"
-                                + myRegistry.getClusterArray()[matchedCluster].getTreeNodeLabel() + " -> (CR"
+                                + myRegistry.getClusterArray()[matchedCluster].getIndexToCongruenceClass() + " -> (CR"
                                 + matchedCluster + ": "
                                 + myMappings.get(myRegistry.getClusterArray()[matchedCluster].getTreeNodeLabel()) + " "
                                 + getArgsAsStrings(matchedCluster) + ")");
@@ -111,11 +118,11 @@ public class Elaborator {
                 }
             }
 
-            if (anyMatched) {
+            if (allMatched) {
                 if (matchedClusters.isEmpty()) {
                     continue;
                 }
-                result.add(new RuleInstance(variableBindings, elaborationRule));
+                result.add(new RuleInstance(variableBindings, elaborationRule, ruleCounter));
             }
         }
 
@@ -262,11 +269,13 @@ public class Elaborator {
             if (expInt == -1)
                 return false;
             return myRegistry.getFirstClusterAccessorForCC(arg, expInt) != -1;
-        } else if (requiredBindings.containsKey(subExp)) {
-            int cc = myRegistry.getClusterArray()[requiredBindings.get(subExp)].getIndexToCongruenceClass();
+        }
+        Integer boundCluster = findBindingByEquivalence(requiredBindings, (VarExp) subExp);
+        if (boundCluster != null) {
+            int cc = myRegistry.getClusterArray()[boundCluster].getIndexToCongruenceClass();
             return cc == arg; // this is a variable that requires an exact match
         } else {
-            // Ensure that arg does not contain any cluster in requiredBindings
+            // Check that arg isn't already bound to a different variable
             for (Integer forbiddenCluster : requiredBindings.values()) {
                 if (myRegistry.getClusterArray()[forbiddenCluster].getIndexToCongruenceClass() == arg)
                     return false;
@@ -283,21 +292,18 @@ public class Elaborator {
     }
 
     private void addToRegistry(RuleInstance rule) {
-        // we'll need to add the resultant to the correct side(s) of the registry
-        // if(isFromAntencedent) {
+        // we'll need to add the resultant to the correct side(s) of the registry via the TreeWalker
         Exp resultant = rule.getResultantClause();
 
-        debugLog("Trying to add " + resultant + " to the registry");
+        debugLog(
+                "\u001B[33m[Rule #" + rule.getCounter() + "]\u001B[0m Trying to add " + resultant + " to the registry");
 
         int CCDesLeftInitial = myRegistry.remainingCCDesignatorCap();
         TreeWalker.visit(new RegisterAntecedent(myRegistry, myExpLabels, myExpLabels.size(), myMappings), resultant);
         int CCDesLeftLater = myRegistry.remainingCCDesignatorCap();
-        debugLog("Resultant: " + resultant + " \u001B[33mAdded " + (CCDesLeftInitial - CCDesLeftLater)
-                + " CCs to the Registry\u001B[0m");
-        // } else {
-        // TreeWalker.visit(new RegisterSuccedent(myRegistry, myExpLabels,
-        // myExpLabels.size(), myMappings), resultant);
-        // }
+        debugLog("\u001B[33m[Rule #" + rule.getCounter() + "]\u001B[0m " + resultant + " \u001B[33mAdded "
+                + (CCDesLeftInitial - CCDesLeftLater) + " CCs to the Registry\u001B[0m");
+//        debugLog(myRegistry);
     }
 
     public void elaborateAndApply(List<ElaborationRule> rules) {
@@ -308,9 +314,18 @@ public class Elaborator {
         List<Integer> args = myRegistry.getArgumentsList(myRegistry.getCongruenceCluster(matchedCluster));
         StringBuilder sb = new StringBuilder();
         for (Integer arg : args) {
-            sb.append("CC").append(myRegistry.getCongruenceCluster(arg).getTreeNodeLabel()).append(", ");
+            sb.append("CC").append(myRegistry.getCongruenceCluster(arg).getIndexToCongruenceClass()).append(", ");
         }
         sb.delete(sb.length() - 2, sb.length());
         return sb.toString();
+    }
+
+    private Integer findBindingByEquivalence(Map<Exp, Integer> bindings, VarExp key) {
+        for (Map.Entry<Exp, Integer> entry : bindings.entrySet()) {
+            if (entry.getKey().equivalent(key)) {
+                return entry.getValue();
+            }
+        }
+        return null;
     }
 }

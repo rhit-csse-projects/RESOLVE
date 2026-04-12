@@ -80,6 +80,7 @@ public class CCRegCheckRegisteredTest {
     public final void testContainsStructures() {
 
         ArrayList<String> myMappings = new ArrayList<>();
+        // for debugging purposes
 
         myMappings.add(null);
         myMappings.add("<=");
@@ -133,24 +134,18 @@ public class CCRegCheckRegisteredTest {
         myRegistry.appendToClusterArgList(concatenate4);
         int equals = myRegistry.registerCluster(2);
 
-        // System.out.println(myRegistry.toPrettyString(myMappings));
-
         myRegistry.appendToClusterArgList(s);
         myRegistry.appendToClusterArgList(concatenate4);
-        // assertTrue("= should be registered with args: " +
-        // myRegistry.getArgumentsList(myRegistry.getCongruenceClass(equals).get),
-        // myRegistry.checkIfRegistered(equals));
+        assertTrue("= should be registered with args: ", myRegistry.checkIfRegistered(2));
         myRegistry.removeFromClusterArgList();
         myRegistry.removeFromClusterArgList();
 
         myRegistry.appendToClusterArgList(temp);
-        // weirdly, this is failing
-        // assertTrue("Reverse should be registered", myRegistry.checkIfRegistered(reverse));
+        assertTrue("Reverse should be registered", myRegistry.checkIfRegistered(10));
         myRegistry.removeFromClusterArgList();
 
         myRegistry.appendToClusterArgList(concatenate3);
-        // weirdly, this is failing
-        // assertTrue("Concatenate should be registered", myRegistry.checkIfRegistered(reverse2));
+        assertTrue("Concatenate should be registered", myRegistry.checkIfRegistered(10));
         myRegistry.removeFromClusterArgList();
 
         myRegistry.appendToClusterArgList(singleton);
@@ -159,8 +154,7 @@ public class CCRegCheckRegisteredTest {
 
         myRegistry.appendToClusterArgList(reverse2);
         myRegistry.appendToClusterArgList(sp);
-        // weirdly, this failing
-        // assertTrue("Concatenate4 should be registered", myRegistry.checkIfRegistered(concatenate4));
+        assertTrue("Concatenate4 should be registered", myRegistry.checkIfRegistered(9));
         myRegistry.removeFromClusterArgList();
         myRegistry.removeFromClusterArgList();
 
@@ -171,11 +165,8 @@ public class CCRegCheckRegisteredTest {
         myRegistry.appendToClusterArgList(concatenate5);
         int reverse5 = myRegistry.registerCluster(10);
 
-        // my mappings: [null, <=, =, Next_Entry, Spp, Sp, S, Temp, <_>, o, Reverse]
-
         myRegistry.appendToClusterArgList(singleton);
-        // weirdly, this is failing
-        // assertTrue("Reverse3 should be registered", myRegistry.checkIfRegistered(reverse3));
+        assertTrue("Reverse3 should be registered", myRegistry.checkIfRegistered(10));
         myRegistry.removeFromClusterArgList();
     }
 

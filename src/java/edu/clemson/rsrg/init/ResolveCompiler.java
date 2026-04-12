@@ -61,7 +61,7 @@ public class ResolveCompiler {
      * This indicates the current compiler version.
      * </p>
      */
-    public static final String COMPILER_VERSION = "RHIT CSSE/Senior Project 2025";
+    public static final String COMPILER_VERSION = "RHIT CSSE/Senior Project 2025-2026";
 
     // ===========================================================
     // Member Fields
