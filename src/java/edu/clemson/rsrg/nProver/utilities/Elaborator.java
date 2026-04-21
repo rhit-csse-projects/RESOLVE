@@ -312,7 +312,7 @@ public class Elaborator {
         ArrayList<RuleInstance> matchedRules = elaborate(rules);
         applyRules(matchedRules);
         for(RuleInstance rule : matchedRules) {
-            appliedTheorems.add(rule.getSourceTheoremName() + ":" + rule.getSourceModuleName());
+            appliedTheorems.add("**" + rule.getSourceTheoremName() + "** (" + rule.getSourceModuleName() + ")");
         }
         return appliedTheorems;
     }

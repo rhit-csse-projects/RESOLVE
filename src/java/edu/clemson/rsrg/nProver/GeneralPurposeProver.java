@@ -505,7 +505,7 @@ public class GeneralPurposeProver {
          */
         StringBuilder niceTheorems = new StringBuilder();
         for(String theorem : theoremsUsed) {
-            niceTheorems.append(theorem).append("\n");
+            niceTheorems.append("- ").append(theorem).append("\n");
         }
 
         // Add the VC to the VC proof detail model

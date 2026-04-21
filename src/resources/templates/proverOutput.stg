@@ -4,17 +4,19 @@
 outputProofFile(fileName, dateGenerated, proverName, timeOut, numTries, vcs, totalTime, numProved, numUnproved) ::= <<
 Proofs for <fileName> generated <dateGenerated>
 
-================================= Summary =================================
+# Summary
 
-[Prover Settings]
+## Prover Settings
     Prover: <proverName>
     Timeout: <timeOut> ms
     Number of Tries Before Halting: <numTries>
 
-[VC Results]
+## VC Results
+| VC | Result |
+| --- | --- |
 <vcs; separator = "\n">
 
-[Aggregate Results]
+## Aggregate Results
     Total number of proved VCs: <numProved>
     Total number of unproved and skipped VCs: <numUnproved>
     Total elapsed time in generating proofs: <totalTime> ms<\n>
@@ -25,5 +27,5 @@ Proofs for <fileName> generated <dateGenerated>
  * Template for storing the proof result for a VC in a human readable format.
  */
 outputVCProofResult(vcNum, isProved, wasSkipped, timedOut, time) ::= <<
-    VC <vcNum; format="%-7s"> .........     <if(wasSkipped)>skipped<elseif(timedOut)>timed out after <time><else><if(!isProved)>not <endif>proved in <time> ms.<endif>
+| VC <vcNum; format="%-7s"> |     <if(wasSkipped)>skipped<elseif(timedOut)>timed out after <time><else><if(!isProved)>not <endif>proved in <time> ms.<endif> |
 >>

@@ -2,11 +2,9 @@
  * Template for proof generation details (aka Verbose Mode)
  */
 outputProofGenDetails(fileHeader, vcProofDetails) ::= <<
-========================= Proof Generation Details  =========================
+# Proof Generation Details
 
 <fileHeader>
-
-=============================================================================
 
 <vcProofDetails; separator = "\n">
 
@@ -60,34 +58,27 @@ outputFacilityHeader(facilityName) ::= <<
  * Template for displaying the VC and the proof details associated with this VC.
  */
 outputVCProofDetails(vcNum, vc, result, expLabels, registryArrays, theoremsUsed) ::= <<
-=================================== <vcNum> ===================================
+# VC: <vcNum>
 
 <vc>
+**Prover Result**: <result>
 
-[Prover Result]: <result>
-_____________________
-
-[Label(s)]:
-    <expLabels.keys : {exp | <exp> -> <expLabels.(exp)>}; separator = "\n">
-
-_____________________
-
-[Applied Theorems]:
+## Applied Theorems:
 <theoremsUsed>
 
-NOTE: Not all applied theorems may have actually contributed to the proof
+**NOTE**: Not all applied theorems may have actually contributed to the proof
 
-_____________________
-
-[Registry State]:
+## Registry State:
+```
 <registryArrays>
+```
 >>
 
 /**
  * Template for storing the final set of VCs in a human readable format.
  */
 outputVC(vcNum, hasImpactingReduction, location, locationDetail, sequent) ::= <<
-VC <vcNum>:
+**VC <vcNum>**:
 <locationDetail><if(hasImpactingReduction)> [After Logical Reduction(s)]<endif> at <location>
 
 <sequent>
@@ -97,10 +88,10 @@ VC <vcNum>:
  * Template for storing a sequent in a VC
  */
 outputSequent(consequents, antecedents) ::= <<
-Goal:
+**Goal**:
 <consequents : {consequent | <consequent>}; separator = " or \n">
 
-Given(s):
+**Given(s)**:
 <antecedents : {antecedent | <i>. <antecedent>}; separator = "\n">
 
 >>
@@ -121,6 +112,5 @@ outputCCRegistryArrays(clusterArguments, clusters, plantations, classes) ::= <<
 [Class Array]:
     <classes : {class | <class>}; separator = "\n">
 
-_____________________
 
 >>

@@ -68,3 +68,5 @@ Thumbs.db
 /stderr.txt
 /stdout.txt
 /.vscode/
+*.proof
+*.proof.md

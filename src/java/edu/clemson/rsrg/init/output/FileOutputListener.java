@@ -200,7 +200,7 @@ public class FileOutputListener implements OutputListener {
         sb.append(verboseOutput);
 
         // Output the results to file
-        writeToFile(outputFileName + ".gp.proof", sb.toString());
+        writeToFile(outputFileName + ".gp.proof.md", sb.toString());
     }
 
     /**
