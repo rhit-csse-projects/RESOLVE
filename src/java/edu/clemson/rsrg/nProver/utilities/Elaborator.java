@@ -21,6 +21,7 @@ import edu.clemson.rsrg.nProver.utilities.theorems.ElaborationRule;
 import edu.clemson.rsrg.nProver.utilities.theorems.RuleInstance;
 import edu.clemson.rsrg.nProver.utilities.treewakers.RegisterAntecedent;
 import edu.clemson.rsrg.treewalk.TreeWalker;
+import edu.clemson.rsrg.typeandpopulate.entry.TheoremEntry;
 
 import java.util.*;
 
@@ -306,8 +307,14 @@ public class Elaborator {
 //        debugLog(myRegistry);
     }
 
-    public void elaborateAndApply(List<ElaborationRule> rules) {
-        applyRules(elaborate(rules));
+    public Set<String> elaborateAndApply(List<ElaborationRule> rules) {
+        Set<String> appliedTheorems = new LinkedHashSet<>();
+        ArrayList<RuleInstance> matchedRules = elaborate(rules);
+        applyRules(matchedRules);
+        for(RuleInstance rule : matchedRules) {
+            appliedTheorems.add(rule.getSourceTheoremName() + ":" + rule.getSourceModuleName());
+        }
+        return appliedTheorems;
     }
 
     private String getArgsAsStrings(int matchedCluster) {

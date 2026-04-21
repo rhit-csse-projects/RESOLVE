@@ -379,6 +379,7 @@ public class GeneralPurposeProver {
 
             isProved |= registry.checkIfProved();
 
+            Set<String> theoremsUsed = new LinkedHashSet<>(); //Used for printing results, not needed to prove
             if (!isProved) {
                 debugLog("=== Initial Registry ===");
                 debugLog(registry.toPrettyString(mappings));
@@ -397,7 +398,7 @@ public class GeneralPurposeProver {
                     debugLog("============ [Attempt " + l + "] Elaboration & Matching (VC #" + vc.getName()
                             + ") ===============");
 
-                    elaborator.elaborateAndApply(rules.getMyElaborationRules());
+                    theoremsUsed.addAll(elaborator.elaborateAndApply(rules.getMyElaborationRules()));
                     isProved |= registry.checkIfProved();
                     debugLog("=== Registry after Elaboration Attempt ===");
                     debugLog(registry.toPrettyString(mappings));
@@ -417,7 +418,7 @@ public class GeneralPurposeProver {
 
             // Store the verbose proof detail for this VC
             String result = isProved ? "Proved" : "Not Proved";
-            storeVCProofVerboseDetail(vc, result, registry, expLabels, mappings);
+            storeVCProofVerboseDetail(vc, result, registry, expLabels, mappings, theoremsUsed);
             if (isProved) {
                 System.out.print("[VC #" + vc.getName() + "]: \u001B[42m   Proved   \u001B[49m " + vc);
             } else {
@@ -455,19 +456,15 @@ public class GeneralPurposeProver {
      * An helper method that stores verbose detail about proving this {@code VC}.
      * </p>
      *
-     * @param vc
-     *            The {@link VerificationCondition} we have attempted to prove.
-     * @param result
-     *            The prover results.
-     * @param registry
-     *            The congruence class registry used on this {@code VC}.
-     * @param expLabels
-     *            The expression labels assigned to the expressions in this {@code VC}.
-     * @param mappings
-     *            The list of labels with indexes as its cluster ID
+     * @param vc           The {@link VerificationCondition} we have attempted to prove.
+     * @param result       The prover results.
+     * @param registry     The congruence class registry used on this {@code VC}.
+     * @param expLabels    The expression labels assigned to the expressions in this {@code VC}.
+     * @param mappings     The list of labels with indexes as its cluster ID
+     * @param theoremsUsed
      */
     private void storeVCProofVerboseDetail(VerificationCondition vc, String result, CongruenceClassRegistry registry,
-            Map<String, Integer> expLabels, List<String> mappings) {
+                                           Map<String, Integer> expLabels, List<String> mappings, Set<String> theoremsUsed) {
         // Create a model for adding all the details associated with this VC.
         LocationDetailModel detailModel = vc.getLocationDetailModel();
         ST vcModel = mySTGroup.getInstanceOf("outputVC");
@@ -506,6 +503,10 @@ public class GeneralPurposeProver {
          * ccRegistryArraysModel.add("plantations", registry.getStandArray()); // plantations are now stands
          * ccRegistryArraysModel.add("classes", registry.getCongruenceClassArray());
          */
+        StringBuilder niceTheorems = new StringBuilder();
+        for(String theorem : theoremsUsed) {
+            niceTheorems.append(theorem).append("\n");
+        }
 
         // Add the VC to the VC proof detail model
         ST vcProofDetailModel = mySTGroup.getInstanceOf("outputVCProofDetails");
@@ -514,6 +515,8 @@ public class GeneralPurposeProver {
         vcProofDetailModel.add("result", result);
         vcProofDetailModel.add("expLabels", expLabels);
         vcProofDetailModel.add("registryArrays", registry.toPrettyString(mappings));// ccRegistryArraysModel.render());
+        vcProofDetailModel.add("theoremsUsed", niceTheorems.toString());
+
 
         // Add VC proof detail model to prover generation details
         myProofGenDetailsModel.add("vcProofDetails", vcProofDetailModel.render());

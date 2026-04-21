@@ -59,7 +59,7 @@ outputFacilityHeader(facilityName) ::= <<
 /*
  * Template for displaying the VC and the proof details associated with this VC.
  */
-outputVCProofDetails(vcNum, vc, result, expLabels, registryArrays) ::= <<
+outputVCProofDetails(vcNum, vc, result, expLabels, registryArrays, theoremsUsed) ::= <<
 =================================== <vcNum> ===================================
 
 <vc>
@@ -72,6 +72,14 @@ _____________________
 
 _____________________
 
+[Applied Theorems]:
+<theoremsUsed>
+
+NOTE: Not all applied theorems may have actually contributed to the proof
+
+_____________________
+
+[Registry State]:
 <registryArrays>
 >>
 
