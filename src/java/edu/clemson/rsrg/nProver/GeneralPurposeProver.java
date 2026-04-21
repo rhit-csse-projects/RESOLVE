@@ -379,7 +379,7 @@ public class GeneralPurposeProver {
 
             isProved |= registry.checkIfProved();
 
-            Set<String> theoremsUsed = new LinkedHashSet<>(); //Used for printing results, not needed to prove
+            Set<String> theoremsUsed = new LinkedHashSet<>(); // Used for printing results, not needed to prove
             if (!isProved) {
                 debugLog("=== Initial Registry ===");
                 debugLog(registry.toPrettyString(mappings));
@@ -456,15 +456,21 @@ public class GeneralPurposeProver {
      * An helper method that stores verbose detail about proving this {@code VC}.
      * </p>
      *
-     * @param vc           The {@link VerificationCondition} we have attempted to prove.
-     * @param result       The prover results.
-     * @param registry     The congruence class registry used on this {@code VC}.
-     * @param expLabels    The expression labels assigned to the expressions in this {@code VC}.
-     * @param mappings     The list of labels with indexes as its cluster ID
+     * @param vc
+     *            The {@link VerificationCondition} we have attempted to prove.
+     * @param result
+     *            The prover results.
+     * @param registry
+     *            The congruence class registry used on this {@code VC}.
+     * @param expLabels
+     *            The expression labels assigned to the expressions in this {@code VC}.
+     * @param mappings
+     *            The list of labels with indexes as its cluster ID
      * @param theoremsUsed
+     *            The set of theorems used
      */
     private void storeVCProofVerboseDetail(VerificationCondition vc, String result, CongruenceClassRegistry registry,
-                                           Map<String, Integer> expLabels, List<String> mappings, Set<String> theoremsUsed) {
+            Map<String, Integer> expLabels, List<String> mappings, Set<String> theoremsUsed) {
         // Create a model for adding all the details associated with this VC.
         LocationDetailModel detailModel = vc.getLocationDetailModel();
         ST vcModel = mySTGroup.getInstanceOf("outputVC");
@@ -504,7 +510,7 @@ public class GeneralPurposeProver {
          * ccRegistryArraysModel.add("classes", registry.getCongruenceClassArray());
          */
         StringBuilder niceTheorems = new StringBuilder();
-        for(String theorem : theoremsUsed) {
+        for (String theorem : theoremsUsed) {
             niceTheorems.append("- ").append(theorem).append("\n");
         }
 
@@ -516,7 +522,6 @@ public class GeneralPurposeProver {
         vcProofDetailModel.add("expLabels", expLabels);
         vcProofDetailModel.add("registryArrays", registry.toPrettyString(mappings));// ccRegistryArraysModel.render());
         vcProofDetailModel.add("theoremsUsed", niceTheorems.toString());
-
 
         // Add VC proof detail model to prover generation details
         myProofGenDetailsModel.add("vcProofDetails", vcProofDetailModel.render());
