@@ -467,6 +467,7 @@ public class GeneralPurposeProver {
      * @param mappings
      *            The list of labels with indexes as its cluster ID
      * @param theoremsUsed
+     *            The set of theorems used
      */
     private void storeVCProofVerboseDetail(VerificationCondition vc, String result, CongruenceClassRegistry registry,
             Map<String, Integer> expLabels, List<String> mappings, Set<String> theoremsUsed) {

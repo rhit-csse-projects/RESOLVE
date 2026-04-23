@@ -21,7 +21,6 @@ import edu.clemson.rsrg.nProver.utilities.theorems.ElaborationRule;
 import edu.clemson.rsrg.nProver.utilities.theorems.RuleInstance;
 import edu.clemson.rsrg.nProver.utilities.treewakers.RegisterAntecedent;
 import edu.clemson.rsrg.treewalk.TreeWalker;
-import edu.clemson.rsrg.typeandpopulate.entry.TheoremEntry;
 
 import java.util.*;
 
