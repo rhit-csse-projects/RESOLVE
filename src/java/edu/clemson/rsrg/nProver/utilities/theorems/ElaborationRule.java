@@ -68,16 +68,23 @@ public class ElaborationRule {
             sb.append("No Source Theorem for this Rule \n");
         }
         sb.append("\n\n Precursor Clauses: ");
-        sb.append(myPrecursorClauses.toString());
-        sb.append("\n");
-        for (Exp exp : myPrecursorClauses) {
-            sb.append(" (IsAntecedent: ").append(exp.getAntecendentState()).append(") ");
+        // sb.append(myPrecursorClauses.toString());
+        // sb.append("\n");
+	sb.append(" [\n");
+        for (int i = 0; i < myPrecursorClauses.size(); i++) {
+	    Exp exp = myPrecursorClauses.get(i);
+	    sb.append("  ");
+	    sb.append(exp);
+            sb.append("; Antecedent: ").append(exp.getAntecendentState());
+	    if (i < myPrecursorClauses.size() - 1)
+		sb.append(",\n");
         }
+	sb.append("\n ]");
         sb.append("\n Source Operator: ");
         sb.append(mySourceTheoremOperator);
         sb.append("\n Resultant Clause: ");
         sb.append(myResultantClause.toString());
-        sb.append("\n (IsAntecedent: ").append(myResultantClause.getAntecendentState()).append(")");
+        sb.append(" Antecedent: ").append(myResultantClause.getAntecendentState());
         sb.append("\u001B[0m");
         sb.append("\n\n");
         return sb.toString();
