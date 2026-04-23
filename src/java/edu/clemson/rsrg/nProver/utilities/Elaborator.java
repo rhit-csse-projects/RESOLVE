@@ -304,14 +304,14 @@ public class Elaborator {
         int CCDesLeftLater = myRegistry.remainingCCDesignatorCap();
         debugLog("\u001B[33m[Rule #" + rule.getCounter() + "]\u001B[0m " + resultant + " \u001B[33mAdded "
                 + (CCDesLeftInitial - CCDesLeftLater) + " CCs to the Registry\u001B[0m");
-//        debugLog(myRegistry);
+        // debugLog(myRegistry);
     }
 
     public Set<String> elaborateAndApply(List<ElaborationRule> rules) {
         Set<String> appliedTheorems = new LinkedHashSet<>();
         ArrayList<RuleInstance> matchedRules = elaborate(rules);
         applyRules(matchedRules);
-        for(RuleInstance rule : matchedRules) {
+        for (RuleInstance rule : matchedRules) {
             appliedTheorems.add("**" + rule.getSourceTheoremName() + "** (" + rule.getSourceModuleName() + ")");
         }
         return appliedTheorems;

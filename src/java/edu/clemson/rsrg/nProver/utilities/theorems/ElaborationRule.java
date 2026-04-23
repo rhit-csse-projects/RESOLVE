@@ -19,16 +19,14 @@ import java.util.List;
 public class ElaborationRule {
     private List<Exp> myPrecursorClauses;
     private Exp myResultantClause;
-    private boolean forConsequent;
     private String mySourceTheoremName;
     private String mySourceModuleName;
     private String mySourceTheoremOperator;
 
-    public ElaborationRule(List<Exp> precursorClauses, Exp resultantClause, boolean forConsequent,
-            String sourceTheoremName, String sourceModuleName, String sourceTheoremOperator) {
+    public ElaborationRule(List<Exp> precursorClauses, Exp resultantClause, String sourceTheoremName,
+            String sourceModuleName, String sourceTheoremOperator) {
         myPrecursorClauses = precursorClauses;
         myResultantClause = resultantClause;
-        this.forConsequent = forConsequent;
         this.mySourceTheoremName = sourceTheoremName;
         this.mySourceModuleName = sourceModuleName;
         this.mySourceTheoremOperator = sourceTheoremOperator;
@@ -40,13 +38,6 @@ public class ElaborationRule {
 
     public Exp getResultantClause() {
         return myResultantClause;
-    }
-
-    /**
-     * @return true if this elaboration rule should only be matched to the consequent
-     */
-    public boolean forConsequent() {
-        return forConsequent;
     }
 
     public String getSourceTheoremName() {
@@ -82,9 +73,6 @@ public class ElaborationRule {
         sb.append(mySourceTheoremOperator);
         sb.append("\n Resultant Clause: ");
         sb.append(myResultantClause.toString());
-        sb.append("\n For Succedent: ");
-        sb.append("\u001B[35m");
-        sb.append(forConsequent);
         sb.append("\u001B[0m");
         sb.append("\n\n");
         return sb.toString();
@@ -98,7 +86,7 @@ public class ElaborationRule {
         if (obj instanceof ElaborationRule) {
             ElaborationRule other = (ElaborationRule) obj;
             return myPrecursorClauses.equals(other.myPrecursorClauses)
-                    && myResultantClause.equals(other.myResultantClause) && forConsequent == other.forConsequent
+                    && myResultantClause.equals(other.myResultantClause)
                     && mySourceModuleName.equals(other.mySourceModuleName)
                     && mySourceTheoremName.equals(other.mySourceTheoremName);
         }
@@ -107,7 +95,7 @@ public class ElaborationRule {
 
     @Override
     public int hashCode() {
-        return myPrecursorClauses.hashCode() + (myResultantClause.hashCode() * 10) + (forConsequent ? 100 : 0)
-                + (mySourceModuleName.hashCode() * 1000) + (mySourceTheoremName.hashCode() * 10000);
+        return myPrecursorClauses.hashCode() + (myResultantClause.hashCode() * 10)
+                + (mySourceModuleName.hashCode() * 100) + (mySourceTheoremName.hashCode() * 1000);
     }
 }

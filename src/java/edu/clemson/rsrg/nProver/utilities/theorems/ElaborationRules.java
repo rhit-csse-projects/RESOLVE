@@ -85,6 +85,7 @@ public class ElaborationRules {
                         elaborationRules.add(mkRule(firstPartPrecursors, t, lastPart, "implies"));
                     }
                 }
+                disjunctiveNormalForm(firstPartPrecursors, lastPart, t, elaborationRules);
             } else if (thisTheorem.getTopLevelOperator().equals("<=")) {
                 // If the top level operator is =, create two ERs, one in each direction
                 Exp firstPart = myTheoremSubExpressions.getFirst();
@@ -100,6 +101,31 @@ public class ElaborationRules {
             }
         }
         return new ArrayList<>(elaborationRules);
+    }
+
+    private void disjunctiveNormalForm(List<Exp> firstPartPrecursors, Exp lastPart, TheoremEntry t,
+            HashSet<ElaborationRule> elaborationRules) {
+	Exp newLastPart = lastPart.clone();
+        newLastPart.setAntecedent(false);
+        List<Exp> exps = new ArrayList<>();
+        firstPartPrecursors.forEach(e -> {
+	    Exp newExp = e.clone();
+	    newExp.setAntecedent(true);
+	    exps.add(newExp);
+	});
+        exps.add(newLastPart);
+        for (Exp expressionForSuccedent : exps) {
+            List<Exp> precursors = new ArrayList<>();
+            for (Exp expressionForAntecedent : exps) {
+                // This is intentional. We're trying to ensure that these 2 expressions are not referring to the same
+                // object in memory.
+                if (expressionForSuccedent != expressionForAntecedent)
+                    precursors.add(expressionForAntecedent);
+            }
+            if (isDeterministic(precursors, expressionForSuccedent))
+                elaborationRules.add(mkRule(precursors, t, expressionForSuccedent, "implies"));
+        }
+
     }
 
     private List<Exp> processPrecursors(Exp precursor) {
@@ -122,9 +148,9 @@ public class ElaborationRules {
         if (precursorExps.size() == 1 && precursorExps.getFirst().getSubExpressions().isEmpty()) {
             List<Exp> l = new ArrayList<>();
             l.add(t.getAssertion());
-            return new ElaborationRule(l, resultant, true, sourceTheoremName, sourceModuleName, operator);
+            return new ElaborationRule(l, resultant, sourceTheoremName, sourceModuleName, operator);
         }
-        return new ElaborationRule(precursorExps, resultant, false, sourceTheoremName, sourceModuleName, operator);
+        return new ElaborationRule(precursorExps, resultant, sourceTheoremName, sourceModuleName, operator);
     }
 
     /**

@@ -53,6 +53,14 @@ public abstract class Exp extends ResolveConceptualElement {
     private LocationDetailModel myLocationDetailModel = null;
 
     /**
+     * This variable should only be set if this expression is part of an
+     * {@link edu.clemson.rsrg.nProver.utilities.theorems.ElaborationRule} in disjunctive normal form. If the variable
+     * is true, we match this variable to the antecedent & add it to the succedent. If the variable is false, we match
+     * this variable to the succedent & add it to the antecedent.
+     */
+    private boolean isAntecedent;
+
+    /**
      * <p>
      * The object's mathematical type.
      * </p>
@@ -497,4 +505,22 @@ public abstract class Exp extends ResolveConceptualElement {
      */
     protected abstract Exp substituteChildren(Map<Exp, Exp> substitutions);
 
+    /**
+     * Set the antecedent variable of this expression & all of its children Do not call this function unless you're
+     * making an elaboration rule for disjunctive normal form (or you will be fired)
+     */
+    public void setAntecedent(boolean isAntecedent) {
+        this.isAntecedent = isAntecedent;
+        for (Exp child : getSubExpressions()) {
+            child.setAntecedent(isAntecedent);
+        }
+    }
+
+    /**
+     * @return null, if we are not in disjunctive normal form, true if we are matching against the antecedent, or false
+     *         if we are not matching against the antecedent
+     */
+    public boolean isAntecedent() {
+        return isAntecedent;
+    }
 }
