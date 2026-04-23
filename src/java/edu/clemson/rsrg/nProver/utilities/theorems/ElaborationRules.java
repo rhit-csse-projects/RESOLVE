@@ -106,14 +106,14 @@ public class ElaborationRules {
 
     private void disjunctiveNormalForm(List<Exp> firstPartPrecursors, Exp lastPart, TheoremEntry t,
             HashSet<ElaborationRule> elaborationRules) {
-	Exp newLastPart = lastPart.clone();
+        Exp newLastPart = lastPart.clone();
         newLastPart.setAntecedentState(AntecendentState.SUCCEDENT);
         List<Exp> exps = new ArrayList<>();
         firstPartPrecursors.forEach(e -> {
-	    Exp newExp = e.clone();
-	    newExp.setAntecedentState(AntecendentState.ANTECEDENT);
-	    exps.add(newExp);
-	});
+            Exp newExp = e.clone();
+            newExp.setAntecedentState(AntecendentState.ANTECEDENT);
+            exps.add(newExp);
+        });
         exps.add(newLastPart);
         for (Exp expressionForSuccedent : exps) {
             List<Exp> precursors = new ArrayList<>();

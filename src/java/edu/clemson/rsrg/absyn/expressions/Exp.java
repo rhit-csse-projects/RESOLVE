@@ -35,15 +35,12 @@ import java.util.Set;
  */
 public abstract class Exp extends ResolveConceptualElement {
     /**
-     * ANTECEDENT means that we match against the antecedent & add to the succedent.
-     * SUCCEDENT means that we match against the succedent & add to the antecedent.
-     * ANTECEDENT & SUCCEDENT & should only be used in disjunctive normal form
-     * EITHER is the normal matching case
+     * ANTECEDENT means that we match against the antecedent & add to the succedent. SUCCEDENT means that we match
+     * against the succedent & add to the antecedent. ANTECEDENT & SUCCEDENT & should only be used in disjunctive normal
+     * form EITHER is the normal matching case
      */
     public enum AntecendentState {
-	ANTECEDENT,
-	SUCCEDENT,
-	EITHER
+        ANTECEDENT, SUCCEDENT, EITHER
     }
 
     // ===========================================================
