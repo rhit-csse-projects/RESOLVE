@@ -13,6 +13,7 @@
 package edu.clemson.rsrg.nProver.utilities.theorems;
 
 import edu.clemson.rsrg.absyn.expressions.Exp;
+import edu.clemson.rsrg.absyn.expressions.Exp.AntecendentState;
 import edu.clemson.rsrg.absyn.expressions.mathexpr.AbstractFunctionExp;
 import edu.clemson.rsrg.absyn.expressions.mathexpr.QuantExp;
 import edu.clemson.rsrg.misc.DebuggerHelper;
@@ -106,11 +107,11 @@ public class ElaborationRules {
     private void disjunctiveNormalForm(List<Exp> firstPartPrecursors, Exp lastPart, TheoremEntry t,
             HashSet<ElaborationRule> elaborationRules) {
 	Exp newLastPart = lastPart.clone();
-        newLastPart.setAntecedent(false);
+        newLastPart.setAntecedentState(AntecendentState.SUCCEDENT);
         List<Exp> exps = new ArrayList<>();
         firstPartPrecursors.forEach(e -> {
 	    Exp newExp = e.clone();
-	    newExp.setAntecedent(true);
+	    newExp.setAntecedentState(AntecendentState.ANTECEDENT);
 	    exps.add(newExp);
 	});
         exps.add(newLastPart);

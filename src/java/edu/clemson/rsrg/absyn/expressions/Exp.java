@@ -34,6 +34,17 @@ import java.util.Set;
  * @version 2.0
  */
 public abstract class Exp extends ResolveConceptualElement {
+    /**
+     * ANTECEDENT means that we match against the antecedent & add to the succedent.
+     * SUCCEDENT means that we match against the succedent & add to the antecedent.
+     * ANTECEDENT & SUCCEDENT & should only be used in disjunctive normal form
+     * EITHER is the normal matching case
+     */
+    public enum AntecendentState {
+	ANTECEDENT,
+	SUCCEDENT,
+	EITHER
+    }
 
     // ===========================================================
     // Member Fields
@@ -58,7 +69,7 @@ public abstract class Exp extends ResolveConceptualElement {
      * is true, we match this variable to the antecedent & add it to the succedent. If the variable is false, we match
      * this variable to the succedent & add it to the antecedent.
      */
-    private boolean isAntecedent;
+    private AntecendentState isAntecedent = AntecendentState.EITHER;
 
     /**
      * <p>
@@ -505,22 +516,14 @@ public abstract class Exp extends ResolveConceptualElement {
      */
     protected abstract Exp substituteChildren(Map<Exp, Exp> substitutions);
 
-    /**
-     * Set the antecedent variable of this expression & all of its children Do not call this function unless you're
-     * making an elaboration rule for disjunctive normal form (or you will be fired)
-     */
-    public void setAntecedent(boolean isAntecedent) {
+    public void setAntecedentState(AntecendentState isAntecedent) {
         this.isAntecedent = isAntecedent;
         for (Exp child : getSubExpressions()) {
-            child.setAntecedent(isAntecedent);
+            child.setAntecedentState(isAntecedent);
         }
     }
 
-    /**
-     * @return null, if we are not in disjunctive normal form, true if we are matching against the antecedent, or false
-     *         if we are not matching against the antecedent
-     */
-    public boolean isAntecedent() {
+    public AntecendentState getAntecendentState() {
         return isAntecedent;
     }
 }
