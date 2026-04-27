@@ -1691,6 +1691,10 @@ public class CongruenceClassRegistry {
                 indexToArgString = clusterArgumentArray[indexToArgString].getNxtIndexWithSameCCNumberInLevel();
             }
 
+            if (indexToArgString == 0) {
+                return; // defensive programming
+            }
+
             // there is no other argument string of 7 in the level and non is existing for 3 in the level, or it's the
             // final 7 after the list
             // first change the class number in the argument record from 7 to 3
@@ -1976,7 +1980,8 @@ public class CongruenceClassRegistry {
                 // move it to the right place
                 int previousIndexToArgString = argIndexWithChangedClass;
                 int nextIndexToArgString = clusterArgumentArray[argIndexWithChangedClass].getAlternativeArg();
-                while (clusterArgumentArray[argIndexWithChangedClass]
+                // defensive infinite loop with != 0
+                while (nextIndexToArgString != 0 && clusterArgumentArray[argIndexWithChangedClass]
                         .getCcNumber() < clusterArgumentArray[nextIndexToArgString].getCcNumber()) {
                     previousIndexToArgString = nextIndexToArgString;
                     nextIndexToArgString = clusterArgumentArray[nextIndexToArgString].getAlternativeArg();

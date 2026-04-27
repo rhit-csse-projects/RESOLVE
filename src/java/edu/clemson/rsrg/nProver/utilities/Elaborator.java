@@ -20,6 +20,7 @@ import edu.clemson.rsrg.nProver.registry.CongruenceClassRegistry;
 import edu.clemson.rsrg.nProver.utilities.theorems.ElaborationRule;
 import edu.clemson.rsrg.nProver.utilities.theorems.RuleInstance;
 import edu.clemson.rsrg.nProver.utilities.treewakers.RegisterAntecedent;
+import edu.clemson.rsrg.nProver.utilities.treewakers.RegisterSuccedent;
 import edu.clemson.rsrg.treewalk.TreeWalker;
 
 import java.util.*;
@@ -159,6 +160,11 @@ public class Elaborator {
                 if (!myRegistry.isMinimalVCCDesignator(operator, currentCCAccessor))
                     continue;
 
+                // if the counter match is on the wrong side, continue to next CC
+                if (!attributeMatchesPrecursor(myRegistry.getCongruenceClass(currentCCAccessor).getAttribute(),
+                        precursor.getAntecendentState()))
+                    continue;
+
                 matchedCluster = ccMatchesExpression(precursor, currentCCAccessor, operator, variableBindings,
                         requiredBindings);
                 if (matchedCluster != -1)
@@ -166,6 +172,14 @@ public class Elaborator {
             }
         }
         return matchedCluster;
+    }
+
+    private boolean attributeMatchesPrecursor(BitSet attribute, Exp.AntecendentState antecendentState) {
+        return switch (antecendentState) {
+            case ANTECEDENT -> attribute.get(0);
+            case SUCCEDENT -> attribute.get(1);
+            default -> true;
+        };
     }
 
     private static String getExpBodyString(Exp precursor) {
@@ -299,7 +313,12 @@ public class Elaborator {
                 "\u001B[33m[Rule #" + rule.getCounter() + "]\u001B[0m Trying to add " + resultant + " to the registry");
 
         int CCDesLeftInitial = myRegistry.remainingCCDesignatorCap();
-        TreeWalker.visit(new RegisterAntecedent(myRegistry, myExpLabels, myExpLabels.size(), myMappings), resultant);
+        if (resultant.getAntecendentState() == Exp.AntecendentState.SUCCEDENT) {
+            TreeWalker.visit(new RegisterSuccedent(myRegistry, myExpLabels, myExpLabels.size(), myMappings), resultant);
+        } else {
+            TreeWalker.visit(new RegisterAntecedent(myRegistry, myExpLabels, myExpLabels.size(), myMappings),
+                    resultant);
+        }
         int CCDesLeftLater = myRegistry.remainingCCDesignatorCap();
         debugLog("\u001B[33m[Rule #" + rule.getCounter() + "]\u001B[0m " + resultant + " \u001B[33mAdded "
                 + (CCDesLeftInitial - CCDesLeftLater) + " CCs to the Registry\u001B[0m");

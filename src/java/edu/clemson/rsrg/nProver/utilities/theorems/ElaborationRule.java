@@ -17,11 +17,11 @@ import edu.clemson.rsrg.absyn.expressions.Exp;
 import java.util.List;
 
 public class ElaborationRule {
-    private List<Exp> myPrecursorClauses;
-    private Exp myResultantClause;
-    private String mySourceTheoremName;
-    private String mySourceModuleName;
-    private String mySourceTheoremOperator;
+    private final List<Exp> myPrecursorClauses;
+    private final Exp myResultantClause;
+    private final String mySourceTheoremName;
+    private final String mySourceModuleName;
+    private final String mySourceTheoremOperator;
 
     public ElaborationRule(List<Exp> precursorClauses, Exp resultantClause, String sourceTheoremName,
             String sourceModuleName, String sourceTheoremOperator) {
@@ -68,18 +68,17 @@ public class ElaborationRule {
             sb.append("No Source Theorem for this Rule \n");
         }
         sb.append("\n\n Precursor Clauses: ");
-        // sb.append(myPrecursorClauses.toString());
-        // sb.append("\n");
-	sb.append(" [\n");
+
+        sb.append(" [\n");
         for (int i = 0; i < myPrecursorClauses.size(); i++) {
-	    Exp exp = myPrecursorClauses.get(i);
-	    sb.append("  ");
-	    sb.append(exp);
+            Exp exp = myPrecursorClauses.get(i);
+            sb.append("  ");
+            sb.append(exp);
             sb.append("; Antecedent: ").append(exp.getAntecendentState());
-	    if (i < myPrecursorClauses.size() - 1)
-		sb.append(",\n");
+            if (i < myPrecursorClauses.size() - 1)
+                sb.append(",\n");
         }
-	sb.append("\n ]");
+        sb.append("\n ]");
         sb.append("\n Source Operator: ");
         sb.append(mySourceTheoremOperator);
         sb.append("\n Resultant Clause: ");
@@ -95,8 +94,7 @@ public class ElaborationRule {
         if (this == obj) {
             return true;
         }
-        if (obj instanceof ElaborationRule) {
-            ElaborationRule other = (ElaborationRule) obj;
+        if (obj instanceof ElaborationRule other) {
             return myPrecursorClauses.equals(other.myPrecursorClauses)
                     && myResultantClause.equals(other.myResultantClause)
                     && mySourceModuleName.equals(other.mySourceModuleName)
