@@ -334,6 +334,8 @@ public class GeneralPurposeProver {
         for (VerificationCondition vc : myVerificationConditions) {
             // if (vc.getName().equals("0_1") || vc.getName().equals("1_1"))
             // continue;
+            // if (!vc.getName().equals("0_3"))
+            // continue;
             Map<String, Integer> expLabels = new LinkedHashMap<>();
             // revert ExpLabels to before Senior Project Team things
             // NM: 0, 1 are spared for <= (1), = (2), etc., the list can expand with more reflexive operators

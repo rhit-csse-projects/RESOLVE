@@ -162,7 +162,7 @@ public class Elaborator {
 
                 // if the counter match is on the wrong side, continue to next CC
                 if (!attributeMatchesPrecursor(myRegistry.getCongruenceClass(currentCCAccessor).getAttribute(),
-                        precursor.getAntecendentState()))
+                        precursor.getAntecedentState()))
                     continue;
 
                 matchedCluster = ccMatchesExpression(precursor, currentCCAccessor, operator, variableBindings,
@@ -313,7 +313,7 @@ public class Elaborator {
                 "\u001B[33m[Rule #" + rule.getCounter() + "]\u001B[0m Trying to add " + resultant + " to the registry");
 
         int CCDesLeftInitial = myRegistry.remainingCCDesignatorCap();
-        if (resultant.getAntecendentState() == Exp.AntecendentState.SUCCEDENT) {
+        if (resultant.getAntecedentState() == Exp.AntecendentState.SUCCEDENT) {
             TreeWalker.visit(new RegisterSuccedent(myRegistry, myExpLabels, myExpLabels.size(), myMappings), resultant);
         } else {
             TreeWalker.visit(new RegisterAntecedent(myRegistry, myExpLabels, myExpLabels.size(), myMappings),

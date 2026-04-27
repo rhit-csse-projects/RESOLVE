@@ -519,10 +519,6 @@ public abstract class AbstractRegisterSequent extends TreeWalkerStackVisitor {
         return myRegistry;
     }
 
-    public void postClusterExp(ClusterExp exp) {
-        storeInArgumentCache(exp);
-    }
-
     // ===========================================================
     // Private Methods
     // ===========================================================

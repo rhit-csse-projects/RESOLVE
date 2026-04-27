@@ -74,7 +74,7 @@ public class ElaborationRule {
             Exp exp = myPrecursorClauses.get(i);
             sb.append("  ");
             sb.append(exp);
-            sb.append("; Antecedent: ").append(exp.getAntecendentState());
+            sb.append("; Antecedent: ").append(exp.getAntecedentState());
             if (i < myPrecursorClauses.size() - 1)
                 sb.append(",\n");
         }
@@ -83,7 +83,7 @@ public class ElaborationRule {
         sb.append(mySourceTheoremOperator);
         sb.append("\n Resultant Clause: ");
         sb.append(myResultantClause.toString());
-        sb.append(" Antecedent: ").append(myResultantClause.getAntecendentState());
+        sb.append(" Antecedent: ").append(myResultantClause.getAntecedentState());
         sb.append("\u001B[0m");
         sb.append("\n\n");
         return sb.toString();

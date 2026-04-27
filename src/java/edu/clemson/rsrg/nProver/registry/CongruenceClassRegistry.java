@@ -564,8 +564,11 @@ public class CongruenceClassRegistry {
             }
 
             if (finalCountNeeded == countArgumentsFound) {
-                return congruenceClassArray[clusterArray[clusterArgumentArray[nextClusterArgument].getClusterNumber()]
-                        .getIndexToCongruenceClass()].getDominantCClass();
+                int clusterNum = clusterArgumentArray[nextClusterArgument].getClusterNumber();
+                while (!Objects.equals(clusterArray[clusterNum].getTreeNodeLabel(), treeNodeLabel)) {
+                    clusterNum = clusterArray[clusterNum].getNextWithSameArg();
+                } // make sure that the treeNodeLabels are the same
+                return congruenceClassArray[clusterArray[clusterNum].getIndexToCongruenceClass()].getDominantCClass();
             } else {
                 // we should not get here if everything is set up correctly
                 // but just for safety return 0

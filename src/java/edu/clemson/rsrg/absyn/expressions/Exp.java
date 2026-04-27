@@ -520,7 +520,7 @@ public abstract class Exp extends ResolveConceptualElement {
         }
     }
 
-    public AntecendentState getAntecendentState() {
+    public AntecendentState getAntecedentState() {
         return isAntecedent;
     }
 }
