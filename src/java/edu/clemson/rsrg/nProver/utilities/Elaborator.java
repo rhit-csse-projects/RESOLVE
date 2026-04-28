@@ -135,12 +135,12 @@ public class Elaborator {
         int matchedCluster = -1;
         if (precursor.toString().matches("[0-9]+") || precursor.toString().matches("Empty_String")) {
             matchedCluster = myExpLabels.getOrDefault(precursor.toString(), -1);
-        } else if (!myExpLabels.containsKey(precursor.getTopLevelOperator())
-                && !precursor.getSubExpressions().isEmpty()) {
+        } else if (!precursor.getSubExpressions().isEmpty()
+                && !myExpLabels.containsKey(precursor.getTopLevelOperator())) {
             debugLog("\u001B[31m[Rule #" + ruleCounter + " Error]\u001B[0m: " + "The key `\u001B[31m"
                     + precursor.getTopLevelOperator() + "\u001B[0m` does not exist in expLabels");
-        } else if (!myRegistry.isRegistryLabel(myExpLabels.get(precursor.getTopLevelOperator()))
-                && !precursor.getSubExpressions().isEmpty()) {
+        } else if (!precursor.getSubExpressions().isEmpty()
+                && !myRegistry.isRegistryLabel(myExpLabels.get(precursor.getTopLevelOperator()))) {
             debugLog("Operator is not registered. Skipping.");
         } else if (precursor instanceof AbstractFunctionExp) {
             int operator = myExpLabels.get(precursor.getTopLevelOperator());
