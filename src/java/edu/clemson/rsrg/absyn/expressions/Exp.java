@@ -43,6 +43,10 @@ public abstract class Exp extends ResolveConceptualElement {
         ANTECEDENT, SUCCEDENT, EITHER
     }
 
+    public enum ElaborationTag {
+        POSITIVE, NEGATIVE
+    }
+
     // ===========================================================
     // Member Fields
     // ===========================================================
@@ -67,6 +71,8 @@ public abstract class Exp extends ResolveConceptualElement {
      * this variable to the succedent & add it to the antecedent.
      */
     private AntecendentState isAntecedent = AntecendentState.EITHER;
+
+    private ElaborationTag elaborationTag = ElaborationTag.POSITIVE;
 
     /**
      * <p>
@@ -520,7 +526,15 @@ public abstract class Exp extends ResolveConceptualElement {
         }
     }
 
+    public void setElaborationTag(ElaborationTag elaborationTag) {
+        this.elaborationTag = elaborationTag;
+    }
+
     public AntecendentState getAntecedentState() {
         return isAntecedent;
+    }
+
+    public ElaborationTag getElaborationTag() {
+        return elaborationTag;
     }
 }

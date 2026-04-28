@@ -76,16 +76,6 @@ public class ElaborationRules {
                 Exp lastPart = myTheoremSubExpressions.getLast();
 
                 List<Exp> firstPartPrecursors = processPrecursors(firstPart);
-                if (isDeterministic(firstPartPrecursors, thisTheorem)) {
-                    // Split "and" resultants into separate rules
-                    if (lastPart.getTopLevelOperator().equals("and")) {
-                        for (Exp subResultant : lastPart.getSubExpressions()) {
-                            elaborationRules.add(mkRule(firstPartPrecursors, t, subResultant, "implies"));
-                        }
-                    } else {
-                        elaborationRules.add(mkRule(firstPartPrecursors, t, lastPart, "implies"));
-                    }
-                }
                 disjunctiveNormalForm(firstPartPrecursors, lastPart, t, elaborationRules);
             } else if (thisTheorem.getTopLevelOperator().equals("<=")) {
                 // If the top level operator is =, create two ERs, one in each direction
@@ -96,6 +86,8 @@ public class ElaborationRules {
                 if (isDeterministic(firstPartPrecursors, lastPart)) {
                     elaborationRules.add(mkRule(firstPartPrecursors, t, thisTheorem, "="));
                 }
+            } else if (thisTheorem.getTopLevelOperator().equals("or")) {
+                disjunctiveNormalForm(new ArrayList<>(), thisTheorem, t, elaborationRules);
             } else {
                 DebuggerHelper.debugLog(
                         "WARNING: Unable to process ER with top level operator " + thisTheorem.getTopLevelOperator());
@@ -106,27 +98,48 @@ public class ElaborationRules {
 
     private void disjunctiveNormalForm(List<Exp> firstPartPrecursors, Exp lastPart, TheoremEntry t,
             HashSet<ElaborationRule> elaborationRules) {
-        Exp newLastPart = lastPart.clone();
-        newLastPart.setAntecedentState(AntecendentState.SUCCEDENT);
+        // if resultant has ands, break apart into more DNFs
+        // (might be incorrect, but just refactoring current logic)
+        if (lastPart.getTopLevelOperator().equals("and")) {
+            for (Exp subResultant : lastPart.getSubExpressions()) {
+                disjunctiveNormalForm(firstPartPrecursors, subResultant, t, elaborationRules);
+            }
+        }
         List<Exp> exps = new ArrayList<>();
         firstPartPrecursors.forEach(e -> {
             Exp newExp = e.clone();
-            newExp.setAntecedentState(AntecendentState.ANTECEDENT);
+            newExp.setElaborationTag(Exp.ElaborationTag.NEGATIVE);
             exps.add(newExp);
         });
+        Exp newLastPart = lastPart.clone();
+        newLastPart.setElaborationTag(Exp.ElaborationTag.POSITIVE);
         exps.add(newLastPart);
         for (Exp expressionForSuccedent : exps) {
             List<Exp> precursors = new ArrayList<>();
             for (Exp expressionForAntecedent : exps) {
                 // This is intentional. We're trying to ensure that these 2 expressions are not referring to the same
                 // object in memory.
-                if (expressionForSuccedent != expressionForAntecedent)
-                    precursors.add(expressionForAntecedent);
-            }
-            if (isDeterministic(precursors, expressionForSuccedent))
-                elaborationRules.add(mkRule(precursors, t, expressionForSuccedent, "implies"));
-        }
+                if (expressionForSuccedent != expressionForAntecedent) {
+                    Exp cloned = expressionForAntecedent.clone();
+                    if (expressionForAntecedent.getElaborationTag() == Exp.ElaborationTag.POSITIVE) {
+                        cloned.setAntecedentState(AntecendentState.SUCCEDENT);
+                    } else {
+                        cloned.setAntecedentState(AntecendentState.ANTECEDENT);
+                    }
+                    precursors.add(cloned);
+                }
 
+            }
+            Exp clonedSuccedent = expressionForSuccedent.clone();
+            if (expressionForSuccedent.getElaborationTag() == Exp.ElaborationTag.POSITIVE) {
+                clonedSuccedent.setAntecedentState(AntecendentState.ANTECEDENT);
+            } else {
+                clonedSuccedent.setAntecedentState(AntecendentState.SUCCEDENT);
+            }
+            if (isDeterministic(precursors, clonedSuccedent)) {
+                elaborationRules.add(mkRule(precursors, t, clonedSuccedent, "implies"));
+            }
+        }
     }
 
     private List<Exp> processPrecursors(Exp precursor) {
@@ -139,6 +152,14 @@ public class ElaborationRules {
         }
     }
 
+    /*
+     * <p> The operator should make a new elaboration rule to be added to the rules list </p>
+     * @param precursorExps all precursor clauses to be added
+     * @param t smaller class accessor e.g., 3
+     * @param resultant The resultant clause to be added to the registry once precursors matched
+     * @param operator The top level operator
+     * @return the operation returns true when a parent for the argument at
+     */
     private ElaborationRule mkRule(List<Exp> precursorExps, TheoremEntry t, Exp resultant, String operator) {
         String sourceTheoremName = null;
         String sourceModuleName = null;
