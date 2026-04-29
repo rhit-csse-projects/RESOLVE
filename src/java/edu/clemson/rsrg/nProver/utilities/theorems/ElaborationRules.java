@@ -104,6 +104,7 @@ public class ElaborationRules {
             for (Exp subResultant : lastPart.getSubExpressions()) {
                 disjunctiveNormalForm(firstPartPrecursors, subResultant, t, elaborationRules);
             }
+            return;
         }
         List<Exp> exps = new ArrayList<>();
         firstPartPrecursors.forEach(e -> {
@@ -111,9 +112,18 @@ public class ElaborationRules {
             newExp.setElaborationTag(Exp.ElaborationTag.NEGATIVE);
             exps.add(newExp);
         });
-        Exp newLastPart = lastPart.clone();
-        newLastPart.setElaborationTag(Exp.ElaborationTag.POSITIVE);
-        exps.add(newLastPart);
+        // or theorems are already DNF so just make them positive
+        if (lastPart.getTopLevelOperator().equals("or")) {
+            for (Exp subExp : lastPart.getSubExpressions()) {
+                Exp cloned = subExp.clone();
+                cloned.setElaborationTag(Exp.ElaborationTag.POSITIVE);
+                exps.add(cloned);
+            }
+        } else {
+            Exp newLastPart = lastPart.clone();
+            newLastPart.setElaborationTag(Exp.ElaborationTag.POSITIVE);
+            exps.add(newLastPart);
+        }
         for (Exp expressionForSuccedent : exps) {
             List<Exp> precursors = new ArrayList<>();
             for (Exp expressionForAntecedent : exps) {
