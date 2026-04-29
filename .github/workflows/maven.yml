@@ -128,7 +128,7 @@ jobs:
         run: |
           java -cp "$GITHUB_WORKSPACE/target/classes:$GITHUB_WORKSPACE/target/deps/*" \
             edu.clemson.rsrg.Main -addConstraints -sprove Do_Nothing_Realiz.rb 2>&1 | tee prove_do_nothing.txt
-      - name: Enforce Do_Nothing_Realiz proof success
+      - name: Check Do_Nothing_Realiz proof success
         run: |
           FILE="RESOLVE-Workspace/Main/Concepts/Stack_Template/prove_do_nothing.txt"
           
