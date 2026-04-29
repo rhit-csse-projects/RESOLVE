@@ -161,8 +161,8 @@ jobs:
         with:
           name: proof-results
           path: |
-            RESOLVE-Workspace/Main/Concepts/Stack_Template/*.proof
-            RESOLVE-Workspace/Main/Concepts/Queue_Template/*.proof
+            RESOLVE-Workspace/Main/Concepts/Stack_Template/*.proof.md
+            RESOLVE-Workspace/Main/Concepts/Queue_Template/*.proof.md
           if-no-files-found: warn
 
   # This job runs the RESOLVE compiler to analyze files that we know to be working.
