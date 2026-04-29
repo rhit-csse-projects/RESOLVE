@@ -39,7 +39,7 @@ public abstract class Exp extends ResolveConceptualElement {
      * against the succedent & add to the antecedent. ANTECEDENT & SUCCEDENT & should only be used in disjunctive normal
      * form EITHER is the normal matching case
      */
-    public enum AntecendentState {
+    public enum Side {
         ANTECEDENT, SUCCEDENT, EITHER
     }
 
@@ -66,11 +66,12 @@ public abstract class Exp extends ResolveConceptualElement {
 
     /**
      * This variable should only be set if this expression is part of an
-     * {@link edu.clemson.rsrg.nProver.utilities.theorems.ElaborationRule} in disjunctive normal form. If the variable
-     * is true, we match this variable to the antecedent & add it to the succedent. If the variable is false, we match
-     * this variable to the succedent & add it to the antecedent.
+     * {@link edu.clemson.rsrg.nProver.utilities.theorems.ElaborationRule} in disjunctive normal form. ANTECEDENT means
+     * that we match against the antecedent & add to the succedent. SUCCEDENT means that we match against the succedent
+     * & add to the antecedent. ANTECEDENT & SUCCEDENT & should only be used in disjunctive normal form EITHER is the
+     * normal matching case
      */
-    private AntecendentState isAntecedent = AntecendentState.EITHER;
+    private Side side = Side.EITHER;
 
     private ElaborationTag elaborationTag = ElaborationTag.POSITIVE;
 
@@ -519,10 +520,17 @@ public abstract class Exp extends ResolveConceptualElement {
      */
     protected abstract Exp substituteChildren(Map<Exp, Exp> substitutions);
 
-    public void setAntecedentState(AntecendentState isAntecedent) {
-        this.isAntecedent = isAntecedent;
+    /**
+     * Sets which side of the antecedent we ought to match against & add this rule to. This method should only be called
+     * if this expression is part of an {@link edu.clemson.rsrg.nProver.utilities.theorems.ElaborationRule} in
+     * disjunctive normal form ANTECEDENT means that we match against the antecedent & add to the succedent. SUCCEDENT
+     * means that we match against the succedent & add to the antecedent. ANTECEDENT & SUCCEDENT & should only be used
+     * in disjunctive normal form EITHER is the normal matching case
+     */
+    public void setSide(Side side) {
+        this.side = side;
         for (Exp child : getSubExpressions()) {
-            child.setAntecedentState(isAntecedent);
+            child.setSide(side);
         }
     }
 
@@ -530,8 +538,15 @@ public abstract class Exp extends ResolveConceptualElement {
         this.elaborationTag = elaborationTag;
     }
 
-    public AntecendentState getAntecedentState() {
-        return isAntecedent;
+    /**
+     * Returns which side of the antecedent we ought to match against & add this rule to. This method should only be
+     * called if this expression is part of an {@link edu.clemson.rsrg.nProver.utilities.theorems.ElaborationRule} in
+     * disjunctive normal form ANTECEDENT means that we match against the antecedent & add to the succedent. SUCCEDENT
+     * means that we match against the succedent & add to the antecedent. ANTECEDENT & SUCCEDENT & should only be used
+     * in disjunctive normal form EITHER is the normal matching case
+     */
+    public Side getSide() {
+        return side;
     }
 
     public ElaborationTag getElaborationTag() {

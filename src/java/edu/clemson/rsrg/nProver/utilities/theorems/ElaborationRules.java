@@ -13,7 +13,7 @@
 package edu.clemson.rsrg.nProver.utilities.theorems;
 
 import edu.clemson.rsrg.absyn.expressions.Exp;
-import edu.clemson.rsrg.absyn.expressions.Exp.AntecendentState;
+import edu.clemson.rsrg.absyn.expressions.Exp.Side;
 import edu.clemson.rsrg.absyn.expressions.mathexpr.AbstractFunctionExp;
 import edu.clemson.rsrg.absyn.expressions.mathexpr.QuantExp;
 import edu.clemson.rsrg.misc.DebuggerHelper;
@@ -132,9 +132,9 @@ public class ElaborationRules {
                 if (expressionForSuccedent != expressionForAntecedent) {
                     Exp cloned = expressionForAntecedent.clone();
                     if (expressionForAntecedent.getElaborationTag() == Exp.ElaborationTag.POSITIVE) {
-                        cloned.setAntecedentState(AntecendentState.SUCCEDENT);
+                        cloned.setSide(Side.SUCCEDENT);
                     } else {
-                        cloned.setAntecedentState(AntecendentState.ANTECEDENT);
+                        cloned.setSide(Side.ANTECEDENT);
                     }
                     precursors.add(cloned);
                 }
@@ -142,9 +142,9 @@ public class ElaborationRules {
             }
             Exp clonedSuccedent = expressionForSuccedent.clone();
             if (expressionForSuccedent.getElaborationTag() == Exp.ElaborationTag.POSITIVE) {
-                clonedSuccedent.setAntecedentState(AntecendentState.ANTECEDENT);
+                clonedSuccedent.setSide(Side.ANTECEDENT);
             } else {
-                clonedSuccedent.setAntecedentState(AntecendentState.SUCCEDENT);
+                clonedSuccedent.setSide(Side.SUCCEDENT);
             }
             if (isDeterministic(precursors, clonedSuccedent)) {
                 elaborationRules.add(mkRule(precursors, t, clonedSuccedent, "implies"));

@@ -164,7 +164,7 @@ public class Elaborator {
 
                 // if the counter match is on the wrong side, continue to next CC
                 if (!attributeMatchesPrecursor(myRegistry.getCongruenceClass(currentCCAccessor).getAttribute(),
-                        precursor.getAntecedentState()))
+                        precursor.getSide()))
                     continue;
 
                 matchedCluster = ccMatchesExpression(precursor, currentCCAccessor, operator, variableBindings,
@@ -176,7 +176,7 @@ public class Elaborator {
         return matchedCluster;
     }
 
-    private boolean attributeMatchesPrecursor(BitSet attribute, Exp.AntecendentState antecendentState) {
+    private boolean attributeMatchesPrecursor(BitSet attribute, Exp.Side antecendentState) {
         return switch (antecendentState) {
             case ANTECEDENT -> attribute.get(0);
             case SUCCEDENT -> attribute.get(1);
@@ -315,7 +315,7 @@ public class Elaborator {
                 "\u001B[33m[Rule #" + rule.getCounter() + "]\u001B[0m Trying to add " + resultant + " to the registry");
 
         int CCDesLeftInitial = myRegistry.remainingCCDesignatorCap();
-        if (resultant.getAntecedentState() == Exp.AntecendentState.SUCCEDENT) {
+        if (resultant.getSide() == Exp.Side.SUCCEDENT) {
             TreeWalker.visit(new RegisterSuccedent(myRegistry, myExpLabels, myExpLabels.size(), myMappings), resultant);
         } else {
             TreeWalker.visit(new RegisterAntecedent(myRegistry, myExpLabels, myExpLabels.size(), myMappings),

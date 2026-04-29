@@ -2397,7 +2397,7 @@ public class CongruenceClassRegistry {
         return label <= topCongruenceClassDesignator;
     }
 
-    public String toPrettyString(List<String> symbolMapping) {
+    public String toUglyString(List<String> symbolMapping, boolean unicode) {
         StringBuilder sb = new StringBuilder();
 
         for (int classIndex = 1; this.isClassDesignator(classIndex); classIndex++) {
@@ -2442,11 +2442,19 @@ public class CongruenceClassRegistry {
             sb.append(" ");
             boolean isSuccedent = getCongruenceClass(classIndex).getAttribute().get(1);
             if (isSuccedent)
-                sb.append("\u001B[35m").append("(succedent)").append("\u001B[0m");
+                sb.append(unicode ? "\u001B[35m" : "").append("(succedent)").append(unicode ? "\u001B[0m" : "");
 
             sb.append("\n");
         }
         return sb.toString();
+    }
+
+    public String toPrettyString(List<String> symbolMapping) {
+        return toUglyString(symbolMapping, true);
+    }
+
+    public String toMarkdownFriendlyString(List<String> symbolMapping) {
+        return toUglyString(symbolMapping, false);
     }
 
     private void displayCluster(List<String> symbolMapping, CongruenceCluster cluster, StringBuilder sb) {

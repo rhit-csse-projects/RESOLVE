@@ -522,7 +522,7 @@ public class GeneralPurposeProver {
         vcProofDetailModel.add("vc", vcModel.render());
         vcProofDetailModel.add("result", result);
         vcProofDetailModel.add("expLabels", expLabels);
-        vcProofDetailModel.add("registryArrays", registry.toPrettyString(mappings));// ccRegistryArraysModel.render());
+        vcProofDetailModel.add("registryArrays", registry.toMarkdownFriendlyString(mappings));// ccRegistryArraysModel.render());
         vcProofDetailModel.add("theoremsUsed", niceTheorems.toString());
 
         // Add VC proof detail model to prover generation details
