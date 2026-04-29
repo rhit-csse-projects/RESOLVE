@@ -162,13 +162,21 @@ public class ElaborationRules {
         }
     }
 
-    /*
-     * <p> The operator should make a new elaboration rule to be added to the rules list </p>
-     * @param precursorExps all precursor clauses to be added
-     * @param t smaller class accessor e.g., 3
-     * @param resultant The resultant clause to be added to the registry once precursors matched
-     * @param operator The top level operator
-     * @return the operation returns true when a parent for the argument at
+    /**
+     * <p>
+     * The operator should make a new elaboration rule to be added to the rules list
+     * </p>
+     *
+     * @param precursorExps
+     *            all precursor clauses to be added
+     * @param t
+     *            the theorem entry associated with the rule
+     * @param resultant
+     *            The resultant clause to be added to the registry once precursors matched
+     * @param operator
+     *            The top level operator
+     *
+     * @return the operation returns a new Elaboration Rule to be added to the rules list
      */
     private ElaborationRule mkRule(List<Exp> precursorExps, TheoremEntry t, Exp resultant, String operator) {
         String sourceTheoremName = null;
