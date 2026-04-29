@@ -122,6 +122,12 @@ jobs:
         run: |
           java -cp "$GITHUB_WORKSPACE/target/classes:$GITHUB_WORKSPACE/target/deps/*" \
             edu.clemson.rsrg.Main -addConstraints -sprove Obvious_Flipping_Realiz.rb 2>&1 | tee prove_flipping.txt
+      - name: Prove Do_Nothing_Realiz
+        working-directory: RESOLVE-Workspace/Main/Concepts/Stack_Template
+        timeout-minutes: 5
+        run: |
+          java -cp "$GITHUB_WORKSPACE/target/classes:$GITHUB_WORKSPACE/target/deps/*" \
+            edu.clemson.rsrg.Main -addConstraints -sprove Do_Nothing_Realiz.rb 2>&1 | tee prove_do_nothing.txt
       - name: Prove Inject_Front_Realiz
         working-directory: RESOLVE-Workspace/Main/Concepts/Queue_Template
         timeout-minutes: 5

@@ -30,7 +30,7 @@ public class ClusterArgument {
     private int nextClusterArg;
     private int prevClusterArg;
     private int ccNumber; // these are congruence class designators
-    private int nexIndexWithSameCCInSameLevel; // points to the same congruence class in the in the same level of
+    private int nexIndexWithSameCCInSameLevel; // points to the same congruence class in the same level of
                                                // argument string.
     private int clusterNumber; // the first cluster of the chained clusters with same argument
     private int alternativeArg;
