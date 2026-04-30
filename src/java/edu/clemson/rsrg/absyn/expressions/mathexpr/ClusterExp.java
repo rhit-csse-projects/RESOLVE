@@ -24,11 +24,11 @@ import edu.clemson.rsrg.nProver.registry.CongruenceClassRegistry;
  * matching & elaboration process.
  */
 public class ClusterExp extends MathExp {
-    private int clusterId;
+    private final int clusterAccessor;
 
-    public ClusterExp(int clusterId) {
+    public ClusterExp(int clusterAccessor) {
         super(null);
-        this.clusterId = clusterId;
+        this.clusterAccessor = clusterAccessor;
     }
 
     @Override
@@ -48,12 +48,12 @@ public class ClusterExp extends MathExp {
 
     @Override
     public String asString(int indentSize, int innerIndentInc) {
-        return "ClusterID: " + clusterId;
+        return "ClusterAccessor: " + clusterAccessor;
     }
 
     @Override
     public Exp copy() {
-        return new ClusterExp(clusterId);
+        return new ClusterExp(clusterAccessor);
     }
 
     @Override
@@ -61,12 +61,12 @@ public class ClusterExp extends MathExp {
         if (this == o)
             return true;
         if (o instanceof ClusterExp) {
-            return this.clusterId == ((ClusterExp) o).clusterId;
+            return this.clusterAccessor == ((ClusterExp) o).clusterAccessor;
         }
         return false;
     }
 
-    public int getClusterId() {
-        return clusterId;
+    public int getClusterAccessor() {
+        return clusterAccessor;
     }
 }

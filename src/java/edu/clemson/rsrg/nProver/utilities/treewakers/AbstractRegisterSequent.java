@@ -551,7 +551,7 @@ public abstract class AbstractRegisterSequent extends TreeWalkerStackVisitor {
 
     protected int resolveArg(Exp arg) {
         if (arg instanceof ClusterExp) {
-            return ((ClusterExp) arg).getClusterId();
+            return ((ClusterExp) arg).getClusterAccessor();
         }
         try {
             return myArgumentsCache.remove(arg);
