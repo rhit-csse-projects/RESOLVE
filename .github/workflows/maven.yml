@@ -168,7 +168,7 @@ jobs:
           echo "|------|--------|------------|-------|" >> $GITHUB_STEP_SUMMARY
           for FILE in \
             "RESOLVE-Workspace/Main/Concepts/Stack_Template/prove_flipping.txt:Obvious_Flipping_Realiz" \
-            "RESOLVE-Workspace/Main/Concepts/Stack_Template/prove_flipping.txt:Do_Nothing_Realiz" \
+            "RESOLVE-Workspace/Main/Concepts/Stack_Template/prove_do_nothing.txt:Do_Nothing_Realiz" \
             "RESOLVE-Workspace/Main/Concepts/Queue_Template/prove_inject.txt:Inject_Front_Realiz"; do
             PATH_PART="${FILE%%:*}"
             NAME="${FILE##*:}"
