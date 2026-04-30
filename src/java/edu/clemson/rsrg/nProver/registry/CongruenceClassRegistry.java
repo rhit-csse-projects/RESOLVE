@@ -765,8 +765,10 @@ public class CongruenceClassRegistry {
         HashSet<Integer> visited = new HashSet<>();
         while (clusterArray[dominantCluster].getDominantCluster() != currentClusterAccessor) {
             if (visited.contains(dominantCluster)) {
-                DebuggerHelper.debugLog(
-                        "\u001B[31mWARNING: advanceClusterAccessor visited a cluster it already saw\u001B[0m");
+                DebuggerHelper
+                        .debugLog("\u001B[31mWARNING: advanceClusterAccessor visited a cluster it already saw\u001B[0m"
+                                + " | DominantCluster: " + dominantCluster + " | Current Cluster: "
+                                + currentClusterAccessor);
                 break;
             }
             visited.add(dominantCluster);
@@ -792,7 +794,8 @@ public class CongruenceClassRegistry {
         HashSet<Integer> visited = new HashSet<>();
         while (clusterArray[dominantCluster].getDominantCluster() != currentClusterAccessor) {
             if (visited.contains(dominantCluster)) {
-                DebuggerHelper.debugLog("\u001B[31mWARNING: isStandMaximal visited a cluster it already saw\u001B[0m");
+                DebuggerHelper.debugLog("\u001B[31mWARNING: isStandMaximal visited a cluster it already saw\u001B[0m"
+                        + " | DominantCluster: " + dominantCluster + " | Current Cluster: " + currentClusterAccessor);
                 break;
             }
             visited.add(dominantCluster);
