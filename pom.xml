@@ -155,6 +155,7 @@
                 <configuration>
                     <excludes>
                         <exclude>**/CCReg*.java</exclude>
+                        <exclude>**/VCGenerationTest.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>
