@@ -113,19 +113,14 @@ jobs:
           restore-keys: |
             maven-${{ runner.os }}-
 
-      - name: Build project (single time)
+      - name: Build project
         run: mvn package -DskipTests -B
 
-      - name: Copy dependencies
-        run: mvn dependency:copy-dependencies -DoutputDirectory=target/deps -B
-
-      - name: Upload build artifacts
+      - name: Upload jar
         uses: actions/upload-artifact@v4
         with:
           name: maven-build
-          path: |
-            target/classes
-            target/deps
+          path: target/RESOLVE-Spring26a-jar-with-dependencies.jar
 
   # This job runs the RESOLVE prover on files we expect to prove.
   prove:
@@ -143,33 +138,34 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Download build artifacts
+      - name: Download jar
         uses: actions/download-artifact@v4
         with:
           name: maven-build
+          path: target
 
       - name: Prove Obvious_Flipping_Realiz
         working-directory: RESOLVE-Workspace/Main/Concepts/Stack_Template
         timeout-minutes: 5
         run: |
-          java -cp "$GITHUB_WORKSPACE/target/classes:$GITHUB_WORKSPACE/target/deps/*" \
-            edu.clemson.rsrg.Main -addConstraints -sprove Obvious_Flipping_Realiz.rb \
+          java -jar "$GITHUB_WORKSPACE/target/RESOLVE-Spring26a-jar-with-dependencies.jar" \
+            -addConstraints -sprove Obvious_Flipping_Realiz.rb \
             2>&1 | tee prove_flipping.txt
 
       - name: Prove Do_Nothing_Realiz
         working-directory: RESOLVE-Workspace/Main/Concepts/Stack_Template
         timeout-minutes: 5
         run: |
-          java -cp "$GITHUB_WORKSPACE/target/classes:$GITHUB_WORKSPACE/target/deps/*" \
-            edu.clemson.rsrg.Main -addConstraints -sprove Do_Nothing_Realiz.rb \
+          java -jar "$GITHUB_WORKSPACE/target/RESOLVE-Spring26a-jar-with-dependencies.jar" \
+            -addConstraints -sprove Do_Nothing_Realiz.rb \
             2>&1 | tee prove_do_nothing.txt
 
       - name: Prove Inject_Front_Realiz
         working-directory: RESOLVE-Workspace/Main/Concepts/Queue_Template
         timeout-minutes: 5
         run: |
-          java -cp "$GITHUB_WORKSPACE/target/classes:$GITHUB_WORKSPACE/target/deps/*" \
-            edu.clemson.rsrg.Main -addConstraints -sprove Inject_Front_Realiz.rb \
+          java -jar "$GITHUB_WORKSPACE/target/RESOLVE-Spring26a-jar-with-dependencies.jar" \
+            -addConstraints -sprove Inject_Front_Realiz.rb \
             2>&1 | tee prove_inject.txt
 
       - name: Check Do_Nothing_Realiz proof success
