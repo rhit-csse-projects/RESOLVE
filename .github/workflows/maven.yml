@@ -137,9 +137,10 @@ jobs:
             exit 1
           fi
           
-          TOTAL_VC=$(grep -c "^\[VC" "$FILE" 2>/dev/null || true)
-          PROVED=$(grep -c "^\[VC.*Proved" "$FILE" 2>/dev/null || true)
-          NOT_PROVED=$(grep -c "Not Proved" "$FILE" 2>/dev/null || true)
+          CLEAN=$(sed -r 's/\x1B\[[0-9;]*[mK]//g' "$FILE")
+          TOTAL_VC=$(grep -c "^\[VC" <<< "$CLEAN" 2>/dev/null || true)
+          PROVED=$(grep -c "]:[[:space:]]*Proved[[:space:]]*$" <<< "$CLEAN" || true)
+          NOT_PROVED=$(grep -c "]:[[:space:]]*Not Proved[[:space:]]*$" <<< "$CLEAN" || true)
           
           echo "Total VCs: $TOTAL_VC"
           echo "Proved: $PROVED"
@@ -173,10 +174,10 @@ jobs:
             PATH_PART="${FILE%%:*}"
             NAME="${FILE##*:}"
             if [ -f "$PATH_PART" ]; then
-              PROVED=$(grep -c "Proved" "$PATH_PART" || echo 0)
-              NOT_PROVED=$(grep -c "Not Proved" "$PATH_PART" || echo 0)
-              PROVED=$((PROVED - NOT_PROVED))
-              TOTAL=$((PROVED + NOT_PROVED))
+              CLEAN=$(sed -r 's/\x1B\[[0-9;]*[mK]//g' "$PATH_PART")
+              TOTAL=$(grep -c "^\[VC" <<< "$CLEAN" || true)
+              PROVED=$(grep -c "]:[[:space:]]*Proved[[:space:]]*$" <<< "$CLEAN" || true)
+              NOT_PROVED=$(grep -c "]:[[:space:]]*Not Proved[[:space:]]*$" <<< "$CLEAN" || true)
               echo "| $NAME | $PROVED | $NOT_PROVED | $TOTAL |" >> $GITHUB_STEP_SUMMARY
             else
               echo "| $NAME | - | - | DID NOT RUN |" >> $GITHUB_STEP_SUMMARY
