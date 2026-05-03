@@ -12,6 +12,7 @@
  */
 package edu.clemson.rsrg.nProver.output;
 
+import edu.clemson.rsrg.absyn.expressions.mathexpr.FunctionExp;
 import edu.clemson.rsrg.nProver.GeneralPurposeProver;
 import edu.clemson.rsrg.vcgeneration.VCGenerator;
 import edu.clemson.rsrg.vcgeneration.utilities.VerificationCondition;
@@ -204,5 +205,9 @@ public class VCProverResult {
         return "VCProverResult{" + "myIsProvedFlag=" + myIsProvedFlag + ", myProofTime=" + myProofTime
                 + ", myTimedOutFlag=" + myTimedOutFlag + ", myVerificationCondition=" + myVerificationCondition
                 + ", myWasSkippedFlag=" + myWasSkippedFlag + '}';
+    }
+
+    public VerificationCondition getVC() {
+        return myVerificationCondition;
     }
 }
