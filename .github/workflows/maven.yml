@@ -137,9 +137,9 @@ jobs:
             exit 1
           fi
           
-          TOTAL_VC=$(grep -c "^\[VC" "$FILE" || echo 0)
-          PROVED=$(grep -c "^\[VC.*Proved" "$FILE" || echo 0)
-          NOT_PROVED=$(grep -c "Not Proved" "$FILE" || echo 0)
+          TOTAL_VC=$(grep -c "^\[VC" "$FILE" 2>/dev/null || true)
+          PROVED=$(grep -c "^\[VC.*Proved" "$FILE" 2>/dev/null || true)
+          NOT_PROVED=$(grep -c "Not Proved" "$FILE" 2>/dev/null || true)
           
           echo "Total VCs: $TOTAL_VC"
           echo "Proved: $PROVED"
