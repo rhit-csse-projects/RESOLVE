@@ -81,10 +81,6 @@ class ProverRegressionTest {
         assertEquals(results.size(), proved, "Proved count mismatch for " + relativePath);
     }
 
-    // ===========================================================
-    // Helper — OutputListener that captures nProver results
-    // ===========================================================
-
     /**
      * <p>
      * A minimal {@link OutputListener} that only captures prover results. All other listener methods are no-ops.

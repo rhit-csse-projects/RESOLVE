@@ -254,7 +254,7 @@ public class Elaborator {
                 }
             }
 
-            if (matchedAllArgs) {// All of the arguments in this cluster matched all of the arguments in our
+            if (matchedAllArgs) {// All the arguments in this cluster matched all the arguments in our
                 // expression!
                 variableBindings.putAll(tempBindings);
                 return currentClusterAccessor;
@@ -324,7 +324,6 @@ public class Elaborator {
         int CCDesLeftLater = myRegistry.remainingCCDesignatorCap();
         debugLog("\u001B[33m[Rule #" + rule.getCounter() + "]\u001B[0m " + resultant + " \u001B[33mAdded "
                 + (CCDesLeftInitial - CCDesLeftLater) + " CCs to the Registry\u001B[0m");
-        // debugLog(myRegistry);
     }
 
     public Set<String> elaborateAndApply(List<ElaborationRule> rules) {
