@@ -1,0 +1,1146 @@
+VCs for Obvious_Flipping_Realiz.rb generated Wed May 06 16:18:02 EDT 2026
+
+================================= VC(s): =================================
+
+VC 0_1:
+Base Case of the Invariant of While Statement at Obvious_Flipping_Realiz.rb(9:15)
+
+Goal:
+(S = (Reverse(Empty_String) o S))
+
+Given(s):
+
+VC 0_2:
+Requires Clause for Pop [After Logical Reduction(s)] at Obvious_Flipping_Realiz.rb(12:3)
+
+Goal:
+(S'' = Empty_String)
+
+Given(s):
+1. (S'' = Empty_String)
+2. (S = (Reverse(Temp'') o S''))
+
+VC 0_3:
+Inductive Case of Invariant of While Statement [After Logical Reduction(s)] at Obvious_Flipping_Realiz.rb(9:15)
+
+Goal:
+(S = (Reverse((<Next_Entry''> o Temp'')) o S')) or 
+(S'' = Empty_String)
+
+Given(s):
+1. (S'' = (<Next_Entry''> o S'))
+2. (S = (Reverse(Temp'') o S''))
+
+VC 0_4:
+Termination of While Statement [After Logical Reduction(s)] at Obvious_Flipping_Realiz.rb(10:3)
+
+Goal:
+((1 + |S'|) <= |S''|) or 
+(S'' = Empty_String)
+
+Given(s):
+1. (S'' = (<Next_Entry''> o S'))
+2. (S = (Reverse(Temp'') o S''))
+
+VC 1_1:
+Base Case of the Invariant of While Statement at Obvious_Flipping_Realiz.rb(9:15)
+
+Goal:
+(S = (Reverse(Empty_String) o S))
+
+Given(s):
+
+VC 1_2:
+Ensures Clause of Flip at Obvious_Flipping_Realiz.rb(4:11)
+
+Goal:
+(Temp' = Reverse(S))
+
+Given(s):
+1. (S' = Empty_String)
+2. (S = (Reverse(Temp') o S'))
+
+========================= VC Generation Details  =========================
+
+    Enhancement Realization Name:   Obvious_Flipping_Realiz
+    Enhancement Name:               Flipping_Capability
+    Concept Name:                   Globally_Bounded_Stack_Template
+
+==========================================================================
+
+========================= Flip =========================
+
+---------------------
+Branching Conditions
+---------------------
+1. Expression at Obvious_Flipping_Realiz.rb(8:10) is true. [Exp: not((S = Empty_String))]
+---------------------
+
+Applied Procedure Declaration Rule (Part 1): 
+
+Free Variables:
+    S : Str('Entry')
+
+Statements:
+    Assume ((((min_int <= 0) and (1 <= max_int)) and (1 <= Last_Char_Num)) and (1 <= Max_Char_Str_Len));
+    Remember;
+
+VC(s):
+
+_____________________
+
+Applied Procedure Declaration Rule (Part 2): 
+
+Free Variables:
+    S : Str('Entry')
+    Temp : Str('Entry')
+    Next_Entry : 'Entry'
+
+Statements:
+    Assume ((((min_int <= 0) and (1 <= max_int)) and (1 <= Last_Char_Num)) and (1 <= Max_Char_Str_Len));
+    Remember;
+    _Initialize(Temp : Stack);
+    _Initialize(Next_Entry : Entry);
+
+    While ( Not(Is_Empty(S)) )
+        changing S, Temp, Next_Entry;
+        maintaining (#S = (Reverse(Temp) o S));
+        decreasing |S|;
+    do
+        Pop(Next_Entry, S);
+        Push(Next_Entry, Temp);
+    end;
+
+    Temp :=: S;
+    _Finalize(Temp : Stack);
+    Confirm (S = Reverse(#S));
+
+VC(s):
+
+_____________________
+
+Applied Confirm Rule: 
+
+Free Variables:
+    S : Str('Entry')
+    Temp : Str('Entry')
+    Next_Entry : 'Entry'
+
+Statements:
+    Assume ((((min_int <= 0) and (1 <= max_int)) and (1 <= Last_Char_Num)) and (1 <= Max_Char_Str_Len));
+    Remember;
+    _Initialize(Temp : Stack);
+    _Initialize(Next_Entry : Entry);
+
+    While ( Not(Is_Empty(S)) )
+        changing S, Temp, Next_Entry;
+        maintaining (#S = (Reverse(Temp) o S));
+        decreasing |S|;
+    do
+        Pop(Next_Entry, S);
+        Push(Next_Entry, Temp);
+    end;
+
+    Temp :=: S;
+    _Finalize(Temp : Stack);
+
+VC(s):
+     |- (S = Reverse(#S))
+
+_____________________
+
+Applied Variable Finalization Rule (Known Program Type): 
+
+Free Variables:
+    S : Str('Entry')
+    Temp : Str('Entry')
+    Next_Entry : 'Entry'
+
+Statements:
+    Assume ((((min_int <= 0) and (1 <= max_int)) and (1 <= Last_Char_Num)) and (1 <= Max_Char_Str_Len));
+    Remember;
+    _Initialize(Temp : Stack);
+    _Initialize(Next_Entry : Entry);
+
+    While ( Not(Is_Empty(S)) )
+        changing S, Temp, Next_Entry;
+        maintaining (#S = (Reverse(Temp) o S));
+        decreasing |S|;
+    do
+        Pop(Next_Entry, S);
+        Push(Next_Entry, Temp);
+    end;
+
+    Temp :=: S;
+    Assume true;
+
+VC(s):
+     |- (S = Reverse(#S))
+
+_____________________
+
+Applied Assume Rule and Simplified: 
+
+Free Variables:
+    S : Str('Entry')
+    Temp : Str('Entry')
+    Next_Entry : 'Entry'
+
+Statements:
+    Assume ((((min_int <= 0) and (1 <= max_int)) and (1 <= Last_Char_Num)) and (1 <= Max_Char_Str_Len));
+    Remember;
+    _Initialize(Temp : Stack);
+    _Initialize(Next_Entry : Entry);
+
+    While ( Not(Is_Empty(S)) )
+        changing S, Temp, Next_Entry;
+        maintaining (#S = (Reverse(Temp) o S));
+        decreasing |S|;
+    do
+        Pop(Next_Entry, S);
+        Push(Next_Entry, Temp);
+    end;
+
+    Temp :=: S;
+
+VC(s):
+     |- (S = Reverse(#S))
+
+_____________________
+
+Applied Swap Rule: 
+
+Free Variables:
+    S : Str('Entry')
+    Temp : Str('Entry')
+    Next_Entry : 'Entry'
+
+Statements:
+    Assume ((((min_int <= 0) and (1 <= max_int)) and (1 <= Last_Char_Num)) and (1 <= Max_Char_Str_Len));
+    Remember;
+    _Initialize(Temp : Stack);
+    _Initialize(Next_Entry : Entry);
+
+    While ( Not(Is_Empty(S)) )
+        changing S, Temp, Next_Entry;
+        maintaining (#S = (Reverse(Temp) o S));
+        decreasing |S|;
+    do
+        Pop(Next_Entry, S);
+        Push(Next_Entry, Temp);
+    end;
+
+
+VC(s):
+     |- (Temp = Reverse(#S))
+
+_____________________
+
+Applied While Rule: 
+
+Free Variables:
+    S : Str('Entry')
+    Temp : Str('Entry')
+    Next_Entry : 'Entry'
+    P_Val' : N
+
+Statements:
+    Assume ((((min_int <= 0) and (1 <= max_int)) and (1 <= Last_Char_Num)) and (1 <= Max_Char_Str_Len));
+    Remember;
+    _Initialize(Temp : Stack);
+    _Initialize(Next_Entry : Entry);
+    Confirm (#S = (Reverse(Temp) o S));
+    Change S, Temp, Next_Entry;
+    Assume ((#S = (Reverse(Temp) o S)) and (P_Val' = |S|));
+
+    If ( Not(Is_Empty(S)) ) then
+        Pop(Next_Entry, S);
+        Push(Next_Entry, Temp);
+        Confirm ((#S = (Reverse(Temp) o S)) and ((1 + |S|) <= P_Val'));
+    Else
+        VC_Confirm
+             |- (Temp = Reverse(#S))
+
+    end;
+
+
+VC(s):
+
+_____________________
+
+Applied If-Part Rule: 
+
+Free Variables:
+    S : Str('Entry')
+    Temp : Str('Entry')
+    Next_Entry : 'Entry'
+    P_Val' : N
+
+Statements:
+    Assume ((((min_int <= 0) and (1 <= max_int)) and (1 <= Last_Char_Num)) and (1 <= Max_Char_Str_Len));
+    Remember;
+    _Initialize(Temp : Stack);
+    _Initialize(Next_Entry : Entry);
+    Confirm (#S = (Reverse(Temp) o S));
+    Change S, Temp, Next_Entry;
+    Assume ((#S = (Reverse(Temp) o S)) and (P_Val' = |S|));
+    Stipulate not((S = Empty_String));
+    Pop(Next_Entry, S);
+    Push(Next_Entry, Temp);
+    Confirm ((#S = (Reverse(Temp) o S)) and ((1 + |S|) <= P_Val'));
+
+VC(s):
+
+_____________________
+
+Applied Confirm Rule: 
+
+Free Variables:
+    S : Str('Entry')
+    Temp : Str('Entry')
+    Next_Entry : 'Entry'
+    P_Val' : N
+
+Statements:
+    Assume ((((min_int <= 0) and (1 <= max_int)) and (1 <= Last_Char_Num)) and (1 <= Max_Char_Str_Len));
+    Remember;
+    _Initialize(Temp : Stack);
+    _Initialize(Next_Entry : Entry);
+    Confirm (#S = (Reverse(Temp) o S));
+    Change S, Temp, Next_Entry;
+    Assume ((#S = (Reverse(Temp) o S)) and (P_Val' = |S|));
+    Stipulate not((S = Empty_String));
+    Pop(Next_Entry, S);
+    Push(Next_Entry, Temp);
+
+VC(s):
+     |- (#S = (Reverse(Temp) o S))
+
+     |- ((1 + |S|) <= P_Val')
+
+Reduction Tree(s):
+    strict digraph G {
+      1 [ label=" |- ((#S = (Reverse(Temp) o S)) and ((1 + |S|) <= P_Val'))" shape="box" ];
+      2 [ label=" |- (#S = (Reverse(Temp) o S))" shape="box" color="red" ];
+      3 [ label=" |- ((1 + |S|) <= P_Val')" shape="box" color="red" ];
+      1 -> 2;
+      1 -> 3;
+    }
+
+_____________________
+
+Applied Call Rule: 
+
+Free Variables:
+    S : Str('Entry')
+    Temp : Str('Entry')
+    Next_Entry : 'Entry'
+    P_Val' : N
+    Next_Entry' : 'Entry'
+    Temp' : Str('Entry')
+
+Statements:
+    Assume ((((min_int <= 0) and (1 <= max_int)) and (1 <= Last_Char_Num)) and (1 <= Max_Char_Str_Len));
+    Remember;
+    _Initialize(Temp : Stack);
+    _Initialize(Next_Entry : Entry);
+    Confirm (#S = (Reverse(Temp) o S));
+    Change S, Temp, Next_Entry;
+    Assume ((#S = (Reverse(Temp) o S)) and (P_Val' = |S|));
+    Stipulate not((S = Empty_String));
+    Pop(Next_Entry, S);
+    Confirm true;
+    Assume (Temp' = (<Next_Entry> o Temp));
+
+VC(s):
+     |- (#S = (Reverse(Temp') o S))
+
+     |- ((1 + |S|) <= P_Val')
+
+_____________________
+
+Applied Assume Rule: 
+
+Free Variables:
+    S : Str('Entry')
+    Temp : Str('Entry')
+    Next_Entry : 'Entry'
+    P_Val' : N
+    Next_Entry' : 'Entry'
+    Temp' : Str('Entry')
+
+Statements:
+    Assume ((((min_int <= 0) and (1 <= max_int)) and (1 <= Last_Char_Num)) and (1 <= Max_Char_Str_Len));
+    Remember;
+    _Initialize(Temp : Stack);
+    _Initialize(Next_Entry : Entry);
+    Confirm (#S = (Reverse(Temp) o S));
+    Change S, Temp, Next_Entry;
+    Assume ((#S = (Reverse(Temp) o S)) and (P_Val' = |S|));
+    Stipulate not((S = Empty_String));
+    Pop(Next_Entry, S);
+    Confirm true;
+
+VC(s):
+     |- (#S = (Reverse((<Next_Entry> o Temp)) o S))
+
+     |- ((1 + |S|) <= P_Val')
+
+_____________________
+
+Applied Confirm Rule and Simplified: 
+
+Free Variables:
+    S : Str('Entry')
+    Temp : Str('Entry')
+    Next_Entry : 'Entry'
+    P_Val' : N
+    Next_Entry' : 'Entry'
+    Temp' : Str('Entry')
+
+Statements:
+    Assume ((((min_int <= 0) and (1 <= max_int)) and (1 <= Last_Char_Num)) and (1 <= Max_Char_Str_Len));
+    Remember;
+    _Initialize(Temp : Stack);
+    _Initialize(Next_Entry : Entry);
+    Confirm (#S = (Reverse(Temp) o S));
+    Change S, Temp, Next_Entry;
+    Assume ((#S = (Reverse(Temp) o S)) and (P_Val' = |S|));
+    Stipulate not((S = Empty_String));
+    Pop(Next_Entry, S);
+
+VC(s):
+     |- (#S = (Reverse((<Next_Entry> o Temp)) o S))
+
+     |- ((1 + |S|) <= P_Val')
+
+_____________________
+
+Applied Call Rule: 
+
+Free Variables:
+    S : Str('Entry')
+    Temp : Str('Entry')
+    Next_Entry : 'Entry'
+    P_Val' : N
+    Next_Entry' : 'Entry'
+    Temp' : Str('Entry')
+    Next_Entry'' : 'Entry'
+    S' : Str('Entry')
+
+Statements:
+    Assume ((((min_int <= 0) and (1 <= max_int)) and (1 <= Last_Char_Num)) and (1 <= Max_Char_Str_Len));
+    Remember;
+    _Initialize(Temp : Stack);
+    _Initialize(Next_Entry : Entry);
+    Confirm (#S = (Reverse(Temp) o S));
+    Change S, Temp, Next_Entry;
+    Assume ((#S = (Reverse(Temp) o S)) and (P_Val' = |S|));
+    Stipulate not((S = Empty_String));
+    Confirm not((S = Empty_String));
+    Assume (S = (<Next_Entry''> o S'));
+
+VC(s):
+     |- (#S = (Reverse((<Next_Entry''> o Temp)) o S'))
+
+     |- ((1 + |S'|) <= P_Val')
+
+_____________________
+
+Applied Assume Rule: 
+
+Free Variables:
+    S : Str('Entry')
+    Temp : Str('Entry')
+    Next_Entry : 'Entry'
+    P_Val' : N
+    Next_Entry' : 'Entry'
+    Temp' : Str('Entry')
+    Next_Entry'' : 'Entry'
+    S' : Str('Entry')
+
+Statements:
+    Assume ((((min_int <= 0) and (1 <= max_int)) and (1 <= Last_Char_Num)) and (1 <= Max_Char_Str_Len));
+    Remember;
+    _Initialize(Temp : Stack);
+    _Initialize(Next_Entry : Entry);
+    Confirm (#S = (Reverse(Temp) o S));
+    Change S, Temp, Next_Entry;
+    Assume ((#S = (Reverse(Temp) o S)) and (P_Val' = |S|));
+    Stipulate not((S = Empty_String));
+    Confirm not((S = Empty_String));
+
+VC(s):
+    (S = (<Next_Entry''> o S')) |- (#S = (Reverse((<Next_Entry''> o Temp)) o S'))
+
+    (S = (<Next_Entry''> o S')) |- ((1 + |S'|) <= P_Val')
+
+_____________________
+
+Applied Confirm Rule: 
+
+Free Variables:
+    S : Str('Entry')
+    Temp : Str('Entry')
+    Next_Entry : 'Entry'
+    P_Val' : N
+    Next_Entry' : 'Entry'
+    Temp' : Str('Entry')
+    Next_Entry'' : 'Entry'
+    S' : Str('Entry')
+
+Statements:
+    Assume ((((min_int <= 0) and (1 <= max_int)) and (1 <= Last_Char_Num)) and (1 <= Max_Char_Str_Len));
+    Remember;
+    _Initialize(Temp : Stack);
+    _Initialize(Next_Entry : Entry);
+    Confirm (#S = (Reverse(Temp) o S));
+    Change S, Temp, Next_Entry;
+    Assume ((#S = (Reverse(Temp) o S)) and (P_Val' = |S|));
+    Stipulate not((S = Empty_String));
+
+VC(s):
+    (S = Empty_String) |- 
+
+    (S = (<Next_Entry''> o S')) |- (#S = (Reverse((<Next_Entry''> o Temp)) o S'))
+
+    (S = (<Next_Entry''> o S')) |- ((1 + |S'|) <= P_Val')
+
+Reduction Tree(s):
+    strict digraph G {
+      1 [ label=" |- not((S = Empty_String))" shape="box" ];
+      2 [ label="(S = Empty_String) |- " shape="box" color="red" ];
+      1 -> 2;
+    }
+
+_____________________
+
+Applied Stipulate Assume Rule: 
+
+Free Variables:
+    S : Str('Entry')
+    Temp : Str('Entry')
+    Next_Entry : 'Entry'
+    P_Val' : N
+    Next_Entry' : 'Entry'
+    Temp' : Str('Entry')
+    Next_Entry'' : 'Entry'
+    S' : Str('Entry')
+
+Statements:
+    Assume ((((min_int <= 0) and (1 <= max_int)) and (1 <= Last_Char_Num)) and (1 <= Max_Char_Str_Len));
+    Remember;
+    _Initialize(Temp : Stack);
+    _Initialize(Next_Entry : Entry);
+    Confirm (#S = (Reverse(Temp) o S));
+    Change S, Temp, Next_Entry;
+    Assume ((#S = (Reverse(Temp) o S)) and (P_Val' = |S|));
+
+VC(s):
+    (S = Empty_String) |- (S = Empty_String)
+
+    (S = (<Next_Entry''> o S')) |- (#S = (Reverse((<Next_Entry''> o Temp)) o S')), (S = Empty_String)
+
+    (S = (<Next_Entry''> o S')) |- ((1 + |S'|) <= P_Val'), (S = Empty_String)
+
+Reduction Tree(s):
+    strict digraph G {
+      1 [ label="(S = Empty_String), not((S = Empty_String)) |- " shape="box" ];
+      2 [ label="(S = Empty_String) |- (S = Empty_String)" shape="box" color="red" ];
+      1 -> 2;
+    }
+
+    strict digraph G {
+      1 [ label="(S = (<Next_Entry''> o S')), not((S = Empty_String)) |- (#S = (Reverse((<Next_Entry''> o Temp)) o S'))" shape="box" ];
+      2 [ label="(S = (<Next_Entry''> o S')) |- (#S = (Reverse((<Next_Entry''> o Temp)) o S')), (S = Empty_String)" shape="box" color="red" ];
+      1 -> 2;
+    }
+
+    strict digraph G {
+      1 [ label="(S = (<Next_Entry''> o S')), not((S = Empty_String)) |- ((1 + |S'|) <= P_Val')" shape="box" ];
+      2 [ label="(S = (<Next_Entry''> o S')) |- ((1 + |S'|) <= P_Val'), (S = Empty_String)" shape="box" color="red" ];
+      1 -> 2;
+    }
+
+_____________________
+
+Applied Assume Rule: 
+
+Free Variables:
+    S : Str('Entry')
+    Temp : Str('Entry')
+    Next_Entry : 'Entry'
+    P_Val' : N
+    Next_Entry' : 'Entry'
+    Temp' : Str('Entry')
+    Next_Entry'' : 'Entry'
+    S' : Str('Entry')
+
+Statements:
+    Assume ((((min_int <= 0) and (1 <= max_int)) and (1 <= Last_Char_Num)) and (1 <= Max_Char_Str_Len));
+    Remember;
+    _Initialize(Temp : Stack);
+    _Initialize(Next_Entry : Entry);
+    Confirm (#S = (Reverse(Temp) o S));
+    Change S, Temp, Next_Entry;
+
+VC(s):
+    (S = Empty_String), (#S = (Reverse(Temp) o S)) |- (S = Empty_String)
+
+    (S = (<Next_Entry''> o S')), (#S = (Reverse(Temp) o S)) |- (#S = (Reverse((<Next_Entry''> o Temp)) o S')), (S = Empty_String)
+
+    (S = (<Next_Entry''> o S')), (#S = (Reverse(Temp) o S)) |- ((1 + |S'|) <= |S|), (S = Empty_String)
+
+Reduction Tree(s):
+    strict digraph G {
+      1 [ label="((#S = (Reverse(Temp) o S)) and (P_Val' = |S|)) |- " shape="box" ];
+      2 [ label="(#S = (Reverse(Temp) o S)), (P_Val' = |S|) |- " shape="box" color="red" ];
+      1 -> 2;
+    }
+
+_____________________
+
+Applied Change Rule: 
+
+Free Variables:
+    S : Str('Entry')
+    Temp : Str('Entry')
+    Next_Entry : 'Entry'
+    P_Val' : N
+    Next_Entry' : 'Entry'
+    Temp' : Str('Entry')
+    Next_Entry'' : 'Entry'
+    S' : Str('Entry')
+    S'' : Str('Entry')
+    Temp'' : Str('Entry')
+    Next_Entry''' : 'Entry'
+
+Statements:
+    Assume ((((min_int <= 0) and (1 <= max_int)) and (1 <= Last_Char_Num)) and (1 <= Max_Char_Str_Len));
+    Remember;
+    _Initialize(Temp : Stack);
+    _Initialize(Next_Entry : Entry);
+    Confirm (#S = (Reverse(Temp) o S));
+
+VC(s):
+    (S'' = Empty_String), (#S = (Reverse(Temp'') o S'')) |- (S'' = Empty_String)
+
+    (S'' = (<Next_Entry''> o S')), (#S = (Reverse(Temp'') o S'')) |- (#S = (Reverse((<Next_Entry''> o Temp'')) o S')), (S'' = Empty_String)
+
+    (S'' = (<Next_Entry''> o S')), (#S = (Reverse(Temp'') o S'')) |- ((1 + |S'|) <= |S''|), (S'' = Empty_String)
+
+_____________________
+
+Applied Confirm Rule: 
+
+Free Variables:
+    S : Str('Entry')
+    Temp : Str('Entry')
+    Next_Entry : 'Entry'
+    P_Val' : N
+    Next_Entry' : 'Entry'
+    Temp' : Str('Entry')
+    Next_Entry'' : 'Entry'
+    S' : Str('Entry')
+    S'' : Str('Entry')
+    Temp'' : Str('Entry')
+    Next_Entry''' : 'Entry'
+
+Statements:
+    Assume ((((min_int <= 0) and (1 <= max_int)) and (1 <= Last_Char_Num)) and (1 <= Max_Char_Str_Len));
+    Remember;
+    _Initialize(Temp : Stack);
+    _Initialize(Next_Entry : Entry);
+
+VC(s):
+     |- (#S = (Reverse(Temp) o S))
+
+    (S'' = Empty_String), (#S = (Reverse(Temp'') o S'')) |- (S'' = Empty_String)
+
+    (S'' = (<Next_Entry''> o S')), (#S = (Reverse(Temp'') o S'')) |- (#S = (Reverse((<Next_Entry''> o Temp'')) o S')), (S'' = Empty_String)
+
+    (S'' = (<Next_Entry''> o S')), (#S = (Reverse(Temp'') o S'')) |- ((1 + |S'|) <= |S''|), (S'' = Empty_String)
+
+_____________________
+
+Applied Variable Declaration/Initialization Rule (Generic Program Type): 
+
+Free Variables:
+    S : Str('Entry')
+    Temp : Str('Entry')
+    Next_Entry : 'Entry'
+    P_Val' : N
+    Next_Entry' : 'Entry'
+    Temp' : Str('Entry')
+    Next_Entry'' : 'Entry'
+    S' : Str('Entry')
+    S'' : Str('Entry')
+    Temp'' : Str('Entry')
+    Next_Entry''' : 'Entry'
+
+Statements:
+    Assume ((((min_int <= 0) and (1 <= max_int)) and (1 <= Last_Char_Num)) and (1 <= Max_Char_Str_Len));
+    Remember;
+    _Initialize(Temp : Stack);
+    Assume Entry.Is_Initial(Next_Entry);
+
+VC(s):
+     |- (#S = (Reverse(Temp) o S))
+
+    (S'' = Empty_String), (#S = (Reverse(Temp'') o S'')) |- (S'' = Empty_String)
+
+    (S'' = (<Next_Entry''> o S')), (#S = (Reverse(Temp'') o S'')) |- (#S = (Reverse((<Next_Entry''> o Temp'')) o S')), (S'' = Empty_String)
+
+    (S'' = (<Next_Entry''> o S')), (#S = (Reverse(Temp'') o S'')) |- ((1 + |S'|) <= |S''|), (S'' = Empty_String)
+
+_____________________
+
+Applied Assume Rule: 
+
+Free Variables:
+    S : Str('Entry')
+    Temp : Str('Entry')
+    Next_Entry : 'Entry'
+    P_Val' : N
+    Next_Entry' : 'Entry'
+    Temp' : Str('Entry')
+    Next_Entry'' : 'Entry'
+    S' : Str('Entry')
+    S'' : Str('Entry')
+    Temp'' : Str('Entry')
+    Next_Entry''' : 'Entry'
+
+Statements:
+    Assume ((((min_int <= 0) and (1 <= max_int)) and (1 <= Last_Char_Num)) and (1 <= Max_Char_Str_Len));
+    Remember;
+    _Initialize(Temp : Stack);
+
+VC(s):
+     |- (#S = (Reverse(Temp) o S))
+
+    (S'' = Empty_String), (#S = (Reverse(Temp'') o S'')) |- (S'' = Empty_String)
+
+    (S'' = (<Next_Entry''> o S')), (#S = (Reverse(Temp'') o S'')) |- (#S = (Reverse((<Next_Entry''> o Temp'')) o S')), (S'' = Empty_String)
+
+    (S'' = (<Next_Entry''> o S')), (#S = (Reverse(Temp'') o S'')) |- ((1 + |S'|) <= |S''|), (S'' = Empty_String)
+
+_____________________
+
+Applied Variable Declaration/Initialization Rule (Known Program Type): 
+
+Free Variables:
+    S : Str('Entry')
+    Temp : Str('Entry')
+    Next_Entry : 'Entry'
+    P_Val' : N
+    Next_Entry' : 'Entry'
+    Temp' : Str('Entry')
+    Next_Entry'' : 'Entry'
+    S' : Str('Entry')
+    S'' : Str('Entry')
+    Temp'' : Str('Entry')
+    Next_Entry''' : 'Entry'
+
+Statements:
+    Assume ((((min_int <= 0) and (1 <= max_int)) and (1 <= Last_Char_Num)) and (1 <= Max_Char_Str_Len));
+    Remember;
+    Assume (Temp = Empty_String);
+
+VC(s):
+     |- (#S = (Reverse(Temp) o S))
+
+    (S'' = Empty_String), (#S = (Reverse(Temp'') o S'')) |- (S'' = Empty_String)
+
+    (S'' = (<Next_Entry''> o S')), (#S = (Reverse(Temp'') o S'')) |- (#S = (Reverse((<Next_Entry''> o Temp'')) o S')), (S'' = Empty_String)
+
+    (S'' = (<Next_Entry''> o S')), (#S = (Reverse(Temp'') o S'')) |- ((1 + |S'|) <= |S''|), (S'' = Empty_String)
+
+_____________________
+
+Applied Assume Rule: 
+
+Free Variables:
+    S : Str('Entry')
+    Temp : Str('Entry')
+    Next_Entry : 'Entry'
+    P_Val' : N
+    Next_Entry' : 'Entry'
+    Temp' : Str('Entry')
+    Next_Entry'' : 'Entry'
+    S' : Str('Entry')
+    S'' : Str('Entry')
+    Temp'' : Str('Entry')
+    Next_Entry''' : 'Entry'
+
+Statements:
+    Assume ((((min_int <= 0) and (1 <= max_int)) and (1 <= Last_Char_Num)) and (1 <= Max_Char_Str_Len));
+    Remember;
+
+VC(s):
+     |- (#S = (Reverse(Empty_String) o S))
+
+    (S'' = Empty_String), (#S = (Reverse(Temp'') o S'')) |- (S'' = Empty_String)
+
+    (S'' = (<Next_Entry''> o S')), (#S = (Reverse(Temp'') o S'')) |- (#S = (Reverse((<Next_Entry''> o Temp'')) o S')), (S'' = Empty_String)
+
+    (S'' = (<Next_Entry''> o S')), (#S = (Reverse(Temp'') o S'')) |- ((1 + |S'|) <= |S''|), (S'' = Empty_String)
+
+_____________________
+
+Applied Remember Rule: 
+
+Free Variables:
+    S : Str('Entry')
+    Temp : Str('Entry')
+    Next_Entry : 'Entry'
+    P_Val' : N
+    Next_Entry' : 'Entry'
+    Temp' : Str('Entry')
+    Next_Entry'' : 'Entry'
+    S' : Str('Entry')
+    S'' : Str('Entry')
+    Temp'' : Str('Entry')
+    Next_Entry''' : 'Entry'
+
+Statements:
+    Assume ((((min_int <= 0) and (1 <= max_int)) and (1 <= Last_Char_Num)) and (1 <= Max_Char_Str_Len));
+
+VC(s):
+     |- (S = (Reverse(Empty_String) o S))
+
+    (S'' = Empty_String), (S = (Reverse(Temp'') o S'')) |- (S'' = Empty_String)
+
+    (S'' = (<Next_Entry''> o S')), (S = (Reverse(Temp'') o S'')) |- (S = (Reverse((<Next_Entry''> o Temp'')) o S')), (S'' = Empty_String)
+
+    (S'' = (<Next_Entry''> o S')), (S = (Reverse(Temp'') o S'')) |- ((1 + |S'|) <= |S''|), (S'' = Empty_String)
+
+_____________________
+
+Applied Assume Rule: 
+
+Free Variables:
+    S : Str('Entry')
+    Temp : Str('Entry')
+    Next_Entry : 'Entry'
+    P_Val' : N
+    Next_Entry' : 'Entry'
+    Temp' : Str('Entry')
+    Next_Entry'' : 'Entry'
+    S' : Str('Entry')
+    S'' : Str('Entry')
+    Temp'' : Str('Entry')
+    Next_Entry''' : 'Entry'
+
+Statements:
+
+VC(s):
+     |- (S = (Reverse(Empty_String) o S))
+
+    (S'' = Empty_String), (S = (Reverse(Temp'') o S'')) |- (S'' = Empty_String)
+
+    (S'' = (<Next_Entry''> o S')), (S = (Reverse(Temp'') o S'')) |- (S = (Reverse((<Next_Entry''> o Temp'')) o S')), (S'' = Empty_String)
+
+    (S'' = (<Next_Entry''> o S')), (S = (Reverse(Temp'') o S'')) |- ((1 + |S'|) <= |S''|), (S'' = Empty_String)
+
+Reduction Tree(s):
+    strict digraph G {
+      1 [ label="((((min_int <= 0) and (1 <= max_int)) and (1 <= Last_Char_Num)) and (1 <= Max_Char_Str_Len)) |- " shape="box" ];
+      2 [ label="(min_int <= 0), (1 <= max_int), (1 <= Last_Char_Num), (1 <= Max_Char_Str_Len) |- " shape="box" color="red" ];
+      1 -> 2;
+    }
+
+_____________________
+
+========================= Flip =========================
+
+---------------------
+Branching Conditions
+---------------------
+1. Expression at Obvious_Flipping_Realiz.rb(8:10) is false. [Exp: (S = Empty_String)]
+---------------------
+
+Applied Else-Part Rule: 
+
+Free Variables:
+    S : Str('Entry')
+    Temp : Str('Entry')
+    Next_Entry : 'Entry'
+    P_Val' : N
+
+Statements:
+    Assume ((((min_int <= 0) and (1 <= max_int)) and (1 <= Last_Char_Num)) and (1 <= Max_Char_Str_Len));
+    Remember;
+    _Initialize(Temp : Stack);
+    _Initialize(Next_Entry : Entry);
+    Confirm (#S = (Reverse(Temp) o S));
+    Change S, Temp, Next_Entry;
+    Assume ((#S = (Reverse(Temp) o S)) and (P_Val' = |S|));
+    Stipulate (S = Empty_String);
+    VC_Confirm
+         |- (Temp = Reverse(#S))
+
+
+VC(s):
+
+_____________________
+
+Applied VCConfirm Rule: 
+
+Free Variables:
+    S : Str('Entry')
+    Temp : Str('Entry')
+    Next_Entry : 'Entry'
+    P_Val' : N
+
+Statements:
+    Assume ((((min_int <= 0) and (1 <= max_int)) and (1 <= Last_Char_Num)) and (1 <= Max_Char_Str_Len));
+    Remember;
+    _Initialize(Temp : Stack);
+    _Initialize(Next_Entry : Entry);
+    Confirm (#S = (Reverse(Temp) o S));
+    Change S, Temp, Next_Entry;
+    Assume ((#S = (Reverse(Temp) o S)) and (P_Val' = |S|));
+    Stipulate (S = Empty_String);
+
+VC(s):
+     |- (Temp = Reverse(#S))
+
+_____________________
+
+Applied Stipulate Assume Rule: 
+
+Free Variables:
+    S : Str('Entry')
+    Temp : Str('Entry')
+    Next_Entry : 'Entry'
+    P_Val' : N
+
+Statements:
+    Assume ((((min_int <= 0) and (1 <= max_int)) and (1 <= Last_Char_Num)) and (1 <= Max_Char_Str_Len));
+    Remember;
+    _Initialize(Temp : Stack);
+    _Initialize(Next_Entry : Entry);
+    Confirm (#S = (Reverse(Temp) o S));
+    Change S, Temp, Next_Entry;
+    Assume ((#S = (Reverse(Temp) o S)) and (P_Val' = |S|));
+
+VC(s):
+    (S = Empty_String) |- (Temp = Reverse(#S))
+
+_____________________
+
+Applied Assume Rule: 
+
+Free Variables:
+    S : Str('Entry')
+    Temp : Str('Entry')
+    Next_Entry : 'Entry'
+    P_Val' : N
+
+Statements:
+    Assume ((((min_int <= 0) and (1 <= max_int)) and (1 <= Last_Char_Num)) and (1 <= Max_Char_Str_Len));
+    Remember;
+    _Initialize(Temp : Stack);
+    _Initialize(Next_Entry : Entry);
+    Confirm (#S = (Reverse(Temp) o S));
+    Change S, Temp, Next_Entry;
+
+VC(s):
+    (S = Empty_String), (#S = (Reverse(Temp) o S)) |- (Temp = Reverse(#S))
+
+Reduction Tree(s):
+    strict digraph G {
+      1 [ label="((#S = (Reverse(Temp) o S)) and (P_Val' = |S|)) |- " shape="box" ];
+      2 [ label="(#S = (Reverse(Temp) o S)), (P_Val' = |S|) |- " shape="box" color="red" ];
+      1 -> 2;
+    }
+
+_____________________
+
+Applied Change Rule: 
+
+Free Variables:
+    S : Str('Entry')
+    Temp : Str('Entry')
+    Next_Entry : 'Entry'
+    P_Val' : N
+    S' : Str('Entry')
+    Temp' : Str('Entry')
+    Next_Entry' : 'Entry'
+
+Statements:
+    Assume ((((min_int <= 0) and (1 <= max_int)) and (1 <= Last_Char_Num)) and (1 <= Max_Char_Str_Len));
+    Remember;
+    _Initialize(Temp : Stack);
+    _Initialize(Next_Entry : Entry);
+    Confirm (#S = (Reverse(Temp) o S));
+
+VC(s):
+    (S' = Empty_String), (#S = (Reverse(Temp') o S')) |- (Temp' = Reverse(#S))
+
+_____________________
+
+Applied Confirm Rule: 
+
+Free Variables:
+    S : Str('Entry')
+    Temp : Str('Entry')
+    Next_Entry : 'Entry'
+    P_Val' : N
+    S' : Str('Entry')
+    Temp' : Str('Entry')
+    Next_Entry' : 'Entry'
+
+Statements:
+    Assume ((((min_int <= 0) and (1 <= max_int)) and (1 <= Last_Char_Num)) and (1 <= Max_Char_Str_Len));
+    Remember;
+    _Initialize(Temp : Stack);
+    _Initialize(Next_Entry : Entry);
+
+VC(s):
+     |- (#S = (Reverse(Temp) o S))
+
+    (S' = Empty_String), (#S = (Reverse(Temp') o S')) |- (Temp' = Reverse(#S))
+
+_____________________
+
+Applied Variable Declaration/Initialization Rule (Generic Program Type): 
+
+Free Variables:
+    S : Str('Entry')
+    Temp : Str('Entry')
+    Next_Entry : 'Entry'
+    P_Val' : N
+    S' : Str('Entry')
+    Temp' : Str('Entry')
+    Next_Entry' : 'Entry'
+
+Statements:
+    Assume ((((min_int <= 0) and (1 <= max_int)) and (1 <= Last_Char_Num)) and (1 <= Max_Char_Str_Len));
+    Remember;
+    _Initialize(Temp : Stack);
+    Assume Entry.Is_Initial(Next_Entry);
+
+VC(s):
+     |- (#S = (Reverse(Temp) o S))
+
+    (S' = Empty_String), (#S = (Reverse(Temp') o S')) |- (Temp' = Reverse(#S))
+
+_____________________
+
+Applied Assume Rule: 
+
+Free Variables:
+    S : Str('Entry')
+    Temp : Str('Entry')
+    Next_Entry : 'Entry'
+    P_Val' : N
+    S' : Str('Entry')
+    Temp' : Str('Entry')
+    Next_Entry' : 'Entry'
+
+Statements:
+    Assume ((((min_int <= 0) and (1 <= max_int)) and (1 <= Last_Char_Num)) and (1 <= Max_Char_Str_Len));
+    Remember;
+    _Initialize(Temp : Stack);
+
+VC(s):
+     |- (#S = (Reverse(Temp) o S))
+
+    (S' = Empty_String), (#S = (Reverse(Temp') o S')) |- (Temp' = Reverse(#S))
+
+_____________________
+
+Applied Variable Declaration/Initialization Rule (Known Program Type): 
+
+Free Variables:
+    S : Str('Entry')
+    Temp : Str('Entry')
+    Next_Entry : 'Entry'
+    P_Val' : N
+    S' : Str('Entry')
+    Temp' : Str('Entry')
+    Next_Entry' : 'Entry'
+
+Statements:
+    Assume ((((min_int <= 0) and (1 <= max_int)) and (1 <= Last_Char_Num)) and (1 <= Max_Char_Str_Len));
+    Remember;
+    Assume (Temp = Empty_String);
+
+VC(s):
+     |- (#S = (Reverse(Temp) o S))
+
+    (S' = Empty_String), (#S = (Reverse(Temp') o S')) |- (Temp' = Reverse(#S))
+
+_____________________
+
+Applied Assume Rule: 
+
+Free Variables:
+    S : Str('Entry')
+    Temp : Str('Entry')
+    Next_Entry : 'Entry'
+    P_Val' : N
+    S' : Str('Entry')
+    Temp' : Str('Entry')
+    Next_Entry' : 'Entry'
+
+Statements:
+    Assume ((((min_int <= 0) and (1 <= max_int)) and (1 <= Last_Char_Num)) and (1 <= Max_Char_Str_Len));
+    Remember;
+
+VC(s):
+     |- (#S = (Reverse(Empty_String) o S))
+
+    (S' = Empty_String), (#S = (Reverse(Temp') o S')) |- (Temp' = Reverse(#S))
+
+_____________________
+
+Applied Remember Rule: 
+
+Free Variables:
+    S : Str('Entry')
+    Temp : Str('Entry')
+    Next_Entry : 'Entry'
+    P_Val' : N
+    S' : Str('Entry')
+    Temp' : Str('Entry')
+    Next_Entry' : 'Entry'
+
+Statements:
+    Assume ((((min_int <= 0) and (1 <= max_int)) and (1 <= Last_Char_Num)) and (1 <= Max_Char_Str_Len));
+
+VC(s):
+     |- (S = (Reverse(Empty_String) o S))
+
+    (S' = Empty_String), (S = (Reverse(Temp') o S')) |- (Temp' = Reverse(S))
+
+_____________________
+
+Applied Assume Rule: 
+
+Free Variables:
+    S : Str('Entry')
+    Temp : Str('Entry')
+    Next_Entry : 'Entry'
+    P_Val' : N
+    S' : Str('Entry')
+    Temp' : Str('Entry')
+    Next_Entry' : 'Entry'
+
+Statements:
+
+VC(s):
+     |- (S = (Reverse(Empty_String) o S))
+
+    (S' = Empty_String), (S = (Reverse(Temp') o S')) |- (Temp' = Reverse(S))
+
+Reduction Tree(s):
+    strict digraph G {
+      1 [ label="((((min_int <= 0) and (1 <= max_int)) and (1 <= Last_Char_Num)) and (1 <= Max_Char_Str_Len)) |- " shape="box" ];
+      2 [ label="(min_int <= 0), (1 <= max_int), (1 <= Last_Char_Num), (1 <= Max_Char_Str_Len) |- " shape="box" color="red" ];
+      1 -> 2;
+    }
+
+_____________________
+
