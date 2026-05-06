@@ -14,7 +14,7 @@ package edu.clemson.rsrg.typeandpopulate.query.searcher;
 
 import edu.clemson.rsrg.parsing.data.Location;
 import edu.clemson.rsrg.parsing.data.PosSymbol;
-import edu.clemson.rsrg.prover.immutableadts.ImmutableList;
+import edu.clemson.rsrg.typeandpopulate.immutableadts.ImmutableList;
 import edu.clemson.rsrg.statushandling.exception.SourceErrorException;
 import edu.clemson.rsrg.typeandpopulate.entry.OperationEntry;
 import edu.clemson.rsrg.typeandpopulate.entry.ProgramParameterEntry;

@@ -10,9 +10,9 @@
  * This file is subject to the terms and conditions defined in
  * file 'LICENSE.txt', which is part of this source code package.
  */
-package edu.clemson.rsrg.prover.immutableadts;
+package edu.clemson.rsrg.typeandpopulate.immutableadts;
 
-import edu.clemson.rsrg.prover.iterators.ChainingIterator;
+import edu.clemson.rsrg.typeandpopulate.iterators.ChainingIterator;
 
 import java.util.Iterator;
 

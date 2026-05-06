@@ -51,7 +51,7 @@ import edu.clemson.rsrg.init.flag.FlagDependencies;
 import edu.clemson.rsrg.parsing.data.Location;
 import edu.clemson.rsrg.parsing.data.LocationDetailModel;
 import edu.clemson.rsrg.parsing.data.PosSymbol;
-import edu.clemson.rsrg.prover.immutableadts.ImmutableList;
+import edu.clemson.rsrg.typeandpopulate.immutableadts.ImmutableList;
 import edu.clemson.rsrg.statushandling.exception.SourceErrorException;
 import edu.clemson.rsrg.statushandling.Fault;
 import edu.clemson.rsrg.statushandling.FaultType;

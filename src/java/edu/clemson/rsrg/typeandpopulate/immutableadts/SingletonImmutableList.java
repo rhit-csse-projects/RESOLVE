@@ -1,5 +1,5 @@
 /*
- * EmptyImmutableList.java
+ * SingletonImmutableList.java
  * ---------------------------------
  * Copyright (c) 2024
  * RESOLVE Software Research Group
@@ -10,24 +10,24 @@
  * This file is subject to the terms and conditions defined in
  * file 'LICENSE.txt', which is part of this source code package.
  */
-package edu.clemson.rsrg.prover.immutableadts;
+package edu.clemson.rsrg.typeandpopulate.immutableadts;
 
-import edu.clemson.rsrg.prover.iterators.DummyIterator;
+import edu.clemson.rsrg.typeandpopulate.iterators.SingletonIterator;
 import java.util.Iterator;
 
 /**
  * <p>
- * This class implements an empty immutable list.
+ * This class implements a singleton element immutable list.
  * </p>
  *
  * @param <E>
- *            Type of elements stored inside this list.
+ *            Type of element stored inside this list.
  *
  * @author Hampton Smith
  *
  * @version 2.0
  */
-public class EmptyImmutableList<E> extends AbstractImmutableList<E> {
+public class SingletonImmutableList<E> extends AbstractImmutableList<E> {
 
     // ===========================================================
     // Member Fields
@@ -35,10 +35,34 @@ public class EmptyImmutableList<E> extends AbstractImmutableList<E> {
 
     /**
      * <p>
-     * A type safe iterator.
+     * An empty immutable list.
      * </p>
      */
-    private final Iterator<E> TYPESAFE_ITERATOR = (Iterator<E>) null;
+    private final EmptyImmutableList<E> EMPTY;
+
+    /**
+     * <p>
+     * The element stored inside this singleton list
+     * </p>
+     */
+    private final E myElement;
+
+    // ===========================================================
+    // Constructors
+    // ===========================================================
+
+    /**
+     * <p>
+     * This creates a new immutable list that only contains the element {@code e}.
+     * </p>
+     *
+     * @param e
+     *            Element to be inserted.
+     */
+    public SingletonImmutableList(E e) {
+        EMPTY = new EmptyImmutableList<>();
+        myElement = e;
+    }
 
     // ===========================================================
     // Public Methods
@@ -56,7 +80,11 @@ public class EmptyImmutableList<E> extends AbstractImmutableList<E> {
      */
     @Override
     public final E get(int index) {
-        throw new IndexOutOfBoundsException();
+        if (index != 0) {
+            throw new IndexOutOfBoundsException();
+        }
+
+        return myElement;
     }
 
     /**
@@ -71,11 +99,20 @@ public class EmptyImmutableList<E> extends AbstractImmutableList<E> {
      */
     @Override
     public final ImmutableList<E> head(int length) {
-        if (length != 0) {
-            throw new IndexOutOfBoundsException();
+        ImmutableList<E> retval;
+
+        switch (length) {
+            case 0:
+                retval = EMPTY;
+                break;
+            case 1:
+                retval = this;
+                break;
+            default:
+                throw new IndexOutOfBoundsException();
         }
 
-        return this;
+        return retval;
     }
 
     /**
@@ -83,7 +120,7 @@ public class EmptyImmutableList<E> extends AbstractImmutableList<E> {
      */
     @Override
     public final Iterator<E> iterator() {
-        return DummyIterator.getInstance(TYPESAFE_ITERATOR);
+        return new SingletonIterator<>(myElement);
     }
 
     /**
@@ -95,7 +132,7 @@ public class EmptyImmutableList<E> extends AbstractImmutableList<E> {
      */
     @Override
     public final int size() {
-        return 0;
+        return 1;
     }
 
     /**
@@ -110,11 +147,20 @@ public class EmptyImmutableList<E> extends AbstractImmutableList<E> {
      */
     @Override
     public final ImmutableList<E> tail(int startIndex) {
-        if (startIndex != 0) {
-            throw new IndexOutOfBoundsException();
+        ImmutableList<E> retval;
+
+        switch (startIndex) {
+            case 0:
+                retval = this;
+                break;
+            case 1:
+                retval = EMPTY;
+                break;
+            default:
+                throw new IndexOutOfBoundsException();
         }
 
-        return this;
+        return retval;
     }
 
 }

@@ -24,7 +24,6 @@ import edu.clemson.rsrg.parsing.ResolveLexer;
 import edu.clemson.rsrg.parsing.ResolveParser;
 import edu.clemson.rsrg.parsing.TreeBuildingListener;
 import edu.clemson.rsrg.parsing.data.ResolveTokenFactory;
-import edu.clemson.rsrg.prover.CongruenceClassProver;
 import edu.clemson.rsrg.statushandling.*;
 import edu.clemson.rsrg.statushandling.exception.*;
 import edu.clemson.rsrg.translation.AbstractTranslator;
@@ -205,13 +204,6 @@ class Controller {
                     VCGenPipeline vcGenPipeline = new VCGenPipeline(myCompileEnvironment, mySymbolTable);
                     vcGenPipeline.process(m);
                     List<VerificationCondition> vcs = vcGenPipeline.getVerificationConditions();
-
-                    // Invoke Automated Prover (if requested)
-                    if (myCompileEnvironment.flags.isFlagSet(CongruenceClassProver.FLAG_PROVE)
-                            && m.equals(new ModuleIdentifier(targetModule))) {
-                        ProverPipeline proverPipeline = new ProverPipeline(myCompileEnvironment, mySymbolTable);
-                        proverPipeline.process(m);
-                    }
 
                     // Invoke nProver (if requested)
                     if (myCompileEnvironment.flags.isFlagSet(GeneralPurposeProver.FLAG_PROVE)

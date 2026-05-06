@@ -10,7 +10,7 @@
  * This file is subject to the terms and conditions defined in
  * file 'LICENSE.txt', which is part of this source code package.
  */
-package edu.clemson.rsrg.prover.iterators;
+package edu.clemson.rsrg.typeandpopulate.iterators;
 
 import java.util.Arrays;
 import java.util.Iterator;

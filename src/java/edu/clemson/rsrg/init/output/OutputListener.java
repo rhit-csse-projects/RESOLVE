@@ -16,8 +16,6 @@ import edu.clemson.rsrg.astoutput.GenerateGraphvizModel;
 import edu.clemson.rsrg.init.file.ResolveFile;
 import edu.clemson.rsrg.nProver.GeneralPurposeProver;
 import edu.clemson.rsrg.nProver.output.VCProverResult;
-import edu.clemson.rsrg.prover.output.Metrics;
-import edu.clemson.rsrg.prover.output.PerVCProverModel;
 import edu.clemson.rsrg.translation.targets.CTranslator;
 import edu.clemson.rsrg.translation.targets.JavaTranslator;
 import edu.clemson.rsrg.vcgeneration.VCGenerator;
@@ -131,19 +129,5 @@ public interface OutputListener {
      */
     void vcGeneratorResult(String inputFileName, String outputFileName, List<AssertiveCodeBlock> blocks,
             String verboseOutput);
-
-    /**
-     * <p>
-     * This method outputs the prover results for a given {@code VC}.
-     * </p>
-     *
-     * @param proved
-     *            {@code true} if the {@code VC} was proved, {@code false} otherwise.
-     * @param finalModel
-     *            The prover representation for a {@code VC}.
-     * @param m
-     *            The prover generated metrics.
-     */
-    void vcResult(boolean proved, PerVCProverModel finalModel, Metrics m);
 
 }

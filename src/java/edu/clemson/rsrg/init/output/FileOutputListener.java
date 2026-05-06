@@ -17,8 +17,6 @@ import edu.clemson.rsrg.init.file.ResolveFile;
 import edu.clemson.rsrg.nProver.GeneralPurposeProver;
 import edu.clemson.rsrg.nProver.output.VCProverResult;
 import edu.clemson.rsrg.parsing.data.LocationDetailModel;
-import edu.clemson.rsrg.prover.output.Metrics;
-import edu.clemson.rsrg.prover.output.PerVCProverModel;
 import edu.clemson.rsrg.statushandling.StatusHandler;
 import edu.clemson.rsrg.statushandling.Fault;
 import edu.clemson.rsrg.statushandling.FaultType;
@@ -293,23 +291,6 @@ public class FileOutputListener implements OutputListener {
 
         // Output the results to file
         writeToFile(outputFileName + ".asrt", sb.toString());
-    }
-
-    /**
-     * <p>
-     * This method outputs the prover results for a given {@code VC}.
-     * </p>
-     *
-     * @param proved
-     *            {@code true} if the {@code VC} was proved, {@code false} otherwise.
-     * @param finalModel
-     *            The prover representation for a {@code VC}.
-     * @param m
-     *            The prover generated metrics.
-     */
-    @Override
-    public final void vcResult(boolean proved, PerVCProverModel finalModel, Metrics m) {
-        throw new UnsupportedOperationException("Needs to be implemented!");
     }
 
     // ===========================================================
