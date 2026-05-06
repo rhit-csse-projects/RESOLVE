@@ -15,8 +15,6 @@ package edu.clemson.rsrg.nProver;
 import edu.clemson.rsrg.init.ResolveCompiler;
 import edu.clemson.rsrg.init.output.OutputListener;
 import edu.clemson.rsrg.nProver.output.VCProverResult;
-import edu.clemson.rsrg.prover.output.Metrics;
-import edu.clemson.rsrg.prover.output.PerVCProverModel;
 import edu.clemson.rsrg.statushandling.SystemStdHandler;
 import edu.clemson.rsrg.vcgeneration.utilities.AssertiveCodeBlock;
 import java.nio.file.Path;
@@ -119,10 +117,6 @@ class ProverRegressionTest {
         @Override
         public void vcGeneratorResult(String inputFileName, String outputFileName, List<AssertiveCodeBlock> blocks,
                 String verboseOutput) {
-        }
-
-        @Override
-        public void vcResult(boolean proved, PerVCProverModel finalModel, Metrics m) {
         }
     }
 }
