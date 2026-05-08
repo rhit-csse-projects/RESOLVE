@@ -12,7 +12,7 @@
  */
 package edu.clemson.rsrg.nProver.registry;
 
-import edu.clemson.rsrg.nProver.utilities.treewakers.AbstractRegisterSequent;
+import edu.clemson.rsrg.nProver.utilities.treewalkers.AbstractRegisterSequent;
 import java.util.BitSet;
 import org.junit.Before;
 import org.junit.Test;

@@ -20,8 +20,8 @@ import edu.clemson.rsrg.typeandpopulate.entry.TheoremEntry;
 
 import java.util.*;
 
-import static edu.clemson.rsrg.nProver.utilities.treewakers.AbstractRegisterSequent.OP_EQUALS;
-import static edu.clemson.rsrg.nProver.utilities.treewakers.AbstractRegisterSequent.OP_LESS_THAN_OR_EQUALS;
+import static edu.clemson.rsrg.nProver.utilities.treewalkers.AbstractRegisterSequent.OP_EQUALS;
+import static edu.clemson.rsrg.nProver.utilities.treewalkers.AbstractRegisterSequent.OP_LESS_THAN_OR_EQUALS;
 import static edu.clemson.rsrg.misc.DebuggerHelper.setDebug;
 
 public class RegistryCI {

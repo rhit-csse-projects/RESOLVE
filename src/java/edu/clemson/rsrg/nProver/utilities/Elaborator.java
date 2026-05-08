@@ -19,8 +19,8 @@ import edu.clemson.rsrg.absyn.expressions.mathexpr.VarExp;
 import edu.clemson.rsrg.nProver.registry.CongruenceClassRegistry;
 import edu.clemson.rsrg.nProver.utilities.theorems.ElaborationRule;
 import edu.clemson.rsrg.nProver.utilities.theorems.RuleInstance;
-import edu.clemson.rsrg.nProver.utilities.treewakers.RegisterAntecedent;
-import edu.clemson.rsrg.nProver.utilities.treewakers.RegisterSuccedent;
+import edu.clemson.rsrg.nProver.utilities.treewalkers.RegisterAntecedent;
+import edu.clemson.rsrg.nProver.utilities.treewalkers.RegisterSuccedent;
 import edu.clemson.rsrg.treewalk.TreeWalker;
 
 import java.util.*;
