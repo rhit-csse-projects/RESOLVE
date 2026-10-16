@@ -60,9 +60,8 @@ public class ElaborationRules {
                 List<Exp> firstPartPrecursors = processPrecursors(firstPart);
                 if (isDeterministic(firstPartPrecursors, lastPart)) {
                     elaborationRules.add(mkRule(firstPartPrecursors, t, thisTheorem, "="));
-                }
-                else {
-                    if(DebuggerHelper.isDebug()){
+                } else {
+                    if (DebuggerHelper.isDebug()) {
                         DebuggerHelper.debugLog("not deterministic: " + t);
                     }
                 }
@@ -74,9 +73,8 @@ public class ElaborationRules {
                 List<Exp> lastPartPrecursors = processPrecursors(lastPart);
                 if (isDeterministic(lastPartPrecursors, firstPart)) {
                     elaborationRules.add(mkRule(lastPartPrecursors, t, thisTheorem, "="));
-                }
-                else {
-                    if(DebuggerHelper.isDebug()){
+                } else {
+                    if (DebuggerHelper.isDebug()) {
                         DebuggerHelper.debugLog("not deterministic: " + t);
                     }
                 }
@@ -95,8 +93,7 @@ public class ElaborationRules {
                 List<Exp> firstPartPrecursors = processPrecursors(firstPart);
                 if (isDeterministic(firstPartPrecursors, lastPart)) {
                     elaborationRules.add(mkRule(firstPartPrecursors, t, thisTheorem, "="));
-                }
-                else {
+                } else {
                     if (DebuggerHelper.isDebug()) {
                         DebuggerHelper.debugLog("not deterministic: " + t);
                     }
@@ -163,9 +160,8 @@ public class ElaborationRules {
             }
             if (isDeterministic(precursors, clonedSuccedent)) {
                 elaborationRules.add(mkRule(precursors, t, clonedSuccedent, "implies"));
-            }
-            else {
-                if(DebuggerHelper.isDebug()){
+            } else {
+                if (DebuggerHelper.isDebug()) {
                     DebuggerHelper.debugLog("not deterministic: " + t);
                 }
             }
@@ -199,7 +195,7 @@ public class ElaborationRules {
      *
      * @return the operation returns a new Elaboration Rule to be added to the rules list
      */
-    //TODO: add a distinction here for precursor terms and clauses
+    // TODO: add a distinction here for precursor terms and clauses
     private ElaborationRule mkRule(List<Exp> precursorExps, TheoremEntry t, Exp resultant, String operator) {
         String sourceTheoremName = null;
         String sourceModuleName = null;
@@ -212,17 +208,16 @@ public class ElaborationRules {
         if (precursorExps.size() == 1 && precursorExps.getFirst().getSubExpressions().isEmpty()) {
             l = new ArrayList<>();
             l.add(t.getAssertion());
-            //TODO: we need to add a distinction here for precursor terms and clauses by making it so
+            // TODO: we need to add a distinction here for precursor terms and clauses by making it so
             // precurson terms and clauses are separate inputs to the ElaborationRule class
         }
 
         List<Exp> terms = new ArrayList<>();
         List<Exp> clauses = new ArrayList<>();
-        for (int i = 0; i< l.size(); i++) {
+        for (int i = 0; i < l.size(); i++) {
             if (l.get(i).getMathType().isBoolean()) {
                 clauses.add(l.get(i));
-            }
-            else {
+            } else {
                 terms.add(l.get(i));
             }
         }

@@ -25,8 +25,8 @@ public class ElaborationRule {
     private final String mySourceTheoremOperator;
     private final List<Exp> myPrecursorTerms;
 
-    public ElaborationRule(List<Exp> PrecursorTerms, List<Exp> precursorClauses, Exp resultantClause, String sourceTheoremName,
-            String sourceModuleName, String sourceTheoremOperator) {
+    public ElaborationRule(List<Exp> PrecursorTerms, List<Exp> precursorClauses, Exp resultantClause,
+            String sourceTheoremName, String sourceModuleName, String sourceTheoremOperator) {
         myPrecursorTerms = PrecursorTerms;
         myPrecursorClauses = precursorClauses;
 
@@ -52,14 +52,13 @@ public class ElaborationRule {
         return mySourceModuleName;
     }
 
-
-    //returns all precursor clauses in the provided list
+    // returns all precursor clauses in the provided list
     private List<Exp> getClauses(List<Exp> precursorClauses) { // TODO Implement
         return precursorClauses;
     }
 
-    //returns all precursor terms in the provided list
-    private List<Exp> getTerms(List<Exp> precursorClauses) { //TODO Implement
+    // returns all precursor terms in the provided list
+    private List<Exp> getTerms(List<Exp> precursorClauses) { // TODO Implement
         return new ArrayList<>();
     }
 
