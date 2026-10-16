@@ -14,6 +14,7 @@ package edu.clemson.rsrg.nProver.utilities.theorems;
 
 import edu.clemson.rsrg.absyn.expressions.Exp;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ElaborationRule {
@@ -22,10 +23,13 @@ public class ElaborationRule {
     private final String mySourceTheoremName;
     private final String mySourceModuleName;
     private final String mySourceTheoremOperator;
+    private final List<Exp> myPrecursorTerms;
 
-    public ElaborationRule(List<Exp> precursorClauses, Exp resultantClause, String sourceTheoremName,
+    public ElaborationRule(List<Exp> PrecursorTerms, List<Exp> precursorClauses, Exp resultantClause, String sourceTheoremName,
             String sourceModuleName, String sourceTheoremOperator) {
+        myPrecursorTerms = PrecursorTerms;
         myPrecursorClauses = precursorClauses;
+
         myResultantClause = resultantClause;
         this.mySourceTheoremName = sourceTheoremName;
         this.mySourceModuleName = sourceModuleName;
@@ -46,6 +50,17 @@ public class ElaborationRule {
 
     public String getSourceModuleName() {
         return mySourceModuleName;
+    }
+
+
+    //returns all precursor clauses in the provided list
+    private List<Exp> getClauses(List<Exp> precursorClauses) { // TODO Implement
+        return precursorClauses;
+    }
+
+    //returns all precursor terms in the provided list
+    private List<Exp> getTerms(List<Exp> precursorClauses) { //TODO Implement
+        return new ArrayList<>();
     }
 
     /**
@@ -77,7 +92,22 @@ public class ElaborationRule {
             sb.append("; Matching: ").append(exp.getSide());
             if (i < myPrecursorClauses.size() - 1)
                 sb.append(",\n");
+
         }
+
+        sb.append("\n\n Precursor Terms: ");
+
+        sb.append(" [\n");
+        for (int i = 0; i < myPrecursorTerms.size(); i++) {
+            Exp exp = myPrecursorTerms.get(i);
+            sb.append("  ");
+            sb.append(exp);
+            sb.append("; Matching: ").append(exp.getSide());
+            if (i < myPrecursorTerms.size() - 1)
+                sb.append(",\n");
+
+        }
+
         sb.append("\n ]");
         sb.append("\n Source Operator: ");
         sb.append(mySourceTheoremOperator);
