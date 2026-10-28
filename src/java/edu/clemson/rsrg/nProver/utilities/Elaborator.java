@@ -72,52 +72,46 @@ public class Elaborator {
             boolean allMatched = true; // stops from adding duplicate resultants to the registry
 
             for (Exp precursor : elaborationRule.getPrecursorClauses()) {
-                if (precursor.getTopLevelOperator().equals("=")) {
-                    Exp leftSide = precursor.getSubExpressions().getFirst();
-                    Exp rightSide = precursor.getSubExpressions().getLast();
-                    Map<Exp, Integer> leftBindings = new HashMap<>();
-                    Map<Exp, Integer> rightBindings = new HashMap<>();
-                    int leftMatched = matchExpression(leftSide, leftBindings, ruleCounter, new HashMap<>());
-                    int rightMatched = matchExpression(rightSide, rightBindings, ruleCounter, leftBindings);
-                    if (rightMatched != -1 && leftMatched != -1) {
-                        int leftCC = myRegistry.getClusterArray()[leftMatched].getIndexToCongruenceClass();
-                        int rightCC = myRegistry.getClusterArray()[rightMatched].getIndexToCongruenceClass();
-                        if (myRegistry.areCongruent(leftCC, rightCC)) {
-                            variableBindings.putAll(rightBindings);
-                            variableBindings.putAll(leftBindings);
-                            matchedClusters.add(leftMatched);
-                            matchedClusters.add(rightMatched);
-                        } else {
-                            allMatched = false;
-                            matchedClusters = new ArrayList<>();
-                        }
+                Exp leftSide = precursor.getSubExpressions().getFirst();
+                Exp rightSide = precursor.getSubExpressions().getLast();
+                Map<Exp, Integer> leftBindings = new HashMap<>();
+                Map<Exp, Integer> rightBindings = new HashMap<>();
+                int leftMatched = matchExpression(leftSide, leftBindings, ruleCounter, new HashMap<>());
+                int rightMatched = matchExpression(rightSide, rightBindings, ruleCounter, leftBindings);
+                if (rightMatched != -1 && leftMatched != -1) {
+                    int leftCC = myRegistry.getClusterArray()[leftMatched].getIndexToCongruenceClass();
+                    int rightCC = myRegistry.getClusterArray()[rightMatched].getIndexToCongruenceClass();
+                    if (myRegistry.areCongruent(leftCC, rightCC)) {
+                        variableBindings.putAll(rightBindings);
+                        variableBindings.putAll(leftBindings);
+                        matchedClusters.add(leftMatched);
+                        matchedClusters.add(rightMatched);
                     } else {
                         allMatched = false;
                         matchedClusters = new ArrayList<>();
                     }
                 } else {
-                    int matchedCluster = matchExpression(precursor, variableBindings, ruleCounter, variableBindings);
-                    if (matchedCluster != -1) {
-                        matchedClusters.add(matchedCluster);
-                    } else {
-                        allMatched = false;
-                        matchedClusters = new ArrayList<>();
-                    }
+                    allMatched = false;
+                    matchedClusters = new ArrayList<>();
                 }
-                String body = getExpBodyString(precursor);
-                if (allMatched) {
-                    debugLog("[Rule #" + ruleCounter + "] \u001B[42m Matched! \u001B[49m :" + body);
-                    for (Integer matchedCluster : matchedClusters) {
-                        debugLog("[Rule #" + ruleCounter + "]" + " Matched Cluster: " + "CC"
-                                + myRegistry.getClusterArray()[matchedCluster].getIndexToCongruenceClass() + " -> (CR"
-                                + matchedCluster + ": "
-                                + myMappings.get(myRegistry.getClusterArray()[matchedCluster].getTreeNodeLabel()) + " "
-                                + getArgsAsStrings(matchedCluster) + ")");
-                    }
-                } else {
-                    debugLog("[Rule #" + ruleCounter + "] \u001B[41m Not Matched \u001B[49m :" + body);
-                }
+
+                elaborateDebugLog(precursor, allMatched, ruleCounter, matchedClusters);
+
             }
+
+            for (Exp precursor : elaborationRule.getPrecursorTerms()) {
+                int matchedCluster = matchExpression(precursor, variableBindings, ruleCounter, variableBindings);
+                if (matchedCluster != -1) {
+                    matchedClusters.add(matchedCluster);
+                } else {
+                    allMatched = false;
+                    matchedClusters = new ArrayList<>();
+                }
+
+                elaborateDebugLog(precursor, allMatched, ruleCounter, matchedClusters);
+            }
+
+
 
             if (allMatched) {
                 if (matchedClusters.isEmpty()) {
@@ -128,6 +122,22 @@ public class Elaborator {
         }
 
         return result;
+    }
+
+    private void elaborateDebugLog(Exp precursor, boolean allMatched, int ruleCounter, ArrayList<Integer> matchedClusters) {
+        String body = getExpBodyString(precursor);
+        if (allMatched) {
+            debugLog("[Rule #" + ruleCounter + "] \u001B[42m Matched! \u001B[49m :" + body);
+            for (Integer matchedCluster : matchedClusters) {
+                debugLog("[Rule #" + ruleCounter + "]" + " Matched Cluster: " + "CC"
+                        + myRegistry.getClusterArray()[matchedCluster].getIndexToCongruenceClass() + " -> (CR"
+                        + matchedCluster + ": "
+                        + myMappings.get(myRegistry.getClusterArray()[matchedCluster].getTreeNodeLabel()) + " "
+                        + getArgsAsStrings(matchedCluster) + ")");
+            }
+        } else {
+            debugLog("[Rule #" + ruleCounter + "] \u001B[41m Not Matched \u001B[49m :" + body);
+        }
     }
 
     private int matchExpression(Exp precursor, Map<Exp, Integer> variableBindings, int ruleCounter,

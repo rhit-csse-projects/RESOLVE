@@ -14,23 +14,21 @@ package edu.clemson.rsrg.nProver.utilities.theorems;
 
 import edu.clemson.rsrg.absyn.expressions.Exp;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ElaborationRule {
     private final List<Exp> myPrecursorClauses;
+    private final List<Exp> myPrecursorTerms;
     private final Exp myResultantClause;
     private final String mySourceTheoremName;
     private final String mySourceModuleName;
     private final String mySourceTheoremOperator;
-    private final List<Exp> myPrecursorTerms;
 
     public ElaborationRule(List<Exp> PrecursorTerms, List<Exp> precursorClauses, Exp resultantClause,
             String sourceTheoremName, String sourceModuleName, String sourceTheoremOperator) {
-        myPrecursorTerms = PrecursorTerms;
-        myPrecursorClauses = precursorClauses;
-
-        myResultantClause = resultantClause;
+        this.myPrecursorClauses = precursorClauses;
+        this.myPrecursorTerms = PrecursorTerms;
+        this.myResultantClause = resultantClause;
         this.mySourceTheoremName = sourceTheoremName;
         this.mySourceModuleName = sourceModuleName;
         this.mySourceTheoremOperator = sourceTheoremOperator;
@@ -38,6 +36,10 @@ public class ElaborationRule {
 
     public List<Exp> getPrecursorClauses() {
         return myPrecursorClauses;
+    }
+
+    public List<Exp> getPrecursorTerms() {
+        return myPrecursorTerms;
     }
 
     public Exp getResultantClause() {
@@ -50,16 +52,6 @@ public class ElaborationRule {
 
     public String getSourceModuleName() {
         return mySourceModuleName;
-    }
-
-    // returns all precursor clauses in the provided list
-    private List<Exp> getClauses(List<Exp> precursorClauses) { // TODO Implement
-        return precursorClauses;
-    }
-
-    // returns all precursor terms in the provided list
-    private List<Exp> getTerms(List<Exp> precursorClauses) { // TODO Implement
-        return new ArrayList<>();
     }
 
     /**
@@ -125,6 +117,7 @@ public class ElaborationRule {
         }
         if (obj instanceof ElaborationRule other) {
             return myPrecursorClauses.equals(other.myPrecursorClauses)
+                    && myPrecursorTerms.equals(other.myPrecursorTerms)
                     && myResultantClause.equals(other.myResultantClause)
                     && mySourceModuleName.equals(other.mySourceModuleName)
                     && mySourceTheoremName.equals(other.mySourceTheoremName);
@@ -134,7 +127,7 @@ public class ElaborationRule {
 
     @Override
     public int hashCode() {
-        return myPrecursorClauses.hashCode() + (myResultantClause.hashCode() * 10)
+        return myPrecursorClauses.hashCode() + myPrecursorTerms.hashCode() +(myResultantClause.hashCode() * 10)
                 + (mySourceModuleName.hashCode() * 100) + (mySourceTheoremName.hashCode() * 1000);
     }
 }
