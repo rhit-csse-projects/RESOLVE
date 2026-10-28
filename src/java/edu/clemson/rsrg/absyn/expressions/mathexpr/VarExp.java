@@ -139,7 +139,6 @@ public class VarExp extends MathExp {
         StringBuffer sb = new StringBuffer();
         printSpace(indentSize, sb);
 
-
         if (myQualifier != null) {
             sb.append(myQualifier.asString(0, innerIndentInc));
             sb.append("::");
@@ -163,12 +162,7 @@ public class VarExp extends MathExp {
      */
     @Override
     public final boolean containsVar(String varName, boolean IsOldExp) {
-        boolean retval = false;
-        if (!IsOldExp && myName.getName().equals(varName)) {
-            retval = true;
-        }
-
-        return retval;
+        return !IsOldExp && myName.getName().equals(varName);
     }
 
     /**
@@ -200,8 +194,7 @@ public class VarExp extends MathExp {
     @Override
     public final boolean equivalent(Exp e) {
         boolean retval = false;
-        if (e instanceof VarExp) {
-            VarExp eAsVarExp = (VarExp) e;
+        if (e instanceof VarExp eAsVarExp) {
             retval = (posSymbolEquivalent(myQualifier, eAsVarExp.myQualifier)
                     && (posSymbolEquivalent(myName, eAsVarExp.myName)));
         }
