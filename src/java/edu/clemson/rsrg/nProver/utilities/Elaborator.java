@@ -111,8 +111,6 @@ public class Elaborator {
                 elaborateDebugLog(precursor, allMatched, ruleCounter, matchedClusters);
             }
 
-
-
             if (allMatched) {
                 if (matchedClusters.isEmpty()) {
                     continue;
@@ -124,7 +122,8 @@ public class Elaborator {
         return result;
     }
 
-    private void elaborateDebugLog(Exp precursor, boolean allMatched, int ruleCounter, ArrayList<Integer> matchedClusters) {
+    private void elaborateDebugLog(Exp precursor, boolean allMatched, int ruleCounter,
+            ArrayList<Integer> matchedClusters) {
         String body = getExpBodyString(precursor);
         if (allMatched) {
             debugLog("[Rule #" + ruleCounter + "] \u001B[42m Matched! \u001B[49m :" + body);

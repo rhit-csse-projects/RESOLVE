@@ -127,7 +127,7 @@ public class ElaborationRule {
 
     @Override
     public int hashCode() {
-        return myPrecursorClauses.hashCode() + myPrecursorTerms.hashCode() +(myResultantClause.hashCode() * 10)
+        return myPrecursorClauses.hashCode() + myPrecursorTerms.hashCode() + (myResultantClause.hashCode() * 10)
                 + (mySourceModuleName.hashCode() * 100) + (mySourceTheoremName.hashCode() * 1000);
     }
 }
