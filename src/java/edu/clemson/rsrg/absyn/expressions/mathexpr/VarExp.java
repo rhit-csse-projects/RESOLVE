@@ -139,11 +139,6 @@ public class VarExp extends MathExp {
         StringBuffer sb = new StringBuffer();
         printSpace(indentSize, sb);
 
-        if (myQuantification != SymbolTableEntry.Quantification.NONE) {
-            sb.append("[");
-            sb.append(myQuantification);
-            sb.append("] ");
-        }
 
         if (myQualifier != null) {
             sb.append(myQualifier.asString(0, innerIndentInc));

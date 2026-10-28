@@ -88,7 +88,7 @@ public class ElaborationRule {
             Exp exp = myPrecursorClauses.get(i);
             sb.append("  ");
             sb.append(exp);
-            sb.append("; Matching: ").append(exp.getSide());
+            sb.append("; Add to: ").append(exp.getSide());
             if (i < myPrecursorClauses.size() - 1)
                 sb.append(",\n");
 
@@ -101,7 +101,7 @@ public class ElaborationRule {
             Exp exp = myPrecursorTerms.get(i);
             sb.append("  ");
             sb.append(exp);
-            sb.append("; Matching: ").append(exp.getSide());
+            sb.append("; Add to: ").append(exp.getSide());
             if (i < myPrecursorTerms.size() - 1)
                 sb.append(",\n");
 
@@ -112,7 +112,7 @@ public class ElaborationRule {
         sb.append(mySourceTheoremOperator);
         sb.append("\n Resultant Clause: ");
         sb.append(myResultantClause.toString());
-        sb.append(" Matching: ").append(myResultantClause.getSide());
+        sb.append(" Add to: ").append(myResultantClause.getSide());
         sb.append("\u001B[0m");
         sb.append("\n\n");
         return sb.toString();
