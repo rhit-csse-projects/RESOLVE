@@ -40,7 +40,7 @@ public abstract class Exp extends ResolveConceptualElement {
      * form EITHER is the normal matching case
      */
     public enum Side {
-        ANTECEDENT, SUCCEDENT, EITHER
+        ANTECEDENT, SUCCEDENT, TERM
     }
 
     public enum ElaborationTag {
@@ -71,7 +71,7 @@ public abstract class Exp extends ResolveConceptualElement {
      * & add to the antecedent. ANTECEDENT & SUCCEDENT & should only be used in disjunctive normal form EITHER is the
      * normal matching case
      */
-    private Side side = Side.EITHER;
+    private Side side = Side.TERM;
 
     private ElaborationTag elaborationTag = ElaborationTag.POSITIVE;
 

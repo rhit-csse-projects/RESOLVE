@@ -180,7 +180,7 @@ public class Elaborator {
         return switch (antecendentState) {
             case ANTECEDENT -> attribute.get(0);
             case SUCCEDENT -> attribute.get(1);
-            default -> true;
+            default -> true; // TODO verify this is the Term case
         };
     }
 
