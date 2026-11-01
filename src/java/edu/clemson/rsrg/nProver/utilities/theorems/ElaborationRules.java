@@ -58,12 +58,15 @@ public class ElaborationRules {
                 Exp lastPart = myTheoremSubExpressions.getLast();
 
                 List<Exp> firstPartPrecursors = processPrecursors(firstPart);
-                if (isDeterministic(firstPartPrecursors, lastPart)) {
+
+                List<Exp> firstPartUndeterminedVars = undeterminedVariables(firstPartPrecursors, lastPart);
+                if (firstPartUndeterminedVars.isEmpty()) {
                     elaborationRules.add(mkRule(firstPartPrecursors, t, thisTheorem, "="));
                 } else {
                     if (DebuggerHelper.isDebug()) {
                         DebuggerHelper.debugLog("not deterministic: " + t);
                     }
+
                 }
 
                 if (lastPart.getSubExpressions().isEmpty()) { // This theorem is not reversible
@@ -71,7 +74,9 @@ public class ElaborationRules {
                 }
 
                 List<Exp> lastPartPrecursors = processPrecursors(lastPart);
-                if (isDeterministic(lastPartPrecursors, firstPart)) {
+
+                List<Exp> lastPartUndeterminedVars = undeterminedVariables(lastPartPrecursors, firstPart);
+                if (!lastPartUndeterminedVars.isEmpty()) {
                     elaborationRules.add(mkRule(lastPartPrecursors, t, thisTheorem, "="));
                 } else {
                     if (DebuggerHelper.isDebug()) {
@@ -91,7 +96,9 @@ public class ElaborationRules {
                 Exp lastPart = myTheoremSubExpressions.getLast();
 
                 List<Exp> firstPartPrecursors = processPrecursors(firstPart);
-                if (isDeterministic(firstPartPrecursors, lastPart)) {
+
+                List<Exp> firstPartUndeterminedVars = undeterminedVariables(firstPartPrecursors, lastPart);
+                if (!firstPartUndeterminedVars.isEmpty()) {
                     elaborationRules.add(mkRule(firstPartPrecursors, t, thisTheorem, "="));
                 } else {
                     if (DebuggerHelper.isDebug()) {
@@ -158,7 +165,9 @@ public class ElaborationRules {
             } else {
                 clonedSuccedent.setSide(Side.SUCCEDENT);
             }
-            if (isDeterministic(precursors, clonedSuccedent)) {
+
+            List<Exp> undeterminedVariables = undeterminedVariables(precursors, clonedSuccedent);
+            if (!undeterminedVariables.isEmpty()) {
                 elaborationRules.add(mkRule(precursors, t, clonedSuccedent, "implies"));
             } else {
                 if (DebuggerHelper.isDebug()) {
@@ -214,11 +223,11 @@ public class ElaborationRules {
 
         List<Exp> terms = new ArrayList<>();
         List<Exp> clauses = new ArrayList<>();
-        for (int i = 0; i < l.size(); i++) {
-            if (l.get(i).getMathType().isBoolean()) {
-                clauses.add(l.get(i));
+        for (Exp exp : l) {
+            if (exp.getMathType().isBoolean()) {
+                clauses.add(exp);
             } else {
-                terms.add(l.get(i));
+                terms.add(exp);
             }
         }
         return new ElaborationRule(terms, clauses, resultant, sourceTheoremName, sourceModuleName, operator);
@@ -235,37 +244,30 @@ public class ElaborationRules {
      * @param resultantExpression
      *            The resultant clause.
      */
-    public boolean isDeterministic(List<Exp> theoremExpressionList, Exp resultantExpression) {
+    public List<Exp> undeterminedVariables(List<Exp> theoremExpressionList, Exp resultantExpression) {
         // remove the resultant expression from the precursor expressions
         theoremExpressionList.remove(resultantExpression);
         // get the resultant sub expressions (will be only constants and variables)
         Set<Exp> resultantVars = getAllVars(resultantExpression);
         // Declare the set that will collect all variables in the precursor expressions
-        Set<Exp> collectionOfPrecursorVars = new LinkedHashSet<>();
+        Set<Exp> precursorVars = new LinkedHashSet<>();
 
         for (Exp e : theoremExpressionList) {
-            collectionOfPrecursorVars.addAll(getAllVars(e));
+            precursorVars.addAll(getAllVars(e));
         }
 
-        // For some reason beyond our understanding, regular containsAll always returns false
-        // probably because of the location stuff in Exps
-        return cursedContainsAll(collectionOfPrecursorVars, resultantVars); // collectionOfPrecursorVars.containsAll(resultantVars);
-    }
+        // declare the set that will collect the variables that don't exist in the precursor expressions
+        List<Exp> undeterminedVars = new ArrayList<>();
 
-    public static boolean cursedContainsAll(Set<Exp> precursorVars, Set<Exp> resultantVars) {
         for (Exp resVar : resultantVars) {
-            boolean matchedSomething = false;
             for (Exp preVar : precursorVars) {
                 if (preVar.equals(resVar)) {
-                    matchedSomething = true;
                     break;
                 }
             }
-            if (!matchedSomething) {
-                return false;
-            }
+            undeterminedVars.add(resVar);
         }
-        return true;
+        return undeterminedVars;
     }
 
     public static Set<Exp> getAllVars(Exp theorem) {
