@@ -18,15 +18,17 @@ import java.util.List;
 
 public class ElaborationRule {
     private final List<Exp> myPrecursorClauses;
+    private final List<Exp> myPrecursorTerms;
     private final Exp myResultantClause;
     private final String mySourceTheoremName;
     private final String mySourceModuleName;
     private final String mySourceTheoremOperator;
 
-    public ElaborationRule(List<Exp> precursorClauses, Exp resultantClause, String sourceTheoremName,
-            String sourceModuleName, String sourceTheoremOperator) {
-        myPrecursorClauses = precursorClauses;
-        myResultantClause = resultantClause;
+    public ElaborationRule(List<Exp> PrecursorTerms, List<Exp> precursorClauses, Exp resultantClause,
+            String sourceTheoremName, String sourceModuleName, String sourceTheoremOperator) {
+        this.myPrecursorClauses = precursorClauses;
+        this.myPrecursorTerms = PrecursorTerms;
+        this.myResultantClause = resultantClause;
         this.mySourceTheoremName = sourceTheoremName;
         this.mySourceModuleName = sourceModuleName;
         this.mySourceTheoremOperator = sourceTheoremOperator;
@@ -34,6 +36,10 @@ public class ElaborationRule {
 
     public List<Exp> getPrecursorClauses() {
         return myPrecursorClauses;
+    }
+
+    public List<Exp> getPrecursorTerms() {
+        return myPrecursorTerms;
     }
 
     public Exp getResultantClause() {
@@ -74,16 +80,31 @@ public class ElaborationRule {
             Exp exp = myPrecursorClauses.get(i);
             sb.append("  ");
             sb.append(exp);
-            sb.append("; Matching: ").append(exp.getSide());
+            sb.append("; Add to: ").append(exp.getSide());
             if (i < myPrecursorClauses.size() - 1)
                 sb.append(",\n");
+
         }
+
+        sb.append("\n\n Precursor Terms: ");
+
+        sb.append(" [\n");
+        for (int i = 0; i < myPrecursorTerms.size(); i++) {
+            Exp exp = myPrecursorTerms.get(i);
+            sb.append("  ");
+            sb.append(exp);
+            sb.append("; Add to: ").append(exp.getSide());
+            if (i < myPrecursorTerms.size() - 1)
+                sb.append(",\n");
+
+        }
+
         sb.append("\n ]");
         sb.append("\n Source Operator: ");
         sb.append(mySourceTheoremOperator);
         sb.append("\n Resultant Clause: ");
         sb.append(myResultantClause.toString());
-        sb.append(" Matching: ").append(myResultantClause.getSide());
+        sb.append(" Add to: ").append(myResultantClause.getSide());
         sb.append("\u001B[0m");
         sb.append("\n\n");
         return sb.toString();
@@ -96,6 +117,7 @@ public class ElaborationRule {
         }
         if (obj instanceof ElaborationRule other) {
             return myPrecursorClauses.equals(other.myPrecursorClauses)
+                    && myPrecursorTerms.equals(other.myPrecursorTerms)
                     && myResultantClause.equals(other.myResultantClause)
                     && mySourceModuleName.equals(other.mySourceModuleName)
                     && mySourceTheoremName.equals(other.mySourceTheoremName);
@@ -105,7 +127,7 @@ public class ElaborationRule {
 
     @Override
     public int hashCode() {
-        return myPrecursorClauses.hashCode() + (myResultantClause.hashCode() * 10)
+        return myPrecursorClauses.hashCode() + myPrecursorTerms.hashCode() + (myResultantClause.hashCode() * 10)
                 + (mySourceModuleName.hashCode() * 100) + (mySourceTheoremName.hashCode() * 1000);
     }
 }
