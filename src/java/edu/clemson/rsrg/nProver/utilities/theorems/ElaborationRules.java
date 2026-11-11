@@ -75,7 +75,7 @@ public class ElaborationRules {
                     elaborationRules.add(mkRule(lastPartPrecursors, t, thisTheorem, "="));
                 } else {
                     if (DebuggerHelper.isDebug()) {
-                        DebuggerHelper.debugLog("not deterministic: " + t);
+                        DebuggerHelper.debugLog("not deterministic =: " + t);
                     }
                 }
 

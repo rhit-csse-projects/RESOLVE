@@ -2,7 +2,7 @@ package edu.clemson.rsrg.nProver.utilities.theorems;
 
 import java.util.*;
 
-public class coveringDispenser {
+public class CoveringDispenser {
     HashMap<Integer, Set<Integer>> blockerSet = new HashMap<>();
     Set<Integer> sourceSet = new HashSet<>();
     int blocker = -1;
@@ -66,6 +66,18 @@ public class coveringDispenser {
             cover.coveredSets.add(blockers);
 
         return cover;
+    }
+
+    public Set<Set<Integer>> getCoveringSets() {
+        return formCoveringSet();
+    }
+
+    public Map<Integer, Set<Integer>> getBlockerSet() {
+        return blockerSet;
+    }
+
+    public Set<Integer> getSourceSet() {
+        return sourceSet;
     }
 
     static class Cover {
